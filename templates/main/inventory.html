@@ -2,6 +2,8 @@
 
 {% block scripts %}
     <div>
+        <a href="{% url 'main:index' %}">На главную</a>
         Здесь будет страница с инвентарем пользователя
+        <a href="{% url 'main:logout' %}">выйти</a>
     </div>
 {% endblock %}
