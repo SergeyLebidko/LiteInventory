@@ -28,6 +28,7 @@
         {% if user.is_authenticated %}
             <a href="{% url 'main:inventory' %}">перейти в инвентарь</a>
             <a href="{% url 'main:logout' %}">выйти</a>
+            <a href="{% url 'main:change_password' %}">сменить пароль</a>
         {% else %}
             <a href="{% url 'main:login' %}">войти</a> или <a href="{% url 'main:register' %}">зарегистрироваться</a>.
         {% endif %}
