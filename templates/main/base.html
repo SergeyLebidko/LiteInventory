@@ -4,12 +4,16 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>LiteInventory</title>
+    <title>liteInventory</title>
     <link rel="stylesheet" href="{% static 'main/css/reset.css' %}">
     <link rel="stylesheet" href="{% static 'main/js/jquery-3.5.1.js' %}"/>
+    {% block style %}
+    {% endblock style %}
 </head>
 <body>
 {% block content %}
 {% endblock %}
+{% block scripts %}
+{% endblock scripts %}
 </body>
 </html>
