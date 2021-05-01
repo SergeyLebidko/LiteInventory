@@ -1,0 +1,21 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <div>
+            Вы уже являетесь зарегистрированным пользователем сервиса.
+            Если хотите зарегистрировать новый аккаунт, сперва выполните <a href="{% url 'main:logout' %}">выход</a>,
+            затем снова перейдите на страницу регистрации.
+        </div>
+    {% else %}
+        <div>
+            <form method="post">
+                <table>
+                    {{ form.as_table }}
+                </table>
+                {% csrf_token %}
+                <input type="submit" value="Зарегистрироваться">
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}

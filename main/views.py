@@ -1,7 +1,12 @@
 from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
+from django.views.generic.base import View
+from django.contrib.auth import login
+
+from .forms import RegisterForm
 
 
 class Login(LoginView):
@@ -10,6 +15,22 @@ class Login(LoginView):
 
 class Logout(LogoutView):
     next_page = reverse_lazy('main:index')
+
+
+class Register(View):
+
+    def get(self, request):
+        form = RegisterForm()
+        return render(request, 'main/register.html', context={'form': form})
+
+    def post(self, request):
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return HttpResponseRedirect(reverse('main:inventory'))
+
+        return render(request, 'main/register.html', context={'form': form})
 
 
 def index(request):

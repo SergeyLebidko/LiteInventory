@@ -21,7 +21,7 @@
             <a href="{% url 'main:inventory' %}">перейти в инвентарь</a>
             <a href="{% url 'main:logout' %}">выйти</a>
         {% else %}
-            <a href="{% url 'main:login' %}">войти</a> или зарегистрироваться.
+            <a href="{% url 'main:login' %}">войти</a> или <a href="{% url 'main:register' %}">зарегистрироваться</a>.
         {% endif %}
     </div>
     <div>
