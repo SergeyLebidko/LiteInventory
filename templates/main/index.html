@@ -17,11 +17,10 @@
         </p>
     </div>
     <div>
-        Чтобы начать пользоваться сервисом нужно
         {% if user.is_authenticated %}
             <a href="{% url 'main:inventory' %}">перейти в инвентарь</a>
         {% else %}
-            войти или зарегистрироваться.
+            <a href="{% url 'main:login' %}">войти</a> или зарегистрироваться.
         {% endif %}
     </div>
     <div>
