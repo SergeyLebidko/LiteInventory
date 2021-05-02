@@ -79,6 +79,15 @@ def remove_account_done(request):
     return render(request, 'main/remove_account_done.html', context={})
 
 
+class EditAccount(View):
+
+    def get(self, request):
+        return render(request, 'main/edit_account.html', context={})
+
+    def post(self, request):
+        pass
+
+
 def index(request):
     return render(request, 'main/index.html', context={})
 

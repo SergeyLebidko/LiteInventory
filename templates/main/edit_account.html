@@ -1,0 +1,23 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    {% if user.is_is_anonymous %}
+        Чтобы редактировать аккаунт <a href="{% url 'main:login' %}">выполните вход</a>
+    {% else %}
+        {% if user.is_staff or user.is_superuser %}
+            Для редактирования аккаунтов персонала или суперпользователя перейдите на
+            <a href="{% url 'admin:index' %}">страницу администрирования Django</a>
+        {% else %}
+            <div>
+                <form method="post">
+                    <table>
+                        {{ form.as_table }}
+                    </table>
+                    {% csrf_token %}
+                    <input type="submit" value="Сохранить">
+                </form>
+            </div>
+        {% endif %}
+    {% endif %}
+
+{% endblock %}
