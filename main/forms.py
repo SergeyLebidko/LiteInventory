@@ -50,3 +50,22 @@ class ResetPasswordConfirmForm(forms.Form):
     code = forms.CharField(label='Код из письма', required=True)
     password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput, required=True)
     password2 = forms.CharField(label='Пароль (подтверждение)', widget=forms.PasswordInput, required=True)
+
+    def __init__(self, *args, valid_code=None, **kwargs):
+        forms.Form.__init__(self, *args, **kwargs)
+        self.valid_code = valid_code
+
+    def clean_code(self):
+        code = self.cleaned_data['code']
+        if code != self.valid_code:
+            raise ValidationError('Неверный код')
+        return code
+
+    def clean(self):
+        forms.Form.clean(self)
+        password1 = self.cleaned_data['password1']
+        password2 = self.cleaned_data['password2']
+        if password1 != password2:
+            raise ValidationError({'password2': 'Пароли не совпадают'})
+
+        validate_password(password1)

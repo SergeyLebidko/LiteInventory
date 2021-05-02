@@ -139,7 +139,26 @@ class ResetPasswordConfirmView(View):
         return render(request, 'main/reset_password_confirm.html', context={'form': form})
 
     def post(self, request, *args, **kwargs):
+        # Если пользователь залогинен, то редиректим на главную страницу
+        if not request.user.is_anonymous:
+            return HttpResponseRedirect(reverse('main:index'))
+
         _uuid = kwargs['_uuid']
+
+        try:
+            reset_password_code = ResetPasswordCode.objects.get(uuid=_uuid)
+        except ResetPasswordCode.DoesNotExist:
+            return Http404()
+
+        form = ResetPasswordConfirmForm(request.POST, valid_code=reset_password_code.code)
+        if form.is_valid():
+            user = reset_password_code.user
+            user.set_password(form.cleaned_data['password1'])
+            user.save()
+            reset_password_code.delete()
+            return HttpResponseRedirect(reverse('main:login'))
+
+        return render(request, 'main/reset_password_confirm.html', context={'form': form})
 
 
 def index(request):
