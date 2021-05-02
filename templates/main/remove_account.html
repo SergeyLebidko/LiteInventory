@@ -2,17 +2,22 @@
 
 {% block content %}
     {% if user.is_authenticated %}
-        <div>
-            <form method="post">
-                <label for="password_field">Текущий пароль:</label>
-                <input id="password_field" type="password" name="password" >
-                {% if error %}
-                    {{ error }}
-                {% endif %}
-                {% csrf_token %}
-                <input type="submit" value="Удалить аккаунт">
-            </form>
-        </div>
+        {% if user.is_staff or user.is_superuser %}
+            Удаление аккаунта персонала или суперпользователя производится через стандарную
+            <a href="{% url 'admin:index' %}">панель администрирования Django</a>
+        {% else %}
+            <div>
+                <form method="post">
+                    <label for="password_field">Текущий пароль:</label>
+                    <input id="password_field" type="password" name="password">
+                    {% if error %}
+                        {{ error }}
+                    {% endif %}
+                    {% csrf_token %}
+                    <input type="submit" value="Удалить аккаунт">
+                </form>
+            </div>
+        {% endif %}
     {% else %}
         <div>
             Прежде, чем удалить аккаунт, вы должны <a href="{% url 'main:login' %}">выполнить вход</a>

@@ -16,10 +16,10 @@ class Register(View):
         return render(request, 'main/register.html', context={'form': form})
 
     def post(self, request):
-        # Если пользователь залогинен - редиректим на страницу выхода
+        # Если пользователь залогинен - редиректим на главную страницу
         user = request.user
         if not user.is_anonimous:
-            return HttpResponseRedirect(reverse('main:logout'))
+            return HttpResponseRedirect(reverse('main:index'))
 
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -56,10 +56,6 @@ class RemoveAccount(View):
         return user.is_superuser or user.is_staff
 
     def get(self, request):
-        # Суперпользователя или персонал - редиректим на стандарную админку Django
-        if self.check_staff(request.user):
-            return HttpResponseRedirect(reverse('admin:index'))
-
         return render(request, 'main/remove_account.html', context={'error': None})
 
     def post(self, request):
