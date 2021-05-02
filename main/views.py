@@ -6,13 +6,13 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.views.generic.base import View
 from django.contrib.auth import login, logout
 
-from .forms import RegisterForm
+from .forms import UserRegisterForm
 
 
 class Register(View):
 
     def get(self, request):
-        form = RegisterForm()
+        form = UserRegisterForm()
         return render(request, 'main/register.html', context={'form': form})
 
     def post(self, request):
@@ -21,7 +21,7 @@ class Register(View):
         if not user.is_anonymous:
             return HttpResponseRedirect(reverse('main:index'))
 
-        form = RegisterForm(request.POST)
+        form = UserRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
