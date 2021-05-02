@@ -9,7 +9,7 @@
             <div>
                 <form method="post">
                     <label for="password_field">Текущий пароль:</label>
-                    <input id="password_field" type="password" name="password">
+                    <input id="password_field" type="password" name="password" required>
                     {% if error %}
                         {{ error }}
                     {% endif %}
