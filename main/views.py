@@ -18,14 +18,12 @@ class Register(View):
     def post(self, request):
         # Если пользователь залогинен - редиректим на главную страницу
         user = request.user
-        if not user.is_anonimous:
+        if not user.is_anonymous:
             return HttpResponseRedirect(reverse('main:index'))
 
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            user.set_password(request.POST['password'])
-            user.save()
             login(request, user)
             return HttpResponseRedirect(reverse('main:inventory'))
 
