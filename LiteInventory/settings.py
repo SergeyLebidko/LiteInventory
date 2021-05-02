@@ -59,8 +59,7 @@ ROOT_URLCONF = 'LiteInventory.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -135,3 +134,6 @@ LOGIN_REDIRECT_URL = '/index/'
 
 # В режиме разработки разрешаем CORS с любых доменов
 CORS_ORIGIN_ALLOW_ALL = DEBUG
+
+# В режиме эксплуатации параметр должен содержать список доменов, для которых разрешена обработка запросов
+CORS_ORIGIN_WHITELIST = []
