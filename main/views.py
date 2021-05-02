@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
@@ -112,8 +112,12 @@ class ResetPasswordView(View):
                 context={'error': 'Пользователь с таким e-mail не обнаружен'}
             )
 
-        code = create_reset_code()
-        _uuid = uuid.uuid4()
+        code_exist = _uuid_exist = True
+        while code_exist or _uuid_exist:
+            code = create_reset_code()
+            _uuid = uuid.uuid4()
+            code_exist = ResetPasswordCode.objects.filter(code=code).exists()
+            _uuid_exist = ResetPasswordCode.objects.filter(uuid=_uuid).exists()
 
         send_mail(
             'Письмо восстановления пароля на liteInventory',
@@ -131,12 +135,10 @@ class ResetPasswordView(View):
 class ResetPasswordConfirmView(View):
 
     def get(self, request, *args, **kwargs):
-        print(args)
-        print(kwargs)
         return render(request, 'main/reset_password_confirm.html', context={})
 
-    def post(self, request):
-        pass
+    def post(self, request, *args, **kwargs):
+        _uuid = kwargs['_uuid']
 
 
 def index(request):
