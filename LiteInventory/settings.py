@@ -137,3 +137,12 @@ CORS_ORIGIN_ALLOW_ALL = DEBUG
 
 # В режиме эксплуатации параметр должен содержать список доменов, для которых разрешена обработка запросов
 CORS_ORIGIN_WHITELIST = []
+
+# Настройки для отправки e-mail
+DEFAULT_FROM_EMAIL = 'liteinventory@gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'liteinventory'
+EMAIL_HOST_PASSWORD = 'gThk8%lo@ji86&'
+EMAIL_USE_TLS = True
+
