@@ -35,11 +35,12 @@
             {% else %}
                 <li><a href="{% url 'main:login' %}">войти</a></li>
                 <li><a href="{% url 'main:register' %}">зарегистрироваться</a></li>
+                <li><a href="{% url 'main:reset_password' %}">сбросить пароль</a></li>
             {% endif %}
         </ul>
     </div>
     <div>
-        Описание API.
+        Ссылка на описание API.
         <a href="{% url 'admin:index' %}">
             Вход для администратора.
         </a>

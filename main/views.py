@@ -7,9 +7,11 @@ from django.contrib.auth.models import User
 from django.views.generic.base import View
 from django.contrib.auth import login, logout
 from django.core.mail import send_mail
+import uuid
 
+from .models import ResetPasswordCode
 from .forms import UserRegisterForm, UserEditForm
-from .utils import ActionAccount
+from .utils import ActionAccount, create_reset_code
 
 
 class Register(View):
@@ -110,14 +112,31 @@ class ResetPasswordView(View):
                 context={'error': 'Пользователь с таким e-mail не обнаружен'}
             )
 
-        try:
-            send_mail('Тестовое письмо', 'Если ты это читаешь, то все прошло хорошо', ['sergeyler@gmail.com'])
-            print('Письмо отправлено нормально')
-        except Exception as ex:
-            print('При отправке писма произошла ошибка')
-            print(ex)
+        code = create_reset_code()
+        _uuid = uuid.uuid4()
 
-        return HttpResponseRedirect(reverse('main:index'))
+        send_mail(
+            'Письмо восстановления пароля на liteInventory',
+            f'Ваш код для восстановления пароля: {code}',
+            'liteinventory@gmail.com',
+            [email],
+            fail_silently=True
+        )
+
+        ResetPasswordCode.objects.create(user=user, code=code, uuid=_uuid)
+
+        return HttpResponseRedirect(reverse('main:reset_password_confirm', args=(_uuid,)))
+
+
+class ResetPasswordConfirmView(View):
+
+    def get(self, request, *args, **kwargs):
+        print(args)
+        print(kwargs)
+        return render(request, 'main/reset_password_confirm.html', context={})
+
+    def post(self, request):
+        pass
 
 
 def index(request):
