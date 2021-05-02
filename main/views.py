@@ -6,7 +6,8 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.views.generic.base import View
 from django.contrib.auth import login, logout
 
-from .forms import UserRegisterForm
+from .forms import UserRegisterForm, UserEditForm
+from .utils import ActionAccount
 
 
 class Register(View):
@@ -47,24 +48,16 @@ def change_password_done(request):
     return render(request, 'main/change_password_done.html', context={})
 
 
-class RemoveAccount(View):
-
-    @staticmethod
-    def check_staff(user):
-        return user.is_superuser or user.is_staff
+class RemoveAccount(View, ActionAccount):
 
     def get(self, request):
         return render(request, 'main/remove_account.html', context={'error': None})
 
     def post(self, request):
-        # Если нет залогинившегося пользователя - редиректим на страницу логина
         user = request.user
-        if user.is_anonymous:
-            return HttpResponseRedirect(reverse('main:login'))
-
-        # Суперпользователя или персонал - редиректим на стандарную админку Django
-        if self.check_staff(user):
-            return HttpResponseRedirect(reverse('admin:index'))
+        redirect = self.check_user(user)
+        if redirect:
+            return redirect
 
         password = request.POST['password']
         if request.user.check_password(password):
@@ -79,13 +72,24 @@ def remove_account_done(request):
     return render(request, 'main/remove_account_done.html', context={})
 
 
-class EditAccount(View):
+class EditAccount(View, ActionAccount):
 
     def get(self, request):
-        return render(request, 'main/edit_account.html', context={})
+        form = UserEditForm(instance=request.user)
+        return render(request, 'main/edit_account.html', context={'form': form})
 
     def post(self, request):
-        pass
+        user = request.user
+        redirect = self.check_user(user)
+        if redirect:
+            return redirect
+
+        form = UserEditForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('main:index'))
+
+        return render(request, 'main/edit_account.html', context={'form': form})
 
 
 def index(request):
