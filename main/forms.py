@@ -5,8 +5,8 @@ from django import forms
 
 
 class UserRegisterForm(forms.ModelForm):
-    password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Пароль (подтверждение)', widget=forms.PasswordInput)
+    password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput, required=True)
+    password2 = forms.CharField(label='Пароль (подтверждение)', widget=forms.PasswordInput, required=True)
     email = forms.EmailField(label='Адрес электронной почты', required=True)
 
     def clean(self):
@@ -44,3 +44,9 @@ class UserEditForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'first_name', 'last_name']
+
+
+class ResetPasswordConfirmForm(forms.Form):
+    code = forms.CharField(label='Код из письма', required=True)
+    password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput, required=True)
+    password2 = forms.CharField(label='Пароль (подтверждение)', widget=forms.PasswordInput, required=True)

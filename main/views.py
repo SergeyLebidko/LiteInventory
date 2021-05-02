@@ -10,7 +10,7 @@ from django.core.mail import send_mail
 import uuid
 
 from .models import ResetPasswordCode
-from .forms import UserRegisterForm, UserEditForm
+from .forms import UserRegisterForm, UserEditForm, ResetPasswordConfirmForm
 from .utils import ActionAccount, create_reset_code
 
 
@@ -135,7 +135,8 @@ class ResetPasswordView(View):
 class ResetPasswordConfirmView(View):
 
     def get(self, request, *args, **kwargs):
-        return render(request, 'main/reset_password_confirm.html', context={})
+        form = ResetPasswordConfirmForm()
+        return render(request, 'main/reset_password_confirm.html', context={'form': form})
 
     def post(self, request, *args, **kwargs):
         _uuid = kwargs['_uuid']
