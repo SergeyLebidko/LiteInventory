@@ -131,6 +131,7 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/index/'
 
 # В режиме разработки разрешаем CORS с любых доменов
 CORS_ORIGIN_ALLOW_ALL = DEBUG

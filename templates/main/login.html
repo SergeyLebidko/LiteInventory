@@ -10,10 +10,9 @@
                     {{ form.as_table }}
                 </table>
                 {% csrf_token %}
-                <input type="hidden" name="next" value="{% url 'main:inventory' %}">
+                <input type="hidden" name="next" value="{{ next }}">
                 <input type="submit" value="Войти">
             </form>
         </div>
     {% endif %}
-
 {% endblock %}

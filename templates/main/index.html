@@ -25,14 +25,17 @@
         </p>
     </div>
     <div>
-        {% if user.is_authenticated %}
-            <a href="{% url 'main:inventory' %}">перейти в инвентарь</a>
-            <a href="{% url 'main:logout' %}">выйти</a>
-            <a href="{% url 'main:change_password' %}">сменить пароль</a>
-            <a href="{% url 'main:remove_account' %}">удалить аккаунт</a>
-        {% else %}
-            <a href="{% url 'main:login' %}">войти</a> или <a href="{% url 'main:register' %}">зарегистрироваться</a>.
-        {% endif %}
+        <ul>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'main:inventory' %}">перейти в инвентарь</a></li>
+                <li><a href="{% url 'main:logout' %}">выйти</a></li>
+                <li><a href="{% url 'main:change_password' %}">сменить пароль</a></li>
+                <li><a href="{% url 'main:remove_account' %}">удалить аккаунт</a></li>
+            {% else %}
+                <li><a href="{% url 'main:login' %}">войти</a></li>
+                <li><a href="{% url 'main:register' %}">зарегистрироваться</a></li>
+            {% endif %}
+        </ul>
     </div>
     <div>
         Описание API.

@@ -13,5 +13,5 @@ urlpatterns = [
     path('remove_account/', RemoveAccount.as_view(), name='remove_account'),
     path('remova_account_done/', remove_account_done, name='remove_account_done'),
     path('index/', index, name='index'),
-    path('inventrory/', inventory, name='inventory')
+    path('inventory/', inventory, name='inventory')
 ]
