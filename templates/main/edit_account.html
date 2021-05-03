@@ -1,23 +1,35 @@
 {% extends 'main/base.html' %}
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'main/css/edit_account.css' %}">
+{% endblock %}
 
 {% block content %}
-    {% if user.is_is_anonymous %}
-        Чтобы редактировать аккаунт <a href="{% url 'main:login' %}">выполните вход</a>
-    {% else %}
-        {% if user.is_staff or user.is_superuser %}
-            Для редактирования аккаунтов персонала или суперпользователя перейдите на
-            <a href="{% url 'admin:index' %}">страницу администрирования Django</a>
+    <div class="container">
+        {% if user.is_is_anonymous %}
+            <h3>Чтобы редактировать аккаунт <a href="{% url 'main:login' %}">выполните вход</a></h3>
         {% else %}
-            <div>
+            {% if user.is_staff or user.is_superuser %}
+                <h3>
+                    Для редактирования аккаунтов персонала или суперпользователя перейдите на
+                    <a href="{% url 'admin:index' %}">страницу администрирования Django</a>
+                </h3>
+            {% else %}
+                <h3>Введите новые данные</h3>
                 <form method="post">
                     <table>
                         {{ form.as_table }}
+                        <tr>
+                            <td></td>
+                            <td>
+                                <input type="submit" value="Сохранить">
+                            </td>
+                        </tr>
                     </table>
                     {% csrf_token %}
-                    <input type="submit" value="Сохранить">
                 </form>
-            </div>
+            {% endif %}
         {% endif %}
-    {% endif %}
-
+    </div>
 {% endblock %}

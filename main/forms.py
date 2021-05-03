@@ -5,6 +5,13 @@ from django.core.exceptions import ValidationError
 from django import forms
 
 
+def username_checker(username):
+    for letter in username:
+        if letter not in string.ascii_letters + '_0123456789':
+            raise ValidationError('Разрешены только английские буквы, цифры и знак подчеркивания')
+    return username
+
+
 class UserRegisterForm(forms.ModelForm):
     password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput, required=True)
     password2 = forms.CharField(label='Пароль (подтверждение)', widget=forms.PasswordInput, required=True)
@@ -12,10 +19,7 @@ class UserRegisterForm(forms.ModelForm):
 
     def clean_username(self):
         username = self.cleaned_data['username']
-        for letter in username:
-            if letter not in string.ascii_letters + '_0123456789':
-                raise ValidationError('Разрешены только английские буквы, цифры и знак подчеркивания')
-        return username
+        return username_checker(username)
 
     def clean(self):
         forms.ModelForm.clean(self)
@@ -50,9 +54,14 @@ class UserRegisterForm(forms.ModelForm):
 class UserEditForm(forms.ModelForm):
     email = forms.EmailField(label='Адрес электронной почты', required=True)
 
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        return username_checker(username)
+
     class Meta:
         model = User
         fields = ['username', 'email', 'first_name', 'last_name']
+        help_texts = {'username': None}
 
 
 class ResetPasswordConfirmForm(forms.Form):
