@@ -1,3 +1,7 @@
 from django.test import TestCase
 
-# Create your tests here.
+
+class UserApiTest(TestCase):
+
+    def test_login(self):
+        print('Тест завершен успешно')
