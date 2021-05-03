@@ -1,3 +1,4 @@
+import string
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -8,6 +9,13 @@ class UserRegisterForm(forms.ModelForm):
     password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput, required=True)
     password2 = forms.CharField(label='Пароль (подтверждение)', widget=forms.PasswordInput, required=True)
     email = forms.EmailField(label='Адрес электронной почты', required=True)
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        for letter in username:
+            if letter not in string.ascii_letters + '_0123456789':
+                raise ValidationError('Разрешены только английские буквы, цифры и знак подчеркивания')
+        return username
 
     def clean(self):
         forms.ModelForm.clean(self)
@@ -36,6 +44,7 @@ class UserRegisterForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'password1', 'password2', 'email', 'first_name', 'last_name']
+        help_texts = {'username': None}
 
 
 class UserEditForm(forms.ModelForm):

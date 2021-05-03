@@ -5,13 +5,15 @@ body {
 
 /* Общие стили для полей ввода и кнопок отправки */
 
-input[type=text], input[type=password] {
+input[type=text], input[type=password], input[type=email] {
     padding: 5px 15px;
     outline: none;
     border: none;
     background-color: rgb(235, 235, 235);
     border-radius: 5px;
     font-size: 1em;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 input[type=submit] {
@@ -25,4 +27,18 @@ input[type=submit] {
 
 input[type=submit]:active {
     transform: scale(0.9);
+}
+
+/* Общий стандартный стиль для вывода ошибок в формах */
+
+.errorlist {
+    list-style-type: none;
+    background-color: orangered;
+    color: white;
+    border-radius: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 5px 10px;
+    width: 100%;
+    box-sizing: border-box;
 }
