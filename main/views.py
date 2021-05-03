@@ -165,6 +165,10 @@ def index(request):
     return render(request, 'main/index.html', context={})
 
 
+def api_description(request):
+    return render(request, 'main/api_description.html', context={})
+
+
 @login_required
 def inventory(request):
     return render(request, 'main/inventory.html', context={})

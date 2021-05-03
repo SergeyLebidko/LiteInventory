@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import Register, Login, Logout, ChangePassword, change_password_done, RemoveAccount, EditAccount, \
-    remove_account_done, ResetPasswordView, ResetPasswordConfirmView, index, inventory
+    remove_account_done, ResetPasswordView, ResetPasswordConfirmView, index, api_description, inventory
 
 app_name = 'main'
 
@@ -16,5 +16,6 @@ urlpatterns = [
     path('reset_password/', ResetPasswordView.as_view(), name='reset_password'),
     path('reset_password_confirm/<uuid:_uuid>/', ResetPasswordConfirmView.as_view(), name='reset_password_confirm'),
     path('index/', index, name='index'),
+    path('api_description/', api_description, name='api_description'),
     path('inventory/', inventory, name='inventory')
 ]
