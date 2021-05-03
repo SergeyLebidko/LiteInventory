@@ -25,34 +25,36 @@
             </p>
         </div>
 
-        <div>
+        <div class="control">
+
             <!-- Управление аккаунтом -->
-            <div>
+            <h3>
                 {% if user.get_full_name %}
                     {{ user.get_full_name }}
                 {% else %}
                     {{ user.username }}
                 {% endif %}
-                <ul>
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url 'main:inventory' %}">перейти в инвентарь</a></li>
-                        <li><a href="{% url 'main:logout' %}">выйти</a></li>
-                        <li><a href="{% url 'main:change_password' %}">сменить пароль</a></li>
-                        <li><a href="{% url 'main:edit_account' %}">редактировать аккаунт</a></li>
-                        <li><a href="{% url 'main:remove_account' %}">удалить аккаунт</a></li>
-                    {% else %}
-                        <li><a href="{% url 'main:login' %}">войти</a></li>
-                        <li><a href="{% url 'main:register' %}">зарегистрироваться</a></li>
-                        <li><a href="{% url 'main:reset_password' %}">сбросить пароль</a></li>
-                    {% endif %}
-                </ul>
-            </div>
+            </h3>
+            <ul class="account_actions">
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'main:inventory' %}">Мой инвентарь</a></li>
+                    <li><a href="{% url 'main:edit_account' %}">Редактировать аккаунт</a></li>
+                    <li><a href="{% url 'main:change_password' %}">Сменить пароль</a></li>
+                    <li><a href="{% url 'main:logout' %}">Выйти</a></li>
+                    <li><a href="{% url 'main:remove_account' %}">Удалить аккаунт</a></li>
+                {% else %}
+                    <li><a href="{% url 'main:login' %}">Войти</a></li>
+                    <li><a href="{% url 'main:register' %}">Зарегистрироваться</a></li>
+                    <li><a href="{% url 'main:reset_password' %}">Сбросить пароль</a></li>
+                {% endif %}
+            </ul>
 
             <!-- Служебные ссылки -->
-            <div>
-                <a href="{% url 'main:api_description' %}">Описание API</a>
-                <a href="{% url 'admin:index' %}">Вход для администратора</a>
-            </div>
+            <ul class="staff_block">
+                <li><a href="{% url 'main:api_description' %}">Описание API</a></li>
+                <li><a href="{% url 'admin:index' %}">Вход для администратора</a></li>
+            </ul>
+
         </div>
 
     </div>

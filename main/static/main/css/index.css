@@ -1,3 +1,26 @@
+h3 {
+    text-align: center;
+    font-weight: normal;
+    font-size: 1.5em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+a {
+    display: block;
+    text-decoration: none;
+    padding: 8px 15px;
+}
+
+p {
+    text-align: justify;
+    padding: 30px;
+}
+
+li:active {
+    transform: scale(0.97);
+}
+
 .container {
     max-width: 1000px;
     min-height: 500px;
@@ -8,6 +31,7 @@
     box-sizing: border-box;
     display: flex;
     justify-content: center;
+    font-family: "Roboto Light", Arial, SansSerif;
 }
 
 .container > div {
@@ -15,7 +39,6 @@
 }
 
 .description {
-    font-family: "Roboto Light", Arial, SansSerif;
     border-top-left-radius: 15px;
     border-bottom-left-radius: 15px;
     background-color: rgb(50, 50, 50);
@@ -23,15 +46,42 @@
     padding: 10px;
 }
 
-.description h3 {
-    text-align: center;
-    font-weight: normal;
-    font-size: 1.5em;
-    margin-top: 10px;
-    margin-bottom: 10px;
+.control {
+    padding: 10px;
+    position: relative;
 }
 
-.description p {
-    text-align: justify;
-    padding: 30px;
+.account_actions {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.account_actions li {
+    margin: 8px;
+    background-color: rgb(235, 235, 235);
+    border-radius: 5px;
+}
+
+.account_actions a:visited {
+    color: black;
+}
+
+.staff_block {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+.staff_block li {
+    display: inline-block;
+    background-color: rgb(50, 50, 50);
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.staff_block li a {
+    display: block;
+    text-decoration: none;
+    padding: 8px 15px;
+    color: white;
 }
