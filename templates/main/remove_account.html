@@ -1,26 +1,36 @@
 {% extends 'main/base.html' %}
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'main/css/remove_account.css' %}">
+{% endblock %}
 
 {% block content %}
-    {% if user.is_authenticated %}
-        {% if user.is_staff or user.is_superuser %}
-            Удаление аккаунта персонала или суперпользователя производится через стандарную
-            <a href="{% url 'admin:index' %}">панель администрирования Django</a>
-        {% else %}
-            <div>
+    <div class="container">
+        {% if user.is_authenticated %}
+            {% if user.is_staff or user.is_superuser %}
+                <h3>
+                    Удаление аккаунта персонала или суперпользователя производится через стандарную
+                    <a href="{% url 'admin:index' %}">панель администрирования Django</a>
+                </h3>
+            {% else %}
+                <h3>Чтобы удалить аккаунт, введите текущий пароль</h3>
                 <form method="post">
                     <label for="password_field">Текущий пароль:</label>
                     <input id="password_field" type="password" name="password" required>
                     {% if error %}
-                        {{ error }}
+                        <ul class="errorlist">
+                            <li>{{ error }}</li>
+                        </ul>
                     {% endif %}
                     {% csrf_token %}
                     <input type="submit" value="Удалить аккаунт">
                 </form>
-            </div>
+            {% endif %}
+        {% else %}
+            <h3>
+                Прежде, чем удалить аккаунт, вы должны <a href="{% url 'main:login' %}">выполнить вход</a>
+            </h3>
         {% endif %}
-    {% else %}
-        <div>
-            Прежде, чем удалить аккаунт, вы должны <a href="{% url 'main:login' %}">выполнить вход</a>
-        </div>
-    {% endif %}
+    </div>
 {% endblock %}
