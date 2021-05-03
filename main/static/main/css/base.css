@@ -2,3 +2,27 @@ body {
     background-color: rgb(230, 230, 230);
     padding: 10px;
 }
+
+/* Общие стили для полей ввода и кнопок отправки */
+
+input[type=text], input[type=password] {
+    padding: 5px 15px;
+    outline: none;
+    border: none;
+    background-color: rgb(235, 235, 235);
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+input[type=submit] {
+    padding: 5px 15px;
+    background-color: rgb(50, 50, 50);
+    color: white;
+    border: none;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+input[type=submit]:active {
+    transform: scale(0.9);
+}

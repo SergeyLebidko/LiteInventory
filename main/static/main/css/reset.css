@@ -30,8 +30,11 @@ ul {
 }
 
 table {
-    border-collapse: collapse;
-    border-spacing: 0;
+    border-spacing: 5px;
+}
+
+th {
+    font-weight: normal;
 }
 
 canvas {
