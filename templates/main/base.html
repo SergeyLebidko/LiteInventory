@@ -6,9 +6,16 @@
     <meta charset="UTF-8">
     <title>liteInventory</title>
     <link rel="stylesheet" href="{% static 'main/css/reset.css' %}">
-    <link rel="stylesheet" href="{% static 'main/js/jquery-3.5.1.js' %}"/>
+    <link rel="stylesheet" href="{% static 'main/css/base.css' %}">
+    <style>
+        @font-face {
+            font-family: 'Roboto Light';
+            src: local('Roboto Light'), url("{% static 'main/font/Roboto-Light.ttf' %}") format('truetype');
+        }
+    </style>
     {% block style %}
     {% endblock style %}
+    <link rel="stylesheet" href="{% static 'main/js/jquery-3.5.1.js' %}"/>
 </head>
 <body>
 {% block content %}

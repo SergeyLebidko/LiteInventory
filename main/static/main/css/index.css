@@ -1,0 +1,37 @@
+.container {
+    max-width: 1000px;
+    min-height: 500px;
+    margin: 20px auto;
+    background-color: white;
+    box-shadow: 0 3px 20px rgba(90, 90, 90, 0.2);
+    border-radius: 15px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+}
+
+.container > div {
+    width: 50%;
+}
+
+.description {
+    font-family: "Roboto Light", Arial, SansSerif;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    background-color: rgb(50, 50, 50);
+    color: white;
+    padding: 10px;
+}
+
+.description h3 {
+    text-align: center;
+    font-weight: normal;
+    font-size: 1.5em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.description p {
+    text-align: justify;
+    padding: 30px;
+}

@@ -1,46 +1,59 @@
 {% extends 'main/base.html' %}
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'main/css/index.css' %}">
+{% endblock %}
 
 {% block content %}
-    <div>
-        <h3>
-            {% if user.is_authenticated %}
+    <div class="container">
+
+        <!-- Описание -->
+        <div class="description">
+            <h3>Добро пожаловать на liteInventory!</h3>
+            <p>
+                liteInventory создан, чтобы облегчить ведение реестра компьютерной, сетевой и оргтехники на небольшом
+                предприятии. Вы можете создавать группы (соответствующие отделам, кабинетам, филиалам и т.д.) и
+                описывать
+                используемую в них технику, а сервис всегда подскажет, сколько всего у вас в парке компьютеров и
+                принтеров,
+                роутеров и серверов, ноутбуков и точек доступа.
+            </p>
+            <p>
+                Для каждого вида техники можно создавать сколько угодно дополнительных параметров с характиристиками
+                (например, объем памяти, модель процессора, установленное ПО и т.д.) и создавать комментарии.
+            </p>
+        </div>
+
+        <div>
+            <!-- Управление аккаунтом -->
+            <div>
                 {% if user.get_full_name %}
-                    Добро пожаловать на liteInventory, {{ user.get_full_name }}!
+                    {{ user.get_full_name }}
                 {% else %}
-                    Добро пожаловать на liteInventory, {{ user.username }}!
+                    {{ user.username }}
                 {% endif %}
-            {% else %}
-                Добро пожаловать на liteInventory!
-            {% endif %}
-        </h3>
-        <p>
-            liteInventory создан, чтобы облегчить ведение реестра компьютерной, сетевой и оргтехники на небольшом
-            предприятии. Вы можете создавать группы (соответствующие отделам, кабинетам, филиалам и т.д.) и описывать
-            используемую в них технику, а сервис всегда подскажет, сколько всего у вас в парке компьютеров и принтеров,
-            роутеров и серверов, ноутбуков и точек доступа.
-        </p>
-        <p>
-            Для каждого вида техники можно создавать сколько угодно дополнительных параметров с характиристиками
-            (например, объем памяти, модель процессора, установленное ПО и т.д.) и создавать комментарии.
-        </p>
-    </div>
-    <div>
-        <ul>
-            {% if user.is_authenticated %}
-                <li><a href="{% url 'main:inventory' %}">перейти в инвентарь</a></li>
-                <li><a href="{% url 'main:logout' %}">выйти</a></li>
-                <li><a href="{% url 'main:change_password' %}">сменить пароль</a></li>
-                <li><a href="{% url 'main:edit_account' %}">редактировать аккаунт</a></li>
-                <li><a href="{% url 'main:remove_account' %}">удалить аккаунт</a></li>
-            {% else %}
-                <li><a href="{% url 'main:login' %}">войти</a></li>
-                <li><a href="{% url 'main:register' %}">зарегистрироваться</a></li>
-                <li><a href="{% url 'main:reset_password' %}">сбросить пароль</a></li>
-            {% endif %}
-        </ul>
-    </div>
-    <div>
-        <a href="{% url 'main:api_description' %}">Описание API</a>
-        <a href="{% url 'admin:index' %}">Вход для администратора</a>
+                <ul>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'main:inventory' %}">перейти в инвентарь</a></li>
+                        <li><a href="{% url 'main:logout' %}">выйти</a></li>
+                        <li><a href="{% url 'main:change_password' %}">сменить пароль</a></li>
+                        <li><a href="{% url 'main:edit_account' %}">редактировать аккаунт</a></li>
+                        <li><a href="{% url 'main:remove_account' %}">удалить аккаунт</a></li>
+                    {% else %}
+                        <li><a href="{% url 'main:login' %}">войти</a></li>
+                        <li><a href="{% url 'main:register' %}">зарегистрироваться</a></li>
+                        <li><a href="{% url 'main:reset_password' %}">сбросить пароль</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Служебные ссылки -->
+            <div>
+                <a href="{% url 'main:api_description' %}">Описание API</a>
+                <a href="{% url 'admin:index' %}">Вход для администратора</a>
+            </div>
+        </div>
+
     </div>
 {% endblock %}
