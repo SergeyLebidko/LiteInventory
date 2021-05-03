@@ -1,7 +1,16 @@
 {% extends 'main/base.html' %}
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'main/css/common_account_form_styles.css' %}">
+{% endblock %}
 
 {% block content %}
-    <div>
-        Аккаунт успешно удален <a href="{% url 'main:index' %}">на главную</a>
+    <div class="container" style="max-width: 400px">
+        <h3>
+            Аккаунт успешно удален
+            <br>
+            <a href="{% url 'main:index' %}">Вернуться на главную</a>
+        </h3>
     </div>
 {% endblock %}
