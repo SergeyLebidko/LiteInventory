@@ -2,7 +2,17 @@
 {% load static %}
 
 {% block style %}
-    <link rel="stylesheet" href="{% static 'main/css/remove_account.css' %}">
+    <link rel="stylesheet" href="{% static 'main/css/common_account_form_styles.css' %}">
+    <style>
+        label {
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            margin-bottom: 5px;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
