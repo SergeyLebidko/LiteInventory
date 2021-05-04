@@ -21,6 +21,13 @@ class UserRegisterForm(forms.ModelForm):
         username = self.cleaned_data['username']
         return username_checker(username)
 
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        user_exists = User.objects.filter(email=email).exists()
+        if user_exists:
+            raise ValidationError('Пользователь с таким email уже зарегистрирован')
+        return email
+
     def clean(self):
         forms.ModelForm.clean(self)
         password1 = self.cleaned_data['password1']
