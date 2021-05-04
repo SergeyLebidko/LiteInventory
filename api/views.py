@@ -25,4 +25,5 @@ def login(request):
 @authentication_classes([CustomTokenAuthentication])
 @permission_classes([IsAuthenticated])
 def logout(request):
-    return Response('Все хорошо', status=status.HTTP_200_OK)
+    Token.objects.get(token=request.auth).delete()
+    return Response(status=status.HTTP_200_OK)
