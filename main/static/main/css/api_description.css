@@ -1,0 +1,55 @@
+.container {
+    max-width: 950px;
+    margin: 20px auto;
+    background-color: white;
+    box-shadow: 0 3px 20px rgba(90, 90, 90, 0.2);
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-family: "Roboto Light", Arial, SansSerif;
+}
+
+h3 {
+    font-size: 1.2em;
+    font-weight: normal;
+    margin-bottom: 10px;
+}
+
+p {
+    margin-bottom: 8px;
+    text-align: justify;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 5px;
+    margin-bottom: 8px;
+}
+
+.hook_block {
+    display: flex;
+    justify-content: center;
+}
+
+.hook_block:not(:last-child) {
+    border-bottom: 1px dotted rgb(150, 150, 150);
+}
+
+.hook_block:first-child .code_block {
+    border-top-right-radius: 10px;
+}
+
+.hook_block:last-child .code_block {
+    border-bottom-right-radius: 10px;
+}
+
+.description_block {
+    width: 50%;
+    padding: 25px 10px;
+}
+
+.code_block {
+    width: 50%;
+    padding: 25px 10px;
+    background-color: rgb(50, 50, 50);
+    color: white;
+}

@@ -1,6 +1,43 @@
 {% extends 'main/base.html' %}
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'main/css/api_description.css' %}">
+{% endblock %}
 
 {% block content %}
-    Здесь будет описание API
-    <a href="{% url 'main:index' %}">Вернуться на главную</a>
+    <div class="container">
+        <div class="hook_block">
+            <div class="description_block">
+                <h3>
+                    Хук для выполнения входа
+                </h3>
+                <p>
+                    POST: /api/login/
+                </p>
+                <p>
+                    На хук надо отправить username (имя пользователя) и password (пароль).
+                    Если данные корректны, то хук вернет токен, который должен быть
+                    сохранен на фронтэнде для аутентификации последующих запросов.
+                </p>
+            </div>
+            <div class="code_block">
+                <code>В запросе:</code>
+                <ul>
+                    <li>
+                        <code>password: "пароль_пользователя"</code>
+                    </li>
+                    <li>
+                        <code>username: "логин_пользователя"</code>
+                    </li>
+                </ul>
+                <code>Ответ:</code>
+                <ul>
+                    <li>
+                        <pre>{{ login_json }}</pre>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 {% endblock %}

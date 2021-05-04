@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse, reverse_lazy
@@ -166,7 +167,14 @@ def index(request):
 
 
 def api_description(request):
-    return render(request, 'main/api_description.html', context={})
+    login_json = {
+        'token': 'f1b8c722-d7dc-4784-9596-365902dc5920'
+    }
+
+    context = {
+        'login_json': json.dumps(login_json, indent=2, ensure_ascii=False, sort_keys=False)
+    }
+    return render(request, 'main/api_description.html', context=context)
 
 
 @login_required
