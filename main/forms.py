@@ -6,6 +6,8 @@ from django import forms
 
 
 def username_checker(username):
+    if not username:
+        raise ValidationError('Пустое имя пользователя недопустимо')
     for letter in username:
         if letter not in string.ascii_letters + '_0123456789':
             raise ValidationError('Разрешены только английские буквы, цифры и знак подчеркивания')
