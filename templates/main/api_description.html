@@ -7,6 +7,7 @@
 
 {% block content %}
     <div class="container">
+        <!-- Описание login -->
         <div class="hook_block">
             <div class="description_block">
                 <h3>
@@ -37,6 +38,25 @@
                         <pre>{{ login_json }}</pre>
                     </li>
                 </ul>
+            </div>
+        </div>
+
+        <!-- Описание logout -->
+        <div class="hook_block">
+            <div class="description_block">
+                <h3>
+                    Хук для выполнения выхода
+                </h3>
+                <p>
+                    POST: /api/logout/
+                </p>
+                <p>
+                    На хук надо отправить пустой запрос, с заголовком Authorization, в котором
+                    должен быть указан токен, для которого необходимо выполнить выход из системы.
+                </p>
+            </div>
+            <div class="code_block">
+                <code>Если успешно - ответ со статусом 200</code>
             </div>
         </div>
     </div>
