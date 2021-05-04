@@ -115,7 +115,7 @@ class ResetPasswordView(View):
         code_exist = _uuid_exist = True
         while code_exist or _uuid_exist:
             code = create_reset_code()
-            _uuid = uuid.uuid4()
+            _uuid = str(uuid.uuid4())
             code_exist = ResetPasswordCode.objects.filter(code=code).exists()
             _uuid_exist = ResetPasswordCode.objects.filter(uuid=_uuid).exists()
 
