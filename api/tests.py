@@ -10,6 +10,7 @@ from .models import Token
 class UserApiTest(TestCase):
     TEST_USERNAME = 'TestUser'
     TEST_PASSWORD = 'test_user_password'
+    TEST_TOKEN = 'token'
 
     def setUp(self):
         self.client = APIClient()
@@ -54,3 +55,29 @@ class UserApiTest(TestCase):
 
         token_exists = Token.objects.filter(user=user).exists()
         self.assertFalse(token_exists, 'Токен создается при логине с некорректными учетными данными')
+
+    def test_success_logout(self):
+        """Тестируем успешность выхода из системы через api"""
+
+        user = User.objects.create_user(username='TestUser', password='test_user_password')
+        token = Token.objects.create(user=user, token=self.TEST_TOKEN)
+
+        self.client.credentials(HTTP_AUTHORIZATION=token.token)
+        response = self.client.post(reverse('api:logout'))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Некорректный http-статус ответа')
+
+        token_base_count = Token.objects.count()
+        self.assertEqual(token_base_count, 0, 'Токен не был удален из БД')
+
+    def test_fail_logout(self):
+        """Тестируем невозможность выполнения выхода из системы при некорректных данных"""
+
+        user = User.objects.create_user(username='TestUser', password='test_user_password')
+        Token.objects.create(user=user, token=self.TEST_TOKEN)
+
+        response = self.client.post(reverse('api:logout'))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'Некорректный http-статус ответа')
+
+        token_base_count = Token.objects.count()
+        self.assertEqual(token_base_count, 1, 'Токен был удален из БД после некорректного запроса')
