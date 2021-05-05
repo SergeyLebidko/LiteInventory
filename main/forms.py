@@ -1,34 +1,15 @@
-import string
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django import forms
 
-
-def username_checker(username):
-    if not username:
-        raise ValidationError('Пустое имя пользователя недопустимо')
-    for letter in username:
-        if letter not in string.ascii_letters + '_0123456789':
-            raise ValidationError('Разрешены только английские буквы, цифры и знак подчеркивания')
-    return username
+from .utils import UsernameCheckMixin, EmailCheckMixin
 
 
-class UserRegisterForm(forms.ModelForm):
+class UserRegisterForm(UsernameCheckMixin, EmailCheckMixin, forms.ModelForm):
     password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput, required=True)
     password2 = forms.CharField(label='Пароль (подтверждение)', widget=forms.PasswordInput, required=True)
     email = forms.EmailField(label='Адрес электронной почты', required=True)
-
-    def clean_username(self):
-        username = self.cleaned_data['username']
-        return username_checker(username)
-
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        user_exists = User.objects.filter(email=email).exists()
-        if user_exists:
-            raise ValidationError('Пользователь с таким email уже зарегистрирован')
-        return email
 
     def clean(self):
         forms.ModelForm.clean(self)
@@ -60,12 +41,8 @@ class UserRegisterForm(forms.ModelForm):
         help_texts = {'username': None}
 
 
-class UserEditForm(forms.ModelForm):
+class UserEditForm(UsernameCheckMixin, EmailCheckMixin, forms.ModelForm):
     email = forms.EmailField(label='Адрес электронной почты', required=True)
-
-    def clean_username(self):
-        username = self.cleaned_data['username']
-        return username_checker(username)
 
     class Meta:
         model = User

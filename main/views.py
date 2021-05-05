@@ -12,7 +12,7 @@ import uuid
 
 from .models import ResetPasswordCode
 from .forms import UserRegisterForm, UserEditForm, ResetPasswordConfirmForm
-from .utils import ActionAccount, create_reset_code
+from .utils import ActionAccountMixin, create_code
 
 
 class Register(View):
@@ -53,7 +53,7 @@ def change_password_done(request):
     return render(request, 'main/change_password_done.html', context={})
 
 
-class RemoveAccount(View, ActionAccount):
+class RemoveAccountMixin(View, ActionAccountMixin):
 
     def get(self, request):
         return render(request, 'main/remove_account.html', context={'error': None})
@@ -77,7 +77,7 @@ def remove_account_done(request):
     return render(request, 'main/remove_account_done.html', context={})
 
 
-class EditAccount(View, ActionAccount):
+class EditAccountMixin(View, ActionAccountMixin):
 
     def get(self, request):
         form = UserEditForm(instance=request.user)
@@ -115,7 +115,7 @@ class ResetPasswordView(View):
 
         code_exist = _uuid_exist = True
         while code_exist or _uuid_exist:
-            code = create_reset_code()
+            code = create_code()
             _uuid = str(uuid.uuid4())
             code_exist = ResetPasswordCode.objects.filter(code=code).exists()
             _uuid_exist = ResetPasswordCode.objects.filter(uuid=_uuid).exists()
