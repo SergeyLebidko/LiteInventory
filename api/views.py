@@ -67,4 +67,4 @@ def register(request):
 
     User.objects.create_user(username, password=password, email=email, first_name=first_name, last_name=last_name)
 
-    return Response(status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_201_CREATED)

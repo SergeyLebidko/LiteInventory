@@ -10,6 +10,9 @@ from .models import Token
 class UserApiTest(TestCase):
     TEST_USERNAME = 'TestUser'
     TEST_PASSWORD = 'test_user_password'
+    TEST_EMAIL = 'test@mail.ru'
+    TEST_FIRST_NAME = 'first_name'
+    TEST_LAST_NAME = 'last_name'
     TEST_TOKEN = 'token'
 
     def setUp(self):
@@ -81,3 +84,57 @@ class UserApiTest(TestCase):
 
         token_base_count = Token.objects.count()
         self.assertEqual(token_base_count, 1, 'Токен был удален из БД после некорректного запроса')
+
+    def test_success_register(self):
+        """Тестируем успешную регистрацию пользователей"""
+
+        exists_before = User.objects.exists()
+
+        response = self.client.post(
+            reverse('api:register'),
+            {
+                'username': self.TEST_USERNAME,
+                'password': self.TEST_PASSWORD,
+                'email': self.TEST_EMAIL,
+                'first_name': self.TEST_FIRST_NAME,
+                'last_name': self.TEST_LAST_NAME
+            }
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, 'Некорректный http-статус ответа')
+
+        exists_after = User.objects.exists()
+        self.assertEqual([exists_before, exists_after], [False, True], 'Пользователь не был создан')
+
+    def test_fail_register(self):
+        """Тестируем невозможность регистрации пользователя при некорректных входных данных"""
+
+        data = [
+            {
+                'username': '',
+                'msg': 'Удалось создать пользователя с некорректным логином'
+            },
+            {
+                'username': self.TEST_USERNAME,
+                'password': '',
+                'msg': 'Удалось создать пользователя с некорректным паролем'
+            },
+            {
+                'username': self.TEST_USERNAME,
+                'password': self.TEST_PASSWORD,
+                'email': '',
+                'msg': 'Удалось создать пользователя с некорректным email'
+            }
+        ]
+
+        for element in data:
+            before_exists = User.objects.exists()
+            client = APIClient()
+            response = client.post(reverse('api:register'), element)
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_400_BAD_REQUEST,
+                f'Некорректный http-статус для следующих данных: {element}'
+            )
+            after_exists = User.objects.exists()
+            self.assertEqual([before_exists, after_exists], [False, False], element['msg'])
