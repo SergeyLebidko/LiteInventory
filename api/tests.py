@@ -142,6 +142,17 @@ class UserApiTest(TestCase):
             after_exists = User.objects.exists()
             self.assertEqual([before_exists, after_exists], [False, False], element['msg'])
 
+        initial = dict(username=self.TEST_USERNAME, password=self.TEST_PASSWORD, email=self.TEST_EMAIL)
+        User.objects.create_user(**initial)
+        client = APIClient()
+        response = client.post(reverse('api:register'), initial)
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+            'Некорректный http-статус ответа при попытке создать двух одинаковых пользователей'
+        )
+
     def test_success_edit(self):
         """Тестируем успешное редактирования аккаунта"""
 

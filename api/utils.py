@@ -12,8 +12,8 @@ def extract_user_data_from_request(request):
     username = request.data.get('username')
     password = request.data.get('password')
     email = request.data.get('email')
-    first_name = request.data.get('first_name')
-    last_name = request.data.get('last_name')
+    first_name = request.data.get('first_name') or ''
+    last_name = request.data.get('last_name') or ''
     return username, password, email, first_name, last_name
 
 
