@@ -59,5 +59,42 @@
                 <code>Если успешно - ответ со статусом 200</code>
             </div>
         </div>
+
+        <!-- Описание register -->
+        <div class="hook_block">
+            <div class="description_block">
+                <h3>
+                    Хук для регистрации пользователя
+                </h3>
+                <p>
+                    POST: /api/register/
+                </p>
+                <p>
+                    На хук надо отправить регистрационные данные создаваемого пользователя.
+                    Если все хорошо: пустой ответ со статусом 201
+                </p>
+            </div>
+            <div class="code_block">
+                <code>В запросе:</code>
+                <ul>
+                    <li>
+                        <code>username: "логин_пользователя"</code>
+                    </li>
+                    <li>
+                        <code>password: "пароль_пользователя"</code>
+                    </li>
+                    <li>
+                        <code>email: "email_пользователя"</code>
+                    </li>
+                    <li>
+                        <code>first_name: "имя_пользователя"</code>
+                    </li>
+                    <li>
+                        <code>last_name: "фамилия_пользователя"</code>
+                    </li>
+                </ul>
+                <code>Если данные корректны: ответ со статусом 201</code>
+            </div>
+        </div>
     </div>
 {% endblock %}
