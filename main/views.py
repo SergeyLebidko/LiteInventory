@@ -12,7 +12,7 @@ import uuid
 
 from .models import ResetPasswordCode
 from .forms import UserRegisterForm, UserEditForm, ResetPasswordConfirmForm
-from .utils import ActionAccountMixin, create_code
+from .utils import ActionAccountMixin, create_random_sequence
 
 
 class Register(View):
@@ -115,7 +115,7 @@ class ResetPasswordView(View):
 
         code_exist = _uuid_exist = True
         while code_exist or _uuid_exist:
-            code = create_code()
+            code = create_random_sequence()
             _uuid = str(uuid.uuid4())
             code_exist = ResetPasswordCode.objects.filter(code=code).exists()
             _uuid_exist = ResetPasswordCode.objects.filter(uuid=_uuid).exists()

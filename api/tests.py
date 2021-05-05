@@ -1,10 +1,13 @@
+import uuid
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from main.utils import create_random_sequence
 from .models import Token
+from .utils import shuffle_string
 
 
 class UserApiTest(TestCase):
@@ -138,3 +141,38 @@ class UserApiTest(TestCase):
             )
             after_exists = User.objects.exists()
             self.assertEqual([before_exists, after_exists], [False, False], element['msg'])
+
+    def test_success_edit(self):
+        """Тестируем успешное редактирования аккаунта"""
+
+        user = User.objects.create_user(
+            username=self.TEST_USERNAME,
+            password=self.TEST_PASSWORD,
+            email=self.TEST_EMAIL,
+            first_name=self.TEST_FIRST_NAME,
+            last_name=self.TEST_LAST_NAME
+        )
+        token = Token.objects.create(user=user, token=str(uuid.uuid4()))
+
+        username = shuffle_string(self.TEST_USERNAME)
+        email = f'{create_random_sequence(10)}@{create_random_sequence(10)}.{create_random_sequence(3)}'
+        first_name = create_random_sequence(10)
+        last_name = create_random_sequence(10)
+
+        next_data = dict(username=username, email=email, first_name=first_name, last_name=last_name)
+
+        self.client.credentials(HTTP_AUTHORIZATION=token.token)
+        response = self.client.post(reverse('api:edit_account'), next_data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Некорректный http-статус ответа')
+
+        user = User.objects.first()
+        self.assertEqual(
+            [username, email, first_name, last_name],
+            [user.username, user.email, user.first_name, user.last_name],
+            'Данные в БД не были обновлены, либо обновлены некорректно'
+        )
+
+    def test_fail_edit(self):
+        """Тестируем невозможность редактирования аккаунта при некорректных данных"""
+        pass

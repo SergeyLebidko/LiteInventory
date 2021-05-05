@@ -51,7 +51,7 @@ class EmailCheckMixin:
         return email
 
 
-def create_code(code_size=8):
+def create_random_sequence(code_size=8):
     code = [random.choice(string.ascii_letters + '0123456789') for _ in range(code_size)]
     random.shuffle(code)
     return ''.join(code)

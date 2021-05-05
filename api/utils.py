@@ -1,3 +1,4 @@
+import random
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
@@ -40,3 +41,15 @@ def check_user_data(username=None, password=None, email=None):
             return 'Пользователь с таким логином или email уже существует'
 
     return None
+
+
+def shuffle_string(source):
+    if not source or len(source) == 1:
+        return source
+
+    source_as_list = list(source)
+    result = source
+    while result == source:
+        random.shuffle(source_as_list)
+        result = ''.join(source_as_list)
+    return result
