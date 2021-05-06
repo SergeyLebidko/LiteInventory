@@ -18,7 +18,7 @@ class UserApiTest(TestCase):
     TEST_LAST_NAME = 'last_name'
     TEST_TOKEN = 'token'
 
-    def create_user(self):
+    def create_user(self, with_token=False):
         user = User.objects.create_user(
             username=self.TEST_USERNAME,
             password=self.TEST_PASSWORD,
@@ -26,6 +26,9 @@ class UserApiTest(TestCase):
             first_name=self.TEST_FIRST_NAME,
             last_name=self.TEST_LAST_NAME
         )
+        if with_token:
+            token = Token.objects.create(user=user, token=str(uuid.uuid4()))
+            return user, token.token
         return user
 
     def setUp(self):
@@ -75,10 +78,9 @@ class UserApiTest(TestCase):
     def test_success_logout(self):
         """Тестируем успешность выхода из системы через api"""
 
-        user = self.create_user()
-        token = Token.objects.create(user=user, token=self.TEST_TOKEN)
+        user, token = self.create_user(with_token=True)
 
-        self.client.credentials(HTTP_AUTHORIZATION=token.token)
+        self.client.credentials(HTTP_AUTHORIZATION=token)
         response = self.client.post(reverse('api:logout'))
 
         self.assertEqual(response.status_code, status.HTTP_200_OK, 'Некорректный http-статус ответа')
@@ -87,10 +89,9 @@ class UserApiTest(TestCase):
         self.assertEqual(token_base_count, 0, 'Токен не был удален из БД')
 
     def test_fail_logout(self):
-        """Тестируем невозможность выполнения выхода из системы при некорректных данных"""
+        """Тестируем невозможность выполнения выхода из системы при некорректных данных (отсутствие токена)"""
 
-        user = self.create_user()
-        Token.objects.create(user=user, token=self.TEST_TOKEN)
+        self.create_user(with_token=True)
 
         response = self.client.post(reverse('api:logout'))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'Некорректный http-статус ответа')
@@ -166,8 +167,7 @@ class UserApiTest(TestCase):
     def test_success_edit(self):
         """Тестируем успешное редактирование аккаунта"""
 
-        user = self.create_user()
-        token = Token.objects.create(user=user, token=str(uuid.uuid4()))
+        user, token = self.create_user(with_token=True)
 
         username = shuffle_string(self.TEST_USERNAME)
         email = f'{create_random_sequence(10)}@{create_random_sequence(10)}.{create_random_sequence(3)}'
@@ -176,7 +176,7 @@ class UserApiTest(TestCase):
 
         next_data = dict(username=username, email=email, first_name=first_name, last_name=last_name)
 
-        self.client.credentials(HTTP_AUTHORIZATION=token.token)
+        self.client.credentials(HTTP_AUTHORIZATION=token)
         response = self.client.post(reverse('api:edit_account'), next_data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK, 'Некорректный http-статус ответа')
@@ -191,8 +191,7 @@ class UserApiTest(TestCase):
     def test_fail_edit(self):
         """Тестируем невозможность редактирования аккаунта при некорректных данных"""
 
-        user = self.create_user()
-        token = Token.objects.create(user=user, token=str(uuid.uuid4()))
+        user, token = self.create_user(with_token=True)
 
         data = [
             {
@@ -210,10 +209,15 @@ class UserApiTest(TestCase):
         ]
         for element in data:
             client = APIClient()
-            client.credentials(HTTP_AUTHORIZATION=token.token)
+            client.credentials(HTTP_AUTHORIZATION=token)
             response = client.post(reverse('api:edit_account'), element)
             self.assertEqual(
                 response.status_code,
                 status.HTTP_400_BAD_REQUEST,
                 f'Некорректный http-статус ответа для данных: {element}'
             )
+
+    def test_success_remove(self):
+        """Тестируем успешное удаление аккаунта"""
+
+        user = self.create_user()
