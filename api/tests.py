@@ -18,7 +18,7 @@ class UserApiTest(TestCase):
     TEST_LAST_NAME = 'last_name'
     TEST_TOKEN = 'token'
 
-    def create_user(self, with_token=False):
+    def create_user(self, with_token=True):
         user = User.objects.create_user(
             username=self.TEST_USERNAME,
             password=self.TEST_PASSWORD,
@@ -26,10 +26,11 @@ class UserApiTest(TestCase):
             first_name=self.TEST_FIRST_NAME,
             last_name=self.TEST_LAST_NAME
         )
-        if with_token:
-            token = Token.objects.create(user=user, token=str(uuid.uuid4()))
-            return user, token.token
-        return user
+        if not with_token:
+            return user
+
+        token = Token.objects.create(user=user, token=str(uuid.uuid4()))
+        return user, token.token
 
     def setUp(self):
         self.client = APIClient()
@@ -37,7 +38,7 @@ class UserApiTest(TestCase):
     def test_success_login(self):
         """Тестируем успешность выполнения логина"""
 
-        user = self.create_user()
+        user = self.create_user(with_token=False)
         response = self.client.post(
             reverse('api:login'),
             {
@@ -61,7 +62,7 @@ class UserApiTest(TestCase):
     def test_fail_login(self):
         """Тестируем невозможность выполнения логина при неверных учетных данных"""
 
-        user = self.create_user()
+        user = self.create_user(with_token=False)
         response = self.client.post(
             reverse('api:login'),
             {
@@ -78,7 +79,7 @@ class UserApiTest(TestCase):
     def test_success_logout(self):
         """Тестируем успешность выхода из системы через api"""
 
-        user, token = self.create_user(with_token=True)
+        user, token = self.create_user()
 
         self.client.credentials(HTTP_AUTHORIZATION=token)
         response = self.client.post(reverse('api:logout'))
@@ -91,7 +92,7 @@ class UserApiTest(TestCase):
     def test_fail_logout(self):
         """Тестируем невозможность выполнения выхода из системы при некорректных данных (отсутствие токена)"""
 
-        self.create_user(with_token=True)
+        self.create_user()
 
         response = self.client.post(reverse('api:logout'))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'Некорректный http-статус ответа')
@@ -167,7 +168,7 @@ class UserApiTest(TestCase):
     def test_success_edit(self):
         """Тестируем успешное редактирование аккаунта"""
 
-        user, token = self.create_user(with_token=True)
+        user, token = self.create_user()
 
         username = shuffle_string(self.TEST_USERNAME)
         email = f'{create_random_sequence(10)}@{create_random_sequence(10)}.{create_random_sequence(3)}'
@@ -191,7 +192,7 @@ class UserApiTest(TestCase):
     def test_fail_edit(self):
         """Тестируем невозможность редактирования аккаунта при некорректных данных"""
 
-        user, token = self.create_user(with_token=True)
+        user, token = self.create_user()
 
         data = [
             {
@@ -220,7 +221,7 @@ class UserApiTest(TestCase):
     def test_success_remove(self):
         """Тестируем успешное удаление аккаунта"""
 
-        user, token = self.create_user(with_token=True)
+        user, token = self.create_user()
         self.client.credentials(HTTP_AUTHORIZATION=token)
 
         response = self.client.delete(reverse('api:remove_account'), {'password': self.TEST_PASSWORD})
@@ -228,3 +229,24 @@ class UserApiTest(TestCase):
 
         user_exists = User.objects.exists()
         self.assertFalse(user_exists, 'Пользователь не был удален')
+
+    def test_fail_remove(self):
+        """Тестируем невозможность удаления аккаунта при некорректных данных"""
+
+        user, token = self.create_user()
+        client1 = APIClient()
+        client1.credentials(HTTP_AUTHORIZATION=token)
+
+        response = client1.delete(reverse('api:remove_account'))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'Некорректный http-статус ответа')
+
+        user_exists = User.objects.exists()
+        self.assertTrue(user_exists, 'Удалось удалить пользователя не передав его пароль')
+
+        client2 = APIClient()
+
+        response = client2.delete(reverse('api:remove_account'), {'password': self.TEST_PASSWORD})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'Некорректный http-статус ответа')
+
+        user_exists = User.objects.exists()
+        self.assertTrue(user_exists, 'Удалось удалить пользователя не передав его токен')
