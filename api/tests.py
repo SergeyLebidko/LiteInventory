@@ -250,3 +250,24 @@ class UserApiTest(TestCase):
 
         user_exists = User.objects.exists()
         self.assertTrue(user_exists, 'Удалось удалить пользователя не передав его токен')
+
+    def test_success_change_password(self):
+        """Тестируем успешное изменение пароля"""
+
+        user, token = self.create_user()
+        self.client.credentials(HTTP_AUTHORIZATION=token)
+
+        before_pass_hash = user.password
+
+        response = self.client.post(
+            reverse('api:change_password'),
+            {
+                'password': self.TEST_PASSWORD,
+                'next_password': shuffle_string(self.TEST_PASSWORD)
+            }
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Некорректный http-статус ответа')
+
+        user.refresh_from_db()
+        after_pass_hash = user.password
+        self.assertNotEqual(before_pass_hash, after_pass_hash, 'Пароль не изменился')
