@@ -154,7 +154,7 @@ class UserApiTest(TestCase):
         )
 
     def test_success_edit(self):
-        """Тестируем успешное редактирования аккаунта"""
+        """Тестируем успешное редактирование аккаунта"""
 
         user = User.objects.create_user(
             username=self.TEST_USERNAME,
@@ -186,4 +186,36 @@ class UserApiTest(TestCase):
 
     def test_fail_edit(self):
         """Тестируем невозможность редактирования аккаунта при некорректных данных"""
-        pass
+
+        user = User.objects.create_user(
+            username=self.TEST_USERNAME,
+            password=self.TEST_PASSWORD,
+            email=self.TEST_EMAIL,
+            first_name=self.TEST_FIRST_NAME,
+            last_name=self.TEST_LAST_NAME
+        )
+        token = Token.objects.create(user=user, token=str(uuid.uuid4()))
+
+        data = [
+            {
+                'username': '',
+                'email': self.TEST_EMAIL
+            },
+            {
+                'username': self.TEST_USERNAME,
+                'email': ''
+            },
+            {
+                'username': '',
+                'email': ''
+            }
+        ]
+        for element in data:
+            client = APIClient()
+            client.credentials(HTTP_AUTHORIZATION=token.token)
+            response = client.post(reverse('api:edit_account'), element)
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_400_BAD_REQUEST,
+                f'Некорректный http-статус ответа для данных: {element}'
+            )
