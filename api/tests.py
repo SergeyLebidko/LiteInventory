@@ -271,3 +271,49 @@ class UserApiTest(TestCase):
         user.refresh_from_db()
         after_pass_hash = user.password
         self.assertNotEqual(before_pass_hash, after_pass_hash, 'Пароль не изменился')
+
+    def test_fail_change_password(self):
+        """ тестируем невозможность смены пароля при некорректных данных"""
+
+        user, token = self.create_user()
+        pass_hash_before = user.password
+
+        client1 = APIClient()
+        client1.credentials(HTTP_AUTHORIZATION=token)
+
+        response = client1.post(
+            reverse('api:change_password'),
+            {
+                'password': shuffle_string(self.TEST_PASSWORD),
+                'next_password': create_random_sequence(10)
+            }
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'Некорректный http-статус ответа')
+
+        user.refresh_from_db()
+        pass_hash_after = user.password
+        self.assertEqual(
+            pass_hash_before,
+            pass_hash_after,
+            'Удалось изменить пароль при передаче некорректного текущего пароля'
+        )
+
+        client2 = APIClient()
+        client2.credentials(HTTP_AUTHORIZATION=token)
+
+        response = client2.post(
+            reverse('api:change_password'),
+            {
+                'password': self.TEST_PASSWORD,
+                'next_password': ''
+            }
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, 'Некорректный http-статус ответа')
+
+        user.refresh_from_db()
+        pass_hash_after = user.password
+        self.assertEqual(
+            pass_hash_before,
+            pass_hash_after,
+            'Удалось изменить пароль при передаче некорректного нового пароля'
+        )
