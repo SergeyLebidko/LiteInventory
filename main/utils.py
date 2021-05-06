@@ -1,9 +1,14 @@
+import uuid
 import string
 import random
+from django.conf import settings
+from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+
+from .models import ResetPasswordCode
 
 
 class ActionAccountMixin:
@@ -55,3 +60,26 @@ def create_random_sequence(code_size=8):
     code = [random.choice(string.ascii_letters + '0123456789') for _ in range(code_size)]
     random.shuffle(code)
     return ''.join(code)
+
+
+def send_password_reset_code(user):
+    """Функция отправляет письмо с кодом сброса пароля. Возвращает необходимый для сброса uuid"""
+
+    code_exist = _uuid_exist = True
+    while code_exist or _uuid_exist:
+        code = create_random_sequence()
+        _uuid = str(uuid.uuid4())
+        code_exist = ResetPasswordCode.objects.filter(code=code).exists()
+        _uuid_exist = ResetPasswordCode.objects.filter(uuid=_uuid).exists()
+
+    email_letter_template = settings.EMAIL_LETTER_TEMPLATE
+    send_mail(
+        settings.EMAIL_LETTER_HEADER,
+        email_letter_template % code,
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],
+        fail_silently=True
+    )
+
+    reset_password_code = ResetPasswordCode.objects.create(user=user, code=code, uuid=_uuid)
+    return reset_password_code.uuid

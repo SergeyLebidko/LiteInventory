@@ -1,11 +1,14 @@
 import uuid
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.conf import settings
+from django.core.mail import send_mail
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 
+from main.utils import send_password_reset_code
 from .models import Token
 from .authentication import CustomTokenAuthentication
 from .utils import extract_user_data_from_request, check_user_data
@@ -109,3 +112,15 @@ def change_password(request):
     user.save()
 
     return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def reset_password(request):
+    email = request.data.get('email')
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({'detail': 'Пользователь с таким email не обнаружен'}, status=status.HTTP_400_BAD_REQUEST)
+
+    _uuid = send_password_reset_code(user)
+    return Response({'uuid': _uuid}, status=status.HTTP_200_OK)

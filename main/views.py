@@ -1,4 +1,5 @@
 import json
+from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse, reverse_lazy
@@ -12,7 +13,7 @@ import uuid
 
 from .models import ResetPasswordCode
 from .forms import UserRegisterForm, UserEditForm, ResetPasswordConfirmForm
-from .utils import ActionAccountMixin, create_random_sequence
+from .utils import ActionAccountMixin, create_random_sequence, send_password_reset_code
 
 
 class Register(View):
@@ -106,30 +107,14 @@ class ResetPasswordView(View):
         email = request.POST['email']
         try:
             user = User.objects.get(email=email)
-        except (User.DoesNotExist, User.MultipleObjectsReturned):
+        except User.DoesNotExist:
             return render(
                 request,
                 'main/reset_password.html',
                 context={'error': 'Пользователь с таким e-mail не обнаружен'}
             )
 
-        code_exist = _uuid_exist = True
-        while code_exist or _uuid_exist:
-            code = create_random_sequence()
-            _uuid = str(uuid.uuid4())
-            code_exist = ResetPasswordCode.objects.filter(code=code).exists()
-            _uuid_exist = ResetPasswordCode.objects.filter(uuid=_uuid).exists()
-
-        send_mail(
-            'Письмо восстановления пароля на liteInventory',
-            f'Ваш код для восстановления пароля: {code}',
-            'liteinventory@gmail.com',
-            [email],
-            fail_silently=True
-        )
-
-        ResetPasswordCode.objects.create(user=user, code=code, uuid=_uuid)
-
+        _uuid = send_password_reset_code(user)
         return HttpResponseRedirect(reverse('main:reset_password_confirm', args=(_uuid,)))
 
 

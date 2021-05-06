@@ -146,4 +146,5 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'liteinventory@gmail.com'
 EMAIL_HOST_PASSWORD = 'gThk8%lo@ji86&'
 EMAIL_USE_TLS = True
-
+EMAIL_LETTER_HEADER = 'Письмо восстановления пароля на liteInventory'
+EMAIL_LETTER_TEMPLATE = 'Ваш код восстановления пароля: %s'
