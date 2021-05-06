@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from main.utils import create_random_sequence
+from main.models import ResetPasswordCode
 from .models import Token
 from .utils import shuffle_string
 
@@ -317,3 +318,49 @@ class UserApiTest(TestCase):
             pass_hash_after,
             'Удалось изменить пароль при передаче некорректного нового пароля'
         )
+
+    def test_success_reset_password(self):
+        """Тестируем успешный сброс пароля"""
+
+        # Фейковая функция, имитирующая отправку email
+        def fake_send_password_reset_code(u):
+            return ResetPasswordCode.objects.create(user=u, code=create_random_sequence(), uuid=str(uuid.uuid4())).uuid
+
+        user = self.create_user(with_token=False)
+        password_hash_before = user.password
+
+        from . import views
+        send_password_reset_code = views.send_password_reset_code
+        views.send_password_reset_code = fake_send_password_reset_code
+
+        # Запрашиваем отправку email с кодом сброса пароля
+        client1 = APIClient()
+        response = client1.post(reverse('api:reset_password'), {'email': self.TEST_EMAIL})
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+            'Некорректный http-статус ответа при запросе письма с кодом сброса пароля'
+        )
+
+        # Отправляем код сброса и новый пароль на хук подтверждения кода
+        _uuid = response.data['uuid']
+        code = ResetPasswordCode.objects.get(user=user).code
+
+        client2 = APIClient()
+        response = client2.post(
+            reverse('api:reset_password_confirm', args=(_uuid,)),
+            {
+                'code': code,
+                'password': shuffle_string(self.TEST_PASSWORD)
+            }
+        )
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+            'Некорректный http-статус ответа при подтверждении кода сброса пароля'
+        )
+        user.refresh_from_db()
+        password_hash_after = user.password
+        self.assertNotEqual(password_hash_before, password_hash_after, 'Пароль не был сброшен')
+
+        views.send_password_reset_code = send_password_reset_code
