@@ -88,3 +88,24 @@ def remove_account(request):
         return Response(status=status.HTTP_200_OK)
 
     return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+@api_view(['POST'])
+@authentication_classes([CustomTokenAuthentication])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    password = request.data.get('password')
+    next_password = request.data.get('next_password', '')
+    user = request.user
+
+    if not user.check_password(password):
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    error = check_user_data(password=next_password)
+    if error:
+        return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
+
+    user.set_password(next_password)
+    user.save()
+
+    return Response(status=status.HTTP_200_OK)
