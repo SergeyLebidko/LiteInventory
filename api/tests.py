@@ -364,3 +364,61 @@ class UserApiTest(TestCase):
         self.assertNotEqual(password_hash_before, password_hash_after, 'Пароль не был сброшен')
 
         views.send_password_reset_code = send_password_reset_code
+
+    def test_fail_reset_password(self):
+        """Тестируем невозможность сброса пароля при некорректных данных"""
+
+        user = self.create_user(with_token=False)
+
+        # Проверяем ответ хука при некорректном email
+        client1 = APIClient()
+        response = client1.post(
+            reverse('api:reset_password'),
+            {'mail': f'{create_random_sequence(10)}@{create_random_sequence(10)}.{create_random_sequence(3)}'}
+        )
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+            'Некорректный http-статус ответа при попытке получить код на фиктивный email'
+        )
+
+        # Проверяем невозможность сбросить пароль при использовании некорректного uuid
+        reset_password_code = ResetPasswordCode.objects.create(
+            user=user,
+            code=create_random_sequence(),
+            uuid=str(uuid.uuid4())
+        )
+        client2 = APIClient()
+        response = client2.post(reverse('api:reset_password_confirm', args=(str(uuid.uuid4()),)))
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_404_NOT_FOUND,
+            'Некорректный http-статус ответа при попытке получить код на некорректный uuid'
+        )
+
+        # Проверяем невозможность сбросить пароль при вводе некорректного кода
+        client3 = APIClient()
+        response = client3.post(
+            reverse('api:reset_password_confirm', args=(reset_password_code.uuid,)),
+            {'code': shuffle_string(reset_password_code.code)}
+        )
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+            'Неверный статус http-ответа при попытке сбросить пароль с некорректным кодом'
+        )
+
+        # Проверяем невозможность сбросить пароль, если новый пароль не удоавлетворяет требованиям
+        client4 = APIClient()
+        response = client4.post(
+            reverse('api:reset_password_confirm', args=(reset_password_code.uuid,)),
+            {
+                'code': reset_password_code.code,
+                'password': ''
+            }
+        )
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+            'Неверный статус http-ответа при попытке сбросить пароль с некорректным новым паролем'
+        )
