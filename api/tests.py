@@ -18,13 +18,23 @@ class UserApiTest(TestCase):
     TEST_LAST_NAME = 'last_name'
     TEST_TOKEN = 'token'
 
+    def create_user(self):
+        user = User.objects.create_user(
+            username=self.TEST_USERNAME,
+            password=self.TEST_PASSWORD,
+            email=self.TEST_EMAIL,
+            first_name=self.TEST_FIRST_NAME,
+            last_name=self.TEST_LAST_NAME
+        )
+        return user
+
     def setUp(self):
         self.client = APIClient()
 
     def test_success_login(self):
         """Тестируем успешность выполнения логина"""
 
-        user = User.objects.create_user(username='TestUser', password='test_user_password')
+        user = self.create_user()
         response = self.client.post(
             reverse('api:login'),
             {
@@ -48,7 +58,7 @@ class UserApiTest(TestCase):
     def test_fail_login(self):
         """Тестируем невозможность выполнения логина при неверных учетных данных"""
 
-        user = User.objects.create_user(username='TestUser', password='test_user_password')
+        user = self.create_user()
         response = self.client.post(
             reverse('api:login'),
             {
@@ -65,7 +75,7 @@ class UserApiTest(TestCase):
     def test_success_logout(self):
         """Тестируем успешность выхода из системы через api"""
 
-        user = User.objects.create_user(username='TestUser', password='test_user_password')
+        user = self.create_user()
         token = Token.objects.create(user=user, token=self.TEST_TOKEN)
 
         self.client.credentials(HTTP_AUTHORIZATION=token.token)
@@ -79,7 +89,7 @@ class UserApiTest(TestCase):
     def test_fail_logout(self):
         """Тестируем невозможность выполнения выхода из системы при некорректных данных"""
 
-        user = User.objects.create_user(username='TestUser', password='test_user_password')
+        user = self.create_user()
         Token.objects.create(user=user, token=self.TEST_TOKEN)
 
         response = self.client.post(reverse('api:logout'))
@@ -156,13 +166,7 @@ class UserApiTest(TestCase):
     def test_success_edit(self):
         """Тестируем успешное редактирование аккаунта"""
 
-        user = User.objects.create_user(
-            username=self.TEST_USERNAME,
-            password=self.TEST_PASSWORD,
-            email=self.TEST_EMAIL,
-            first_name=self.TEST_FIRST_NAME,
-            last_name=self.TEST_LAST_NAME
-        )
+        user = self.create_user()
         token = Token.objects.create(user=user, token=str(uuid.uuid4()))
 
         username = shuffle_string(self.TEST_USERNAME)
@@ -187,13 +191,7 @@ class UserApiTest(TestCase):
     def test_fail_edit(self):
         """Тестируем невозможность редактирования аккаунта при некорректных данных"""
 
-        user = User.objects.create_user(
-            username=self.TEST_USERNAME,
-            password=self.TEST_PASSWORD,
-            email=self.TEST_EMAIL,
-            first_name=self.TEST_FIRST_NAME,
-            last_name=self.TEST_LAST_NAME
-        )
+        user = self.create_user()
         token = Token.objects.create(user=user, token=str(uuid.uuid4()))
 
         data = [

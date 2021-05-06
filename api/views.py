@@ -75,3 +75,16 @@ def edit_account(request):
     user.save()
 
     return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+@authentication_classes([CustomTokenAuthentication])
+@permission_classes([IsAuthenticated])
+def remove_account(request):
+    password = request.data.get('password')
+    user = request.user
+    if user.check_password(password):
+        user.delete()
+        return Response(status=status.HTTP_200_OK)
+
+    return Response(status=status.HTTP_403_FORBIDDEN)
