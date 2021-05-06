@@ -1,5 +1,4 @@
 import uuid
-from django.db.models import Q
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
