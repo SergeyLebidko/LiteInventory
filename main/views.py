@@ -170,9 +170,16 @@ def api_description(request):
     login_json = {
         'token': 'f1b8c722-d7dc-4784-9596-365902dc5920'
     }
+    account_data_json = {
+        'login': 'thanos',
+        'email': 'th@nos.com',
+        'first_name': 'Танос',
+        'last_name': 'Завоеватель'
+    }
 
     context = {
-        'login_json': json.dumps(login_json, indent=2, ensure_ascii=False, sort_keys=False)
+        'login_json': json.dumps(login_json, indent=2, ensure_ascii=False, sort_keys=False),
+        'account_data_json': json.dumps(account_data_json, indent=2, ensure_ascii=False, sort_keys=False)
     }
     return render(request, 'main/api_description.html', context=context)
 

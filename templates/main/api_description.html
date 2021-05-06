@@ -41,6 +41,30 @@
             </div>
         </div>
 
+        <!-- Описание account_data -->
+        <div class="hook_block">
+            <div class="description_block">
+                <h3>
+                    Получение данных аккаунта
+                </h3>
+                <p>
+                    GET: /api/account_data/
+                </p>
+                <p>
+                    Хук возвращает данные аккаунта. Для корректной обработки запроса обязательно
+                    должен быть указан HTTP-заголовок Authorization с токеном запрашиваемого аккаунта.
+                </p>
+            </div>
+            <div class="code_block">
+                <code>Ответ:</code>
+                <ul>
+                    <li>
+                        <pre>{{ account_data_json }}</pre>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
         <!-- Описание logout -->
         <div class="hook_block">
             <div class="description_block">

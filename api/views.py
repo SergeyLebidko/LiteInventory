@@ -12,6 +12,19 @@ from .authentication import CustomTokenAuthentication
 from .utils import extract_user_data_from_request, check_user_data
 
 
+@api_view(['GET'])
+@authentication_classes([CustomTokenAuthentication])
+@permission_classes([IsAuthenticated])
+def account_data(request):
+    user = request.user
+    return Response({
+        'login': user.username,
+        'email': user.email,
+        'first_name': user.first_name,
+        'last_name': user.last_name
+    }, status=status.HTTP_200_OK)
+
+
 @api_view(['POST'])
 def login(request):
     username = request.data.get('username')
