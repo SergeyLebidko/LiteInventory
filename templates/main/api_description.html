@@ -155,5 +155,30 @@
                 <code>Если данные корректны: ответ со статусом 200</code>
             </div>
         </div>
+
+        <!-- Описание remove_account -->
+        <div class="hook_block">
+            <div class="description_block">
+                <h3>
+                    Удаление пользователя
+                </h3>
+                <p>
+                    DELETE: /api/remove_account/
+                </p>
+                <p>
+                    Ну хук надо отправить текущий пароль пользователя.
+                    В запросе должен присутствовать HTTP-заголовок Authorization с токеном удаляемого пользователя.
+                </p>
+            </div>
+            <div class="code_block">
+                <code>В запросе:</code>
+                <ul>
+                    <li>
+                        <code>password: "пароль_пользователя"</code>
+                    </li>
+                </ul>
+                <code>Если данные корректны: ответ со статусом 200</code>
+            </div>
+        </div>
     </div>
 {% endblock %}
