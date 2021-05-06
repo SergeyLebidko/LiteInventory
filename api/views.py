@@ -1,14 +1,13 @@
 import uuid
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.conf import settings
-from django.core.mail import send_mail
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 
 from main.utils import send_password_reset_code
+from main.models import ResetPasswordCode
 from .models import Token
 from .authentication import CustomTokenAuthentication
 from .utils import extract_user_data_from_request, check_user_data
@@ -124,3 +123,26 @@ def reset_password(request):
 
     _uuid = send_password_reset_code(user)
     return Response({'uuid': _uuid}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def reset_password_confirm(request, _uuid):
+    try:
+        reset_password_code = ResetPasswordCode.objects.get(uuid=_uuid)
+    except ResetPasswordCode.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    code = request.data.get('code')
+    if code != reset_password_code.code:
+        return Response({'detail': 'Неверный код сброса пароля'}, status=status.HTTP_403_FORBIDDEN)
+
+    password = request.data.get('password')
+    error = check_user_data(password=password)
+    if error:
+        return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = reset_password_code.user
+    user.set_password(password)
+    user.save()
+
+    return Response(status=status.HTTP_200_OK)

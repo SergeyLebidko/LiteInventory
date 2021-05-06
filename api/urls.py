@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views import account_data, login, logout, register, edit_account, remove_account, change_password
+from .views import account_data, login, logout, register, edit_account, remove_account, change_password, \
+    reset_password, reset_password_confirm
 
 app_name = 'api'
 
@@ -11,5 +12,7 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('edit_account/', edit_account, name='edit_account'),
     path('remove_account/', remove_account, name='remove_account'),
-    path('change_password/', change_password, name='change_password')
+    path('change_password/', change_password, name='change_password'),
+    path('reset_password/', reset_password, name='reset_password'),
+    path('reset_password_confirm/<uuid:_uuid>/', reset_password_confirm, name='reset_password_confirm')
 ]
