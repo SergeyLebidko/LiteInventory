@@ -202,10 +202,71 @@
                         <code>password: "текущий_пароль_пользователя"</code>
                     </li>
                     <li>
-                        <code>password: "новый_пароль_пользователя"</code>
+                        <code>next_password: "новый_пароль_пользователя"</code>
                     </li>
                 </ul>
                 <code>Если данные корректны: ответ со статусом 200</code>
+            </div>
+        </div>
+
+        <!-- Описание reset_password -->
+        <div class="hook_block">
+            <div class="description_block">
+                <h3>
+                    Сброс пароля пользователя. Отправка email с кодом сброса
+                </h3>
+                <p>
+                    POST: /api/reset_password/
+                </p>
+                <p>
+                    Ну хук надо отправить текущий email пользователя.
+                    После этого на email будет отправлен код сброса пароля, который необходимо задействовать
+                    при установке нового пароля.
+                </p>
+            </div>
+            <div class="code_block">
+                <code>В запросе:</code>
+                <ul>
+                    <li>
+                        <code>email: "текущий_email_пользователя"</code>
+                    </li>
+                </ul>
+                <code>
+                    Если данные корректны, то в ответ придет uuid запроса, который надо будет использовать при
+                    обращении к хуку установки нового пароля:
+                </code>
+                <pre>{{ reset_password_json }}</pre>
+            </div>
+        </div>
+
+        <!-- Описание reset_password_confirm -->
+        <div class="hook_block">
+            <div class="description_block">
+                <h3>
+                    Сброс пароля пользователя. Отправка кода сброса и нового пароля
+                </h3>
+                <p>
+                    POST: /api/reset_password_confirm/{uuid}/
+                </p>
+                <p>
+                    Ну хук надо отправить uuid, полученный от хука /api/reset_password/ и новый пароль.
+                    Если данные корректны, то новый пароль будет установлен пользователю с переданным ранее
+                    адресом электронной почты.
+                </p>
+            </div>
+            <div class="code_block">
+                <code>В запросе:</code>
+                <ul>
+                    <li>
+                        <code>code: "код_сброса_пароля"</code>
+                    </li>
+                    <li>
+                        <code>password: "новый_пароль"</code>
+                    </li>
+                </ul>
+                <code>
+                    Если данные корректны: ответ со статусом 200
+                </code>
             </div>
         </div>
     </div>
