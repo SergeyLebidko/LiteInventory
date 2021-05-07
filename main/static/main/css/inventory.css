@@ -66,5 +66,5 @@ dialog {
 }
 
 dialog input, dialog select {
-    margin: 5px;
+    margin: 5px 2px;
 }
