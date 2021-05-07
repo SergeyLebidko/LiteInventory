@@ -14,3 +14,24 @@ class ResetPasswordCode(models.Model):
     class Meta:
         verbose_name = 'Код сброса паролей'
         verbose_name_plural = 'Коды сброса паролей'
+
+
+class Group(models.Model):
+    """Модель для хранения групп объектов"""
+
+    title = models.CharField(max_length=1024, verbose_name='Наименование')
+    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
+    group = models.ForeignKey(
+        'self',
+        verbose_name='Группа',
+        related_name='child_groups',
+        on_delete=models.CASCADE,
+        null=True
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Группа'
+        verbose_name_plural = 'Группы'
