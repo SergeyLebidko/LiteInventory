@@ -26,7 +26,8 @@ class Group(models.Model):
         verbose_name='Группа',
         related_name='child_groups',
         on_delete=models.CASCADE,
-        null=True
+        null=True,
+        default=None
     )
 
     def __str__(self):
