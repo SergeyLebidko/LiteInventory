@@ -1,7 +1,8 @@
 from django.urls import path
+from rest_framework.routers import SimpleRouter
 
 from .views import account_data, login, logout, register, edit_account, remove_account, change_password, \
-    reset_password, reset_password_confirm
+    reset_password, reset_password_confirm, GroupViwSet
 
 app_name = 'api'
 
@@ -16,3 +17,7 @@ urlpatterns = [
     path('reset_password/', reset_password, name='reset_password'),
     path('reset_password_confirm/<uuid:_uuid>/', reset_password_confirm, name='reset_password_confirm')
 ]
+
+router = SimpleRouter()
+router.register('group', GroupViwSet, basename='group')
+urlpatterns.extend(router.urls)

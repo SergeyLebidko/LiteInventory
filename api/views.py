@@ -3,14 +3,16 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 
 from main.utils import send_password_reset_code
-from main.models import ResetPasswordCode
+from main.models import ResetPasswordCode, Group
 from .models import Token
 from .authentication import CustomTokenAuthentication
 from .utils import extract_user_data_from_request, check_user_data
+from .serializers import GroupSerializer
 
 
 @api_view(['GET'])
@@ -146,3 +148,11 @@ def reset_password_confirm(request, _uuid):
     user.save()
 
     return Response(status=status.HTTP_200_OK)
+
+
+class GroupViwSet(ModelViewSet):
+    serializer_class = GroupSerializer
+
+    def get_queryset(self):
+        queryset = Group.objects.all()
+        return queryset
