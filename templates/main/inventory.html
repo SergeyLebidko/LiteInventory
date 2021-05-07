@@ -1,9 +1,22 @@
 {% extends 'main/base.html' %}
 
-{% block scripts %}
-    <div>
-        <a href="{% url 'main:index' %}">На главную</a>
-        Здесь будет страница с инвентарем пользователя
-        <a href="{% url 'main:logout' %}">выйти</a>
+
+{% block content %}
+    <div id="container" class="container">
+
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $.ajax('/api/groups/').then(data => {
+            let $container = $('#container');
+            let $groupList = $('<ul>');
+            $groupList.appendTo($container);
+
+            for (let group of data) {
+                $groupList.append($('<li>').text(group.title));
+            }
+        });
+    </script>
 {% endblock %}

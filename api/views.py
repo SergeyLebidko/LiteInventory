@@ -1,6 +1,7 @@
 import uuid
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.viewsets import ModelViewSet
@@ -152,7 +153,7 @@ def reset_password_confirm(request, _uuid):
 
 class GroupViwSet(ModelViewSet):
     serializer_class = GroupSerializer
-    authentication_classes = [CustomTokenAuthentication]
+    authentication_classes = [SessionAuthentication, CustomTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
