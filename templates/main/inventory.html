@@ -14,19 +14,22 @@
 {% block scripts %}
     <script type="text/javascript">
         (function ($) {
+            $.fn.buildGroupList = function (url, elementsClickHandler) {
 
-            // Функция формирует список (ul), наполняет его наименованиями групп из groupList и вставляет в $container
-            function insertGroupToContainer($container, groupList) {
-                if (groupList.length === 0) return;
-                let $listElement = $('<ul>');
-                $listElement.appendTo($container);
-                for (let group of groupList) {
-                    $listElement.append($('<li>').attr({'data-group-id': group.id}).html(`<span>${group.title}</span>`));
+                // Функция формирует список (ul), наполняет его наименованиями групп из groupList и вставляет в $container
+                function insertGroupToContainer($container, groupList) {
+                    if (groupList.length === 0) return;
+                    let $listElement = $('<ul>');
+                    $listElement.appendTo($container);
+                    for (let group of groupList) {
+                        $listElement.append($(`<li data-group-id=${group.id}>`).html(`<span>${group.title}</span>`));
+                    }
                 }
-            }
 
-            $.fn.buildGroupList = function (url) {
                 $.ajax(url).then(rawData => {
+                    // Очищаем контейнер, в который будем рендерить группы
+                    $('*', this).off().empty();
+
                     // Первый этап - рендеринг списка корневых групп
                     let work1 = rawData.filter(value => value.group === null);
                     insertGroupToContainer(this, work1);
@@ -46,6 +49,9 @@
                         }
                         work1 = work2;
                     }
+
+                    // Назначаем обработчки событий для всех элементов
+                    $('span', this).click(elementsClickHandler);
                 });
 
                 // Возвращаем значение, чтобы можно было продолжать цепочку jQuery
@@ -53,6 +59,13 @@
             }
         })(jQuery);
 
-        $('.group_list').buildGroupList('/api/groups/');
+        $('.group_list').buildGroupList('/api/groups/', event => {
+            event.stopPropagation();
+
+            console.log($(event.target).closest('li').attr('data-group-id'));
+
+            $('.group_list *').removeClass('selected');
+            $(event.target).addClass('selected');
+        });
     </script>
 {% endblock %}
