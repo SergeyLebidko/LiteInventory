@@ -17,12 +17,16 @@
             $.fn.buildGroupList = function (url, elementsClickHandler) {
 
                 // Функция формирует список (ul), наполняет его наименованиями групп из groupList и вставляет в $container
-                function insertGroupToContainer($container, groupList) {
+                function insertGroupToContainer($container, groupList, hasRoot = false) {
                     if (groupList.length === 0) return;
                     let $listElement = $('<ul>');
                     $listElement.appendTo($container);
                     for (let group of groupList) {
-                        $listElement.append($(`<li data-group-id=${group.id}>`).html(`<span>${group.title}</span>`));
+                        if (hasRoot) {
+                            $listElement.append($(`<li data-group-id=${group.id}>`).addClass('root_group').html(`<span>${group.title}</span>`));
+                        } else {
+                            $listElement.append($(`<li data-group-id=${group.id}>`).html(`<span>${group.title}</span>`));
+                        }
                     }
                 }
 
@@ -32,7 +36,7 @@
 
                     // Первый этап - рендеринг списка корневых групп
                     let work1 = rawData.filter(value => value.group === null);
-                    insertGroupToContainer(this, work1);
+                    insertGroupToContainer(this, work1, true);
 
                     // Второй этап - рендеринг списка подгрупп
                     let work2;

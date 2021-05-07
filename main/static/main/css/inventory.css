@@ -24,8 +24,12 @@
     padding-left: 0;
 }
 
+.group_list li.root_group {
+    margin-left: 0;
+}
+
 .group_list li {
-    margin-left: 30px;
+    margin-left: 40px;
 }
 
 .selected {
