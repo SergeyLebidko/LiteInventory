@@ -19,5 +19,5 @@ urlpatterns = [
 ]
 
 router = SimpleRouter()
-router.register('group', GroupViwSet, basename='group')
+router.register('groups', GroupViwSet, basename='group')
 urlpatterns.extend(router.urls)
