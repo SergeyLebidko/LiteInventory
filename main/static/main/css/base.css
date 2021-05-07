@@ -16,16 +16,17 @@ input[type=text], input[type=password], input[type=email] {
     box-sizing: border-box;
 }
 
-input[type=submit] {
-    padding: 5px 15px;
+input[type=submit], input[type=button] {
+    padding: 10px 15px;
     background-color: rgb(50, 50, 50);
     color: white;
     border: none;
     margin-top: 5px;
     cursor: pointer;
+    border-radius: 5px;
 }
 
-input[type=submit]:active {
+input[type=submit]:active, input[type=button]:active {
     transform: scale(0.9);
 }
 
