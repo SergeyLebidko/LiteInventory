@@ -44,12 +44,12 @@
     padding-left: 0;
 }
 
-.group_list li.root_group {
-    margin-left: 0;
-}
-
 .group_list li {
     margin-left: 40px;
+}
+
+.group_list li.root_group {
+    margin-left: 0;
 }
 
 .selected {

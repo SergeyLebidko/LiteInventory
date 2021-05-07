@@ -18,12 +18,25 @@ input[type=text], input[type=password], input[type=email] {
 
 input[type=submit], input[type=button] {
     padding: 10px 15px;
-    background-color: rgb(50, 50, 50);
-    color: white;
     border: none;
-    margin-top: 5px;
     cursor: pointer;
     border-radius: 5px;
+}
+
+input[type=submit] {
+    background-color: rgb(50, 50, 50);
+    color: white;
+    margin-top: 5px;
+}
+
+input[type=button] {
+    background-color: rgb(235, 235, 235);
+    color: black;
+}
+
+input[type=button]:hover {
+    background-color: rgb(50, 50, 50);
+    color: white;
 }
 
 input[type=submit]:active, input[type=button]:active {
