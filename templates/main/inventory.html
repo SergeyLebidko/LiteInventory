@@ -2,29 +2,49 @@
 
 
 {% block content %}
-    <div id="container" class="container">
-
-    </div>
+    <div class="container"></div>
 {% endblock %}
 
 {% block scripts %}
     <script type="text/javascript">
         (function ($) {
-            $.fn.buildGroupList = function () {
-                $.ajax('/api/groups/').then(data => {
-                    let $container = $(this);
-                    let $groupList = $('<ul>');
-                    $groupList.appendTo($container);
 
-                    for (let group of data) {
-                        if (group.group === null) $groupList.append($('<li>').text(group.title));
+            // Функция формирует список (ul), наполняет его наименованиями групп из groupList и вставляет в $container
+            function insertGroupToContainer($container, groupList) {
+                if (groupList.length === 0) return;
+                let $listElement = $('<ul>');
+                $listElement.appendTo($container);
+                for (let group of groupList) {
+                    $listElement.append($('<li>').attr({'data-group-id': group.id}).html(`<span>${group.title}</span>`));
+                }
+            }
+
+            $.fn.buildGroupList = function (url) {
+                $.ajax(url).then(rawData => {
+                    // Первый этап - рендеринг списка корневых групп
+                    let work1 = rawData.filter(value => value.group === null);
+                    insertGroupToContainer(this, work1);
+
+                    // Второй этап - рендеринг списка подгрупп
+                    let work2;
+                    let buffer;
+                    while (work1.length > 0) {
+                        work2 = [];
+                        for (let group of work1) {
+                            let $container = $(`li[data-group-id=${group.id}]`);
+                            buffer = rawData.filter(value => value.group === group.id);
+                            insertGroupToContainer($container, buffer);
+                            work2 = work2.concat(buffer);
+                        }
+                        work1 = work2;
                     }
-
-                    console.log('Готово!');
                 });
+
+                // Возвращаем значение, чтобы можно было продолжать цепочку jQuery
+                return this;
             }
         })(jQuery);
 
-        $('#container').buildGroupList();
+        $('.container').buildGroupList('/api/groups/');
     </script>
 {% endblock %}
