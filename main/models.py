@@ -27,6 +27,7 @@ class Group(models.Model):
         related_name='child_groups',
         on_delete=models.CASCADE,
         null=True,
+        blank=True,
         default=None
     )
 
