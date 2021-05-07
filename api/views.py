@@ -152,7 +152,10 @@ def reset_password_confirm(request, _uuid):
 
 class GroupViwSet(ModelViewSet):
     serializer_class = GroupSerializer
+    authentication_classes = [CustomTokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = Group.objects.all()
+        user = self.request.user
+        queryset = Group.objects.filter(user=user)
         return queryset
