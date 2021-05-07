@@ -9,14 +9,22 @@
 
 {% block scripts %}
     <script type="text/javascript">
-        $.ajax('/api/groups/').then(data => {
-            let $container = $('#container');
-            let $groupList = $('<ul>');
-            $groupList.appendTo($container);
+        (function ($) {
+            $.fn.buildGroupList = function () {
+                $.ajax('/api/groups/').then(data => {
+                    let $container = $(this);
+                    let $groupList = $('<ul>');
+                    $groupList.appendTo($container);
 
-            for (let group of data) {
-                $groupList.append($('<li>').text(group.title));
+                    for (let group of data) {
+                        if (group.group === null) $groupList.append($('<li>').text(group.title));
+                    }
+
+                    console.log('Готово!');
+                });
             }
-        });
+        })(jQuery);
+
+        $('#container').buildGroupList();
     </script>
 {% endblock %}
