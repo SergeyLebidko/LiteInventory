@@ -62,8 +62,16 @@ li:active {
     border-radius: 5px;
 }
 
-.account_actions a:visited {
+.account_actions li:hover {
+    background-color: rgb(50, 50, 50);
+}
+
+.account_actions li a, .account_actions li a:visited {
     color: black;
+}
+
+.account_actions li:hover a {
+    color: white;
 }
 
 .staff_block {
