@@ -1,0 +1,12 @@
+.group_list {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    bottom: 10px;
+    width: 350px;
+    padding: 10px;
+    background-color: white;
+    box-shadow: 0 3px 20px rgba(90, 90, 90, 0.2);
+    border-radius: 10px;
+    overflow: auto;
+}

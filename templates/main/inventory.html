@@ -1,8 +1,14 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
+{% block style %}
+    <link rel="stylesheet" href="{% static 'main/css/inventory.css' %}">
+{% endblock %}
 
 {% block content %}
-    <div class="container"></div>
+    <div class="container">
+        <div class="group_list"></div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
@@ -33,8 +39,10 @@
                         for (let group of work1) {
                             let $container = $(`li[data-group-id=${group.id}]`);
                             buffer = rawData.filter(value => value.group === group.id);
-                            insertGroupToContainer($container, buffer);
-                            work2 = work2.concat(buffer);
+                            if (buffer.length > 0) {
+                                insertGroupToContainer($container, buffer);
+                                work2 = work2.concat(buffer);
+                            }
                         }
                         work1 = work2;
                     }
@@ -45,6 +53,6 @@
             }
         })(jQuery);
 
-        $('.container').buildGroupList('/api/groups/');
+        $('.group_list').buildGroupList('/api/groups/');
     </script>
 {% endblock %}
