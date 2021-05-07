@@ -43,6 +43,15 @@ input[type=submit]:active, input[type=button]:active {
     transform: scale(0.9);
 }
 
+select {
+    width: 100%;
+    padding: 5px;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    background-color: rgb(235, 235, 235);
+}
+
 /* Общий стандартный стиль для вывода ошибок в формах */
 
 .errorlist {

@@ -7,72 +7,109 @@
 
 {% block content %}
     <div class="container group_control">
-        <input type="button" value="Добавить">
-        <input type="button" value="Переименовать">
-        <input type="button" value="Удалить">
+        <input type="button" id="create_group_btn" value="Добавить">
+        <input type="button" id="rename_group_btn" value="Переименовать">
+        <input type="button" id="remove_group_btn" value="Удалить">
     </div>
-    <div class="container group_list"></div>
+    <div id="group_list" class="container group_list"></div>
+
+    <dialog id="create_group_dialog">
+        <form id="create_group_form">
+            <input type="text" name="title" placeholder="Введите название новой группы" required>
+            <select name="group">
+            </select>
+            <div>
+                <input type="button" value="Отмена">
+                <input type="submit" value="Создать">
+            </div>
+        </form>
+    </dialog>
 {% endblock %}
 
 {% block scripts %}
     <script type="text/javascript">
-        (function ($) {
-            $.fn.buildGroupList = function (url, elementsClickHandler) {
+        const GROUPS_API_URL = '/api/groups/';
 
-                // Функция формирует список (ul), наполняет его наименованиями групп из groupList и вставляет в $container
-                function insertGroupToContainer($container, groupList, hasRoot = false) {
-                    if (groupList.length === 0) return;
-                    let $listElement = $('<ul>');
-                    $listElement.appendTo($container);
-                    for (let group of groupList) {
-                        if (hasRoot) {
-                            $listElement.append($(`<li data-group-id=${group.id}>`).addClass('root_group').html(`<span>${group.title}</span>`));
-                        } else {
-                            $listElement.append($(`<li data-group-id=${group.id}>`).html(`<span>${group.title}</span>`));
-                        }
+        // Определяем плагин jQuery для загрузки и отображения списка групп
+        //     первый параметр - url для загрузки списка
+        //     второй параметр - коллбэк, который будет вызываться при кликах на группе
+        $.fn.buildGroupList = function (url, elementsClickHandler) {
+
+            // Функция формирует список (ul), наполняет его наименованиями групп из groupList и вставляет в $container
+            function insertGroupToContainer($container, groupList, hasRoot = false) {
+                if (groupList.length === 0) return;
+                let $listElement = $('<ul>');
+                $listElement.appendTo($container);
+                for (let group of groupList) {
+                    if (hasRoot) {
+                        $listElement.append($(`<li data-group-id=${group.id}>`).addClass('root_group').html(`<span>${group.title}</span>`));
+                    } else {
+                        $listElement.append($(`<li data-group-id=${group.id}>`).html(`<span>${group.title}</span>`));
                     }
                 }
-
-                $.ajax(url).then(rawData => {
-                    // Очищаем контейнер, в который будем рендерить группы
-                    $('*', this).off().empty();
-
-                    // Первый этап - рендеринг списка корневых групп
-                    let work1 = rawData.filter(value => value.group === null);
-                    insertGroupToContainer(this, work1, true);
-
-                    // Второй этап - рендеринг списка подгрупп
-                    let work2;
-                    let buffer;
-                    while (work1.length > 0) {
-                        work2 = [];
-                        for (let group of work1) {
-                            let $container = $(`li[data-group-id=${group.id}]`);
-                            buffer = rawData.filter(value => value.group === group.id);
-                            if (buffer.length > 0) {
-                                insertGroupToContainer($container, buffer);
-                                work2 = work2.concat(buffer);
-                            }
-                        }
-                        work1 = work2;
-                    }
-
-                    // Назначаем обработчки событий для всех элементов
-                    $('span', this).click(elementsClickHandler);
-                });
-
-                // Возвращаем значение, чтобы можно было продолжать цепочку jQuery
-                return this;
             }
-        })(jQuery);
 
-        $('.group_list').buildGroupList('/api/groups/', event => {
+            $.ajax(url).then(rawData => {
+                // Очищаем контейнер, в который будем рендерить группы
+                $('*', this).off().empty();
+
+                // Первый этап - рендеринг списка корневых групп
+                let work1 = rawData.filter(value => value.group === null);
+                insertGroupToContainer(this, work1, true);
+
+                // Второй этап - рендеринг списка подгрупп
+                let work2;
+                let buffer;
+                while (work1.length > 0) {
+                    work2 = [];
+                    for (let group of work1) {
+                        let $container = $(`li[data-group-id=${group.id}]`);
+                        buffer = rawData.filter(value => value.group === group.id);
+                        if (buffer.length > 0) {
+                            insertGroupToContainer($container, buffer);
+                            work2 = work2.concat(buffer);
+                        }
+                    }
+                    work1 = work2;
+                }
+
+                // Назначаем обработчки событий для всех элементов
+                $('span', this).click(elementsClickHandler);
+            });
+
+            // Возвращаем значение, чтобы можно было продолжать цепочку jQuery
+            return this;
+        }
+
+        $('#group_list').buildGroupList(GROUPS_API_URL, event => {
             event.stopPropagation();
-
-            console.log($(event.target).closest('li').attr('data-group-id'));
-
-            $('.group_list *').removeClass('selected');
+            $('.selected', $('#group_list')).removeClass('selected');
             $(event.target).addClass('selected');
+        });
+
+        // Привязываем обработчики к кнопкам управления группами
+        $('#create_group_btn').click(() => {
+            $.ajax(GROUPS_API_URL).then(groupList => {
+                let $dialog = $('#create_group_dialog');
+                $('input[type=text]', $dialog).val('');
+                let $parentSelector = $('select', $dialog);
+                $parentSelector.empty();
+                $parentSelector.append($(`<option value="0">-- поместить в корень --</option>`))
+                for (let group of groupList) {
+                    $parentSelector.append($(`<option value="${group.id}">${group.title}</option>`));
+                }
+                $dialog.get(0).showModal();
+            });
+        });
+
+        // Привязываем обработчики к кнопкам управления в диалоге создания группы
+        $('#create_group_dialog input[type=button]').click(() => {
+            $('#create_group_dialog').get(0).close();
+        });
+
+        $('#create_group_dialog form').submit(event => {
+            event.preventDefault();
+            console.log('Попытка отправки');
         });
     </script>
 {% endblock %}

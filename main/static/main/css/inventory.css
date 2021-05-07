@@ -57,3 +57,14 @@
     color: white;
     border-radius: 5px;
 }
+
+dialog {
+    width: 350px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 3px 20px rgba(90, 90, 90, 0.2);
+}
+
+dialog input, dialog select {
+    margin: 5px;
+}
