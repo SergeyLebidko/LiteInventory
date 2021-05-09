@@ -37,7 +37,7 @@
     height: 60px;
     box-sizing: border-box;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 }
 
@@ -72,6 +72,31 @@
 
 .group_list li.root_group {
     margin-left: 0;
+}
+
+.item_control {
+    position: fixed;
+    top: 10px;
+    left: 370px;
+    width: 350px;
+    height: 60px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.item_control input {
+    margin: 2px;
+}
+
+.item_list {
+    position: fixed;
+    top: 80px;
+    left: 370px;
+    right: 10px;
+    bottom: 10px;
+    box-sizing: border-box;
 }
 
 .selected {
