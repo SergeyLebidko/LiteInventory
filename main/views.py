@@ -164,11 +164,29 @@ def api_description(request):
     reset_password_json = {
         'uuid': 'c0690dc0-0181-4471-95b4-5a6926901a56'
     }
+    group_json = [
+        {
+            'id': 7,
+            'title': 'Отдел контроля',
+            'group': 1
+        },
+        {
+            'id': 3,
+            'title': 'Отдел закупок',
+            'group': None
+        },
+        {
+            'id': 6,
+            'title': 'Отдел начисления ЗП',
+            'group': 1
+        }
+    ]
 
     context = {
         'login_json': json.dumps(login_json, indent=2, ensure_ascii=False, sort_keys=False),
         'account_data_json': json.dumps(account_data_json, indent=2, ensure_ascii=False, sort_keys=False),
-        'reset_password_json': json.dumps(reset_password_json, indent=2, ensure_ascii=False, sort_keys=False)
+        'reset_password_json': json.dumps(reset_password_json, indent=2, ensure_ascii=False, sort_keys=False),
+        'group_json': json.dumps(group_json, indent=2, ensure_ascii=False, sort_keys=False)
     }
     return render(request, 'main/api_description.html', context=context)
 

@@ -269,5 +269,35 @@
                 </code>
             </div>
         </div>
+
+        <!-- Описание groups -->
+        <div class="hook_block">
+            <div class="description_block">
+                <h3>
+                    Работа с группами
+                </h3>
+                <p>
+                    GET: /api/groups/
+                </p>
+                <p>
+                    GET, POST, DELETE, PATCH, PUT: /api/groups/{id_группы}/
+                </p>
+                <p>
+                    Хук нужен для создания, удаления и изменения групп. Запросы к хуку требуют обязательной
+                    аутентификации (указания токена пользователя в заголовке Authorization).
+                </p>
+            </div>
+            <div class="code_block">
+                <code>Пример ответа API на запрос списка групп:</code>
+                <p>
+                <pre>{{ group_json }}</pre>
+                </p>
+                <p>
+                    <code>
+                        Поле group у объектов - идентификатор родительской группы. У корневых групп он равен null.
+                    </code>
+                </p>
+            </div>
+        </div>
     </div>
 {% endblock %}
