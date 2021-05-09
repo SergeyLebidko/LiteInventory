@@ -81,20 +81,24 @@
             return this;
         }
 
-        $('#group_list').buildGroupList(GROUPS_API_URL, event => {
-            event.stopPropagation();
-            $('.selected', $('#group_list')).removeClass('selected');
-            $(event.target).addClass('selected');
-        });
+        // Функция обновления списка групп
+        function refreshGroupList() {
+            $('#group_list').buildGroupList(GROUPS_API_URL, event => {
+                event.stopPropagation();
+                $('.selected', $('#group_list')).removeClass('selected');
+                $(event.target).addClass('selected');
+            });
+        }
 
         // Привязываем обработчики к кнопкам управления группами
+        // Кнопка создания новой группы
         $('#create_group_btn').click(() => {
             $.ajax(GROUPS_API_URL).then(groupList => {
                 let $dialog = $('#create_group_dialog');
                 $('input[type=text]', $dialog).val('');
                 let $parentSelector = $('select', $dialog);
                 $parentSelector.empty();
-                $parentSelector.append($(`<option value="0">-- поместить в корень --</option>`))
+                $parentSelector.append($(`<option value="place_to_root">-- поместить в корень --</option>`))
                 for (let group of groupList) {
                     $parentSelector.append($(`<option value="${group.id}">${group.title}</option>`));
                 }
@@ -103,17 +107,19 @@
         });
 
         // Привязываем обработчики к кнопкам управления в диалоге создания группы
+        // Кнопка закрытия диалога
         $('#create_group_dialog input[type=button]').click(() => {
             $('#create_group_dialog').get(0).close();
         });
 
+        // Кнопка создания группы
         $('#create_group_dialog form').submit(event => {
             event.preventDefault();
 
             let data = {
                 title: $('#create_group_form input[name=title]').val()
             }
-            if ($('#create_group_form select').val() !== 0) {
+            if ($('#create_group_form select').val() !== "place_to_root") {
                 data.group = $('#create_group_form select').val()
             }
 
@@ -123,12 +129,11 @@
                 data
             }).then(() => {
                 $('#create_group_dialog input[type=button]').trigger('click');
-                $('#group_list').buildGroupList(GROUPS_API_URL, event => {
-                    event.stopPropagation();
-                    $('.selected', $('#group_list')).removeClass('selected');
-                    $(event.target).addClass('selected');
-                });
+                refreshGroupList();
             });
         });
+
+        // Обновляем список групп
+        refreshGroupList();
     </script>
 {% endblock %}
