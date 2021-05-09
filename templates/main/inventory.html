@@ -12,6 +12,7 @@
         <input type="button" id="remove_group_btn" value="Удалить">
     </div>
     <div class="container item_control">
+        <input type="button" id="to_index_btn" value="На главную">
         <input type="button" id="create_item_btn" value="Добавить">
         <input type="button" id="remove_item_btn" value="Удалить">
     </div>
@@ -209,6 +210,12 @@
                 refreshGroupList(selectedGroup.id);
                 $('#rename_group_dialog input[type=button]').trigger('click');
             });
+        });
+
+        // Привязываем обработчики к кнопкам управления элементами
+        // Кнопка перехода на главную страницу
+        $('#to_index_btn').click(() => {
+            window.location.pathname = 'index/'
         });
 
         // Обновляем список групп
