@@ -24,6 +24,16 @@
             </div>
         </form>
     </dialog>
+
+    <dialog id="rename_group_dialog">
+        <form id="rename_group_form">
+            <input type="text" name="title" required>
+            <div>
+                <input type="button" value="Отмена">
+                <input type="submit" value="Сохранить">
+            </div>
+        </form>
+    </dialog>
 {% endblock %}
 
 {% block scripts %}
@@ -44,9 +54,18 @@
                 $listElement.appendTo($container);
                 for (let group of groupList) {
                     if (hasRoot) {
-                        $listElement.append($(`<li data-group-id=${group.id}>`).addClass('root_group').html(`<span>${group.title}</span>`));
+                        $listElement.append(
+                            $(`<li data-id=${group.id}>`)
+                                .data('group', group)
+                                .addClass('root_group')
+                                .html(`<span>${group.title}</span>`)
+                        );
                     } else {
-                        $listElement.append($(`<li data-group-id=${group.id}>`).html(`<span>${group.title}</span>`));
+                        $listElement.append(
+                            $(`<li data-id=${group.id}>`)
+                                .data('group', group)
+                                .html(`<span>${group.title}</span>`)
+                        );
                     }
                 }
             }
@@ -65,7 +84,7 @@
                 while (work1.length > 0) {
                     work2 = [];
                     for (let group of work1) {
-                        let $container = $(`li[data-group-id=${group.id}]`);
+                        let $container = $(`li[data-id=${group.id}]`);
                         buffer = rawData.filter(value => value.group === group.id);
                         if (buffer.length > 0) {
                             insertGroupToContainer($container, buffer);
@@ -89,7 +108,7 @@
                 event.stopPropagation();
                 $('.selected', $('#group_list')).removeClass('selected');
                 $(event.target).addClass('selected');
-                selectedGroup = $(event.target).closest('li').attr('data-group-id');
+                selectedGroup = $(event.target).closest('li').data('group');
             });
         }
 
@@ -109,10 +128,18 @@
             });
         });
 
+        // Кнопка переименования группы
+        $('#rename_group_btn').click(() => {
+            if (selectedGroup === null) return
+            let $dialog = $('#rename_group_dialog');
+            $('input[type=text]', $dialog).val(selectedGroup.title);
+            $dialog.get(0).showModal();
+        });
+
         // Кнопка удаления группы
         $('#remove_group_btn').click(() => {
             if (selectedGroup === null) return;
-            $.ajax(`${GROUPS_API_URL}${selectedGroup}/`, {
+            $.ajax(`${GROUPS_API_URL}${selectedGroup.id}/`, {
                 method: 'delete'
             }).then(() => {
                 selectedGroup = null;
@@ -143,6 +170,28 @@
             }).then(() => {
                 $('#create_group_dialog input[type=button]').trigger('click');
                 refreshGroupList();
+            });
+        });
+
+        // Привязываем обработчики к кнопкам управления в диалоге переименования группы
+        // Кнопка закрытия диалога
+        $('#rename_group_dialog input[type=button]').click(() => {
+            $('#rename_group_dialog').get(0).close();
+        });
+
+        // Кнопка переименования группы
+        $('#rename_group_dialog form').submit(event => {
+            event.preventDefault();
+            $.ajax(`${GROUPS_API_URL}${selectedGroup.id}/`,
+                {
+                    method: 'patch',
+                    data: {
+                        title: $('#rename_group_dialog input[type=text]').val()
+                    }
+                }
+            ).then(() => {
+                refreshGroupList();
+                $('#rename_group_dialog input[type=button]').trigger('click');
             });
         });
 
