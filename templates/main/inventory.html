@@ -45,26 +45,32 @@
         // Определяем плагин jQuery для загрузки и отображения списка групп
         //     первый параметр - url для загрузки списка
         //     второй параметр - коллбэк, который будет вызываться при кликах на группе
-        $.fn.buildGroupList = function (url, elementsClickHandler) {
+        $.fn.buildGroupList = function (url, elementsClickHandler, selectedId = null) {
 
             // Функция формирует список (ul), наполняет его наименованиями групп из groupList и вставляет в $container
             function insertGroupToContainer($container, groupList, hasRoot = false) {
                 if (groupList.length === 0) return;
                 let $listElement = $('<ul>');
                 $listElement.appendTo($container);
+                let titleHtml;
                 for (let group of groupList) {
+                    if (selectedId !== group.id) {
+                        titleHtml = `<span>${group.title}</span>`;
+                    } else {
+                        titleHtml = `<span class="selected">${group.title}</span>`;
+                    }
                     if (hasRoot) {
                         $listElement.append(
                             $(`<li data-id=${group.id}>`)
                                 .data('group', group)
                                 .addClass('root_group')
-                                .html(`<span>${group.title}</span>`)
+                                .html(titleHtml)
                         );
                     } else {
                         $listElement.append(
                             $(`<li data-id=${group.id}>`)
                                 .data('group', group)
-                                .html(`<span>${group.title}</span>`)
+                                .html(titleHtml)
                         );
                     }
                 }
@@ -103,13 +109,14 @@
         }
 
         // Функция обновления списка групп
-        function refreshGroupList() {
-            $('#group_list').buildGroupList(GROUPS_API_URL, event => {
+        function refreshGroupList(selectedId = null) {
+            let elementsClickHandler = event => {
                 event.stopPropagation();
                 $('.selected', $('#group_list')).removeClass('selected');
                 $(event.target).addClass('selected');
                 selectedGroup = $(event.target).closest('li').data('group');
-            });
+            }
+            $('#group_list').buildGroupList(GROUPS_API_URL, elementsClickHandler, selectedId);
         }
 
         // Привязываем обработчики к кнопкам управления группами
@@ -190,7 +197,7 @@
                     }
                 }
             ).then(() => {
-                refreshGroupList();
+                refreshGroupList(selectedGroup.id);
                 $('#rename_group_dialog input[type=button]').trigger('click');
             });
         });
