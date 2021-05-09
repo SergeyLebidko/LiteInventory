@@ -7,6 +7,28 @@
     font-family: "Roboto Light", Arial, SansSerif;
 }
 
+.container::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+.container::-webkit-scrollbar-thumb {
+    background-color: lightgray;
+    border-radius: 10px;
+}
+
+.container::-webkit-scrollbar-button {
+    background-color: transparent;
+}
+
+.container:hover::-webkit-scrollbar-thumb {
+    background-color: rgb(50, 50, 50);
+}
+
+.container::-webkit-scrollbar-corner {
+    border-radius: 15px;
+}
+
 .group_control {
     position: fixed;
     top: 10px;
