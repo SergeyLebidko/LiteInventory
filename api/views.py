@@ -156,6 +156,9 @@ class GroupViwSet(ModelViewSet):
     authentication_classes = [SessionAuthentication, CustomTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
+    def get_serializer_context(self):
+        return {'request': self.request}
+
     def get_queryset(self):
         user = self.request.user
         queryset = Group.objects.filter(user=user)

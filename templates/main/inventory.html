@@ -109,7 +109,26 @@
 
         $('#create_group_dialog form').submit(event => {
             event.preventDefault();
-            console.log('Попытка отправки');
+
+            let data = {
+                title: $('#create_group_form input[name=title]').val()
+            }
+            if ($('#create_group_form select').val() !== 0) {
+                data.group = $('#create_group_form select').val()
+            }
+
+            $.ajax(GROUPS_API_URL, {
+                method: 'post',
+                headers: {'X-CSRFToken': Cookies.get('csrftoken')},
+                data
+            }).then(() => {
+                $('#create_group_dialog input[type=button]').trigger('click');
+                $('#group_list').buildGroupList(GROUPS_API_URL, event => {
+                    event.stopPropagation();
+                    $('.selected', $('#group_list')).removeClass('selected');
+                    $(event.target).addClass('selected');
+                });
+            });
         });
     </script>
 {% endblock %}
