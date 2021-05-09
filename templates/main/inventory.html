@@ -30,6 +30,8 @@
     <script type="text/javascript">
         const GROUPS_API_URL = '/api/groups/';
 
+        let selectedGroup = null;
+
         // Определяем плагин jQuery для загрузки и отображения списка групп
         //     первый параметр - url для загрузки списка
         //     второй параметр - коллбэк, который будет вызываться при кликах на группе
@@ -87,6 +89,7 @@
                 event.stopPropagation();
                 $('.selected', $('#group_list')).removeClass('selected');
                 $(event.target).addClass('selected');
+                selectedGroup = $(event.target).closest('li').attr('data-group-id');
             });
         }
 
@@ -105,6 +108,17 @@
                 $dialog.get(0).showModal();
             });
         });
+
+        // Кнопка удаления группы
+        $('#remove_group_btn').click(() => {
+            if (selectedGroup === null) return;
+            $.ajax(`${GROUPS_API_URL}${selectedGroup}/`, {
+                method: 'delete'
+            }).then(() => {
+                selectedGroup = null;
+                refreshGroupList()
+            });
+        })
 
         // Привязываем обработчики к кнопкам управления в диалоге создания группы
         // Кнопка закрытия диалога
@@ -125,7 +139,6 @@
 
             $.ajax(GROUPS_API_URL, {
                 method: 'post',
-                headers: {'X-CSRFToken': Cookies.get('csrftoken')},
                 data
             }).then(() => {
                 $('#create_group_dialog input[type=button]').trigger('click');
@@ -135,5 +148,8 @@
 
         // Обновляем список групп
         refreshGroupList();
+
+        // Устанавливаем заголовок для всех ajax-запросов
+        $.ajaxSetup({headers: {'X-CSRFToken': Cookies.get('csrftoken')}});
     </script>
 {% endblock %}
