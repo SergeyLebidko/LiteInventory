@@ -121,6 +121,7 @@
 
         // Привязываем обработчики к кнопкам управления группами
         // Кнопка создания новой группы
+        // Кнопка создания группы
         $('#create_group_btn').click(() => {
             $.ajax(GROUPS_API_URL).then(groupList => {
                 let $dialog = $('#create_group_dialog');
@@ -130,6 +131,9 @@
                 $parentSelector.append($(`<option value="place_to_root">-- поместить в корень --</option>`))
                 for (let group of groupList) {
                     $parentSelector.append($(`<option value="${group.id}">${group.title}</option>`));
+                }
+                if (selectedGroup !== null) {
+                    $parentSelector.val(selectedGroup.id);
                 }
                 $dialog.get(0).showModal();
             });
@@ -160,7 +164,7 @@
             $('#create_group_dialog').get(0).close();
         });
 
-        // Кнопка создания группы
+        // Кнопка сохранения
         $('#create_group_dialog form').submit(event => {
             event.preventDefault();
 
@@ -186,7 +190,7 @@
             $('#rename_group_dialog').get(0).close();
         });
 
-        // Кнопка переименования группы
+        // Кнопка сохранения
         $('#rename_group_dialog form').submit(event => {
             event.preventDefault();
             $.ajax(`${GROUPS_API_URL}${selectedGroup.id}/`,
