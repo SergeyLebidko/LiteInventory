@@ -186,7 +186,7 @@
                 data
             }).then(() => {
                 $('#create_group_dialog input[type=button]').trigger('click');
-                refreshGroupList();
+                refreshGroupList(selectedGroup.id);
             });
         });
 
