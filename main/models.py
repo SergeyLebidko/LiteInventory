@@ -44,13 +44,16 @@ class EquipmentCard(models.Model):
     """Модель для хранения учетных карточек оборудования"""
 
     group = models.ForeignKey(Group, verbose_name='Группа', on_delete=models.CASCADE)
-    inv_number = models.CharField(max_length=100, verbose_name='Инвентарный номер', null=True, blank=True)
     equipment_type = models.ForeignKey('EquipmentType', verbose_name='Тип оборудования', on_delete=models.CASCADE)
+    inv_number = models.CharField(max_length=100, verbose_name='Инвентарный номер', null=True, blank=True)
     title = models.CharField(max_length=1000, verbose_name='Описание', null=True, blank=True)
     comment = models.TextField(verbose_name='Комментарий', null=True, blank=True)
     worker = models.CharField(max_length=1000, verbose_name='Пользователь оборудования', null=True, blank=True)
     purchase_date = models.DateField(verbose_name='Дата приобретения', null=True, blank=True)
     price = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='Стоимость', null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.equipment_type} {self.title}'
 
     class Meta:
         verbose_name = 'Учетная карточка'
@@ -63,6 +66,9 @@ class EquipmentType(models.Model):
     user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
     title = models.CharField(max_length=100, verbose_name='Наименование')
 
+    def __str__(self):
+        return f'{self.title}'
+
     class Meta:
         verbose_name = 'Тип оборудования'
         verbose_name_plural = 'Типы оборудования'
@@ -71,8 +77,12 @@ class EquipmentType(models.Model):
 class EquipmentFeature(models.Model):
     """Модель для хранения характеристик оборудования (например, модель процессора, объем памяти и т.д.)"""
 
+    equipment_card = models.ForeignKey(EquipmentCard, verbose_name='Учетная карточка', on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name='Название характеристики')
     value = models.CharField(max_length=1000, verbose_name='Значение характеристики')
+
+    def __str__(self):
+        return f'{self.name} {self.value}'
 
     class Meta:
         verbose_name = 'Характеристика оборудования'
