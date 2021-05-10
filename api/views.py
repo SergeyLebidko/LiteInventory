@@ -9,11 +9,11 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from main.utils import send_password_reset_code
-from main.models import ResetPasswordCode, Group
+from main.models import ResetPasswordCode, Group, EquipmentCard, EquipmentType, EquipmentFeature
 from .models import Token
 from .authentication import CustomTokenAuthentication
 from .utils import extract_user_data_from_request, check_user_data
-from .serializers import GroupSerializer
+from .serializers import GroupSerializer, EquipmentCardSerializer, EquipmentTypeSerializer, EquipmentFeatureSerializer
 
 
 @api_view(['GET'])
@@ -162,4 +162,37 @@ class GroupViwSet(ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         queryset = Group.objects.filter(user=user)
+        return queryset
+
+
+class EquipmentCardViewSet(ModelViewSet):
+    serializer_class = EquipmentCardSerializer
+    authentication_classes = [SessionAuthentication, CustomTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = EquipmentCard.objects.all()
+        return queryset
+
+
+class EquipmentTypeViewSet(ModelViewSet):
+    serializer_class = EquipmentTypeSerializer
+    authentication_classes = [SessionAuthentication, CustomTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+    def get_queryset(self):
+        queryset = EquipmentType.objects.all()
+        return queryset
+
+
+class EquipmentFeatureViewSet(ModelViewSet):
+    serializer_class = EquipmentFeatureSerializer
+    authentication_classes = [SessionAuthentication, CustomTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = EquipmentFeature.objects.all()
         return queryset

@@ -2,7 +2,8 @@ from django.urls import path
 from rest_framework.routers import SimpleRouter
 
 from .views import account_data, login, logout, register, edit_account, remove_account, change_password, \
-    reset_password, reset_password_confirm, GroupViwSet
+    reset_password, reset_password_confirm, GroupViwSet, EquipmentCardViewSet, EquipmentTypeViewSet, \
+    EquipmentFeatureViewSet
 
 app_name = 'api'
 
@@ -20,4 +21,7 @@ urlpatterns = [
 
 router = SimpleRouter()
 router.register('groups', GroupViwSet, basename='group')
+router.register('equipment_cards', EquipmentCardViewSet, basename='equipment_card')
+router.register('equipment_types', EquipmentTypeViewSet, basename='equipment_type')
+router.register('equipment_features', EquipmentFeatureViewSet, basename='equipment_feature')
 urlpatterns.extend(router.urls)
