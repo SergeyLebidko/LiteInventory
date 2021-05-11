@@ -48,10 +48,9 @@
 
         let selectedGroup = null;
 
-        // Определяем плагин jQuery для загрузки и отображения списка групп
-        //     первый параметр - url для загрузки списка
-        //     второй параметр - коллбэк, который будет вызываться при кликах на группе
-        $.fn.buildGroupList = function (url, elementsClickHandler, selectedId = null) {
+        // Функция для загрузки и отображения списка групп
+        function buildGroupList(url, elementsClickHandler, selectedId = null) {
+            let $root = $('#group_list');
 
             // Функция формирует список (ul), наполняет его наименованиями групп из groupList и вставляет в $container
             function insertGroupToContainer($container, groupList, hasRoot = false) {
@@ -84,11 +83,11 @@
 
             $.ajax(url).then(rawData => {
                 // Очищаем контейнер, в который будем рендерить группы
-                $('*', this).off().empty();
+                $('*', $root).off().empty();
 
                 // Первый этап - рендеринг списка корневых групп
                 let work1 = rawData.filter(value => value.group === null);
-                insertGroupToContainer(this, work1, true);
+                insertGroupToContainer($root, work1, true);
 
                 // Второй этап - рендеринг списка подгрупп
                 let work2;
@@ -107,7 +106,7 @@
                 }
 
                 // Назначаем обработчки событий для всех элементов
-                $('span', this).click(elementsClickHandler);
+                $('span', $root).click(elementsClickHandler);
             });
 
             // Возвращаем значение, чтобы можно было продолжать цепочку jQuery
@@ -122,7 +121,7 @@
                 $(event.target).addClass('selected');
                 selectedGroup = $(event.target).closest('li').data('group');
             }
-            $('#group_list').buildGroupList(GROUPS_API_URL, elementsClickHandler, selectedId);
+            buildGroupList(GROUPS_API_URL, elementsClickHandler, selectedId);
         }
 
         // Привязываем обработчики к кнопкам управления группами
