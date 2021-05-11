@@ -54,44 +54,30 @@
 
             // Обработчик кликов на элементах списка
             let elementsClickHandler = event => {
-                event.stopPropagation();
-                $('.selected', $('#group_list')).removeClass('selected');
+                $('.selected', $root).removeClass('selected');
                 $(event.target).addClass('selected');
-                selectedGroup = $(event.target).closest('li').data('group');
+                selectedGroup = $(event.target).data('group');
             }
 
-            // Функция формирует список (ul), наполняет его наименованиями групп из groupList и вставляет в $container
             function insertGroupToContainer($container, groupList, hasRoot = false) {
                 if (groupList.length === 0) return;
-                let $listElement = $('<ul>');
-                $listElement.appendTo($container);
-                let titleHtml;
+                let $ul = $('<ul>'), $li, $span;
+                $ul.appendTo($container);
                 for (let group of groupList) {
-                    if (selectedId !== group.id) {
-                        titleHtml = `<span>${group.title}</span>`;
-                    } else {
-                        titleHtml = `<span class="selected">${group.title}</span>`;
-                    }
-                    if (hasRoot) {
-                        $listElement.append(
-                            $(`<li data-id=${group.id}>`)
-                                .data('group', group)
-                                .addClass('root_group')
-                                .html(titleHtml)
-                        );
-                    } else {
-                        $listElement.append(
-                            $(`<li data-id=${group.id}>`)
-                                .data('group', group)
-                                .html(titleHtml)
-                        );
-                    }
+                    $span = $('<span>').data('group', group).click(elementsClickHandler).text(group.title);
+                    if (selectedId === group.id) $span.addClass('selected');
+
+                    $li = $(`<li>`).attr('data-id', group.id).append($span);
+                    if (hasRoot) $li.addClass('root_group');
+
+                    $ul.append($li);
                 }
             }
 
             $.ajax(url).then(rawData => {
                 // Очищаем контейнер, в который будем рендерить группы
-                $('*', $root).off().empty();
+                $('*', $root).off();
+                $root.empty();
 
                 // Первый этап - рендеринг списка корневых групп
                 let work1 = rawData.filter(value => value.group === null);
@@ -112,9 +98,6 @@
                     }
                     work1 = work2;
                 }
-
-                // Назначаем обработчки событий для всех элементов
-                $('span', $root).click(elementsClickHandler);
             });
 
             // Возвращаем значение, чтобы можно было продолжать цепочку jQuery
