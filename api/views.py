@@ -179,6 +179,9 @@ class EquipmentCardViewSet(ModelViewSet):
 
     def get_queryset(self):
         queryset = EquipmentCard.objects.all()
+        group = self.request.query_params.get('group')
+        if group:
+            queryset = queryset.filter(group=group)
         return queryset
 
 

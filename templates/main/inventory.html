@@ -17,7 +17,7 @@
         <input type="button" id="remove_item_btn" value="Удалить">
     </div>
     <div id="group_list" class="container group_list"></div>
-    <div id="item_list" class="container item_list"></div>
+    <div id="equipment_list" class="container equipment_list"></div>
 
     <dialog id="create_group_dialog">
         <form id="create_group_form">
@@ -106,6 +106,7 @@
                 $('.selected', $root).removeClass('selected');
                 $(event.target).addClass('selected');
                 selectedGroup = $(event.target).data('group');
+                refreshEquipmentList();
             }
 
             // Функция вставляет переданные группы в контейнер
@@ -147,6 +148,28 @@
                         }
                     }
                     work1 = work2;
+                }
+            });
+        }
+
+        // Функция для загрузки и отображения списка оборудования
+        function refreshEquipmentList() {
+            let $root = $('#equipment_list');
+            $root.empty();
+
+            if (selectedGroup === null) return;
+
+            $.ajax(EQUIPMENT_CARDS_API_URL, {
+                data: {
+                    group: selectedGroup.id
+                }
+            }).then(data => {
+                if (data.length === 0) return;
+
+                let $equipment;
+                for (let {equipment_type, inv_number, title, comment, worker, purchase_date, price} of data) {
+                    $equipment = $('<div>').text(`${equipment_type} ${title} ${worker}`);
+                    $root.append($equipment);
                 }
             });
         }
@@ -293,12 +316,13 @@
                 data
             }).then(() => {
                 $('#create_equipment_dialog').get(0).close();
-                // TODO Вставить код обновления списка оборудования
+                refreshEquipmentList();
             });
         });
 
-        // Обновляем список групп
+        // Обновляем списки групп и оборудования
         refreshGroupList();
+        refreshEquipmentList();
 
         // Устанавливаем заголовок для всех ajax-запросов
         $.ajaxSetup({headers: {'X-CSRFToken': Cookies.get('csrftoken')}});
