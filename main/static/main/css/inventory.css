@@ -123,3 +123,25 @@ dialog input, dialog select {
 table {
     width: 100%;
 }
+
+.equipment_card {
+    background-color: rgb(235, 235, 235);
+    padding: 10px;
+    border-radius: 10px;
+    margin: 10px 0;
+}
+
+.equipment_card:hover {
+    background-color: rgb(225, 225, 225);
+}
+
+.equipment_card ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.equipment_card ul span:first-child {
+    display: inline-block;
+    width: 215px;
+}
+
