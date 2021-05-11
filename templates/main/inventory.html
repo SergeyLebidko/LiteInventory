@@ -41,9 +41,50 @@
         </form>
     </dialog>
 
-    <dialog id="create_equipment_dialog">
+    <dialog id="create_equipment_dialog" class="create_equipment_dialog">
         <form id="create_equipment_form">
-
+            <table>
+                <tr>
+                    <td><label for="">Тип оборудования:</label></td>
+                    <td><select id="equipment_type_selector" name="equipment_type"></select></td>
+                </tr>
+                <tr>
+                    <td><label for="inv_number">Инв. номер:</label></td>
+                    <td><input type="text" id="equipment_inv_number" name="inv_number"></td>
+                </tr>
+                <tr>
+                    <td><label for="equipment_title">Описание:</label></td>
+                    <td><input type="text" id="equipment_title" name="title"></td>
+                </tr>
+                <tr>
+                    <td><label for="equipment_comment">Комментарий:</label></td>
+                    <td><input type="text" id="equipment_comment" name="comment"></td>
+                </tr>
+                <tr>
+                    <td><label for="equipment_worker">Должность пользователя:</label></td>
+                    <td><input type="text" id="equipment_worker" name="worker"></td>
+                </tr>
+                <tr>
+                    <td><label for="equipment_price">Стоимость:</label></td>
+                    <td>
+                        <input type="text" id="equipment_price" name="price" pattern="(\d{0,13})|(\d{0,13}\.\d{0,2})">
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td style="font-size: 0.8em; vertical-align: top">
+                        Только цифры. Не более двух знаков после запятой
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="equipment_purchase_date">Дата приобретения:</label></td>
+                    <td><input type="date" id="equipment_purchase_date" name="purchase_date"></td>
+                </tr>
+            </table>
+            <div>
+                <input type="button" value="Отмена">
+                <input type="submit" value="Сохранить">
+            </div>
         </form>
     </dialog>
 {% endblock %}
@@ -51,6 +92,9 @@
 {% block scripts %}
     <script type="text/javascript">
         const GROUPS_API_URL = '/api/groups/';
+        const EQUIPMENT_TYPES_API_URL = '/api/equipment_types/';
+        const EQUIPMENT_CARDS_API_URL = '/api/equipment_cards/';
+
         let selectedGroup = null;
 
         // Функция для загрузки и отображения списка групп
@@ -109,7 +153,6 @@
 
         // Привязываем обработчики к кнопкам управления группами
         // Кнопка создания новой группы
-        // Кнопка создания группы
         $('#create_group_btn').click(() => {
             $.ajax(GROUPS_API_URL).then(groupList => {
                 let $dialog = $('#create_group_dialog');
@@ -195,6 +238,64 @@
         // Привязываем обработчики к кнопкам управления элементами
         // Кнопка перехода на главную страницу
         $('#to_index_btn').click(() => window.location.pathname = 'index/');
+
+        // Кнопка добавления нового оборудования
+        $('#create_item_btn').click(() => {
+            if (selectedGroup === null) return;
+
+            $.ajax(EQUIPMENT_TYPES_API_URL).then(data => {
+                let $dialog = $('#create_equipment_dialog');
+                let $selector = $('select', $dialog);
+
+                //Сбрасываем ранее введенные значения
+                $('input[type=text], input[type=date]', $dialog).val('');
+                $selector.empty();
+
+                for (let equipmentType of data) {
+                    $selector.append(`<option value="${equipmentType.id}">${equipmentType.title}</option>`);
+                }
+
+                $dialog.get(0).showModal();
+            });
+        });
+
+        // Привязывавем обработчики к кнопкам управления в диалоге создания оборудования
+        // Кнопка закрытия диалога
+        $('#create_equipment_dialog input[type=button]').click(() => $('#create_equipment_dialog').get(0).close());
+
+        // Кнопка сохранения
+        $('#create_equipment_dialog form').submit(event => {
+            event.preventDefault();
+
+            let data = {
+                group: selectedGroup.id,
+                equipment_type: $('#equipment_type_selector').val()
+            }
+
+            let inv_number = $('#equipment_inv_number').val();
+            let title = $('#equipment_title').val();
+            let comment = $('#equipment_comment').val();
+            let worker = $('#equipment_worker').val();
+            let purchase_date = $('#equipment_purchase_date').val();
+            let price = $('#equipment_price').val();
+
+            if (inv_number) data = {...data, inv_number};
+            if (title) data = {...data, title};
+            if (comment) data = {...data, comment};
+            if (worker) data = {...data, worker};
+            if (purchase_date) data = {...data, purchase_date};
+            if (price) data = {...data, price};
+
+            console.log(data);
+
+            $.ajax(EQUIPMENT_CARDS_API_URL, {
+                method: 'post',
+                data
+            }).then(() => {
+                $('#create_equipment_dialog').get(0).close();
+                // TODO Вставить код обновления списка оборудования
+            });
+        });
 
         // Обновляем список групп
         refreshGroupList();

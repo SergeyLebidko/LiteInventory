@@ -5,7 +5,7 @@ body {
 
 /* Общие стили для полей ввода и кнопок отправки */
 
-input[type=text], input[type=password], input[type=email] {
+input[type=text], input[type=password], input[type=email], input[type=date] {
     padding: 5px 15px;
     outline: none;
     border: none;

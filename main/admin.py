@@ -20,7 +20,7 @@ class EquipmentCardAdmin(admin.ModelAdmin):
     list_display_links = ['equipment_type', 'title']
 
     def equipment_user(self, rec):
-        return rec.user
+        return rec.group.user
 
     equipment_user.short_description = 'Пользователь'
 
