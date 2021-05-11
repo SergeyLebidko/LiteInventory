@@ -114,9 +114,7 @@
                 for (let group of groupList) {
                     $parentSelector.append($(`<option value="${group.id}">${group.title}</option>`));
                 }
-                if (selectedGroup !== null) {
-                    $parentSelector.val(selectedGroup.id);
-                }
+                if (selectedGroup !== null) $parentSelector.val(selectedGroup.id);
                 $dialog.get(0).showModal();
             });
         });
@@ -153,9 +151,9 @@
             let data = {
                 title: $('#create_group_form input[name=title]').val()
             }
-            if ($('#create_group_form select').val() !== "place_to_root") {
-                data.group = $('#create_group_form select').val()
-            }
+
+            let $selector = $('#create_group_form select');
+            if ($selector.val() !== "place_to_root") data.group = $selector.val();
 
             $.ajax(GROUPS_API_URL, {
                 method: 'post',
@@ -190,9 +188,7 @@
 
         // Привязываем обработчики к кнопкам управления элементами
         // Кнопка перехода на главную страницу
-        $('#to_index_btn').click(() => {
-            window.location.pathname = 'index/'
-        });
+        $('#to_index_btn').click(() => window.location.pathname = 'index/');
 
         // Обновляем список групп
         refreshGroupList();
