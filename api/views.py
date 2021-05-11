@@ -8,7 +8,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 
-from main.utils import send_password_reset_code
+from main.utils import send_password_reset_code, create_default_equipment_types
 from main.models import ResetPasswordCode, Group, EquipmentCard, EquipmentType, EquipmentFeature
 from .models import Token
 from .authentication import CustomTokenAuthentication
@@ -57,7 +57,14 @@ def register(request):
     if error:
         return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
 
-    User.objects.create_user(username, password=password, email=email, first_name=first_name, last_name=last_name)
+    user = User.objects.create_user(
+        username,
+        password=password,
+        email=email,
+        first_name=first_name,
+        last_name=last_name
+    )
+    create_default_equipment_types(user)
 
     return Response(status=status.HTTP_201_CREATED)
 

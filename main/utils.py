@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from .models import ResetPasswordCode
+from .models import ResetPasswordCode, EquipmentType
 
 
 class ActionAccountMixin:
@@ -83,3 +83,11 @@ def send_password_reset_code(user):
 
     reset_password_code = ResetPasswordCode.objects.create(user=user, code=code, uuid=_uuid)
     return reset_password_code.uuid
+
+
+def create_default_equipment_types(user):
+    """Функция создает несколько типов оборудования, доступных для только что зарегистрировавшихся пользователей"""
+
+    titles = ['Десктоп', 'Ноутбук', 'Сервер', 'Принтер', 'МФУ', 'Сканер', 'Коммутатор', 'Роутер']
+    for title in titles:
+        EquipmentType.objects.create(user=user, title=title)

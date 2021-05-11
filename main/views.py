@@ -1,5 +1,4 @@
 import json
-from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse, reverse_lazy
@@ -8,12 +7,11 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.contrib.auth.models import User
 from django.views.generic.base import View
 from django.contrib.auth import login, logout
-from django.core.mail import send_mail
-import uuid
+
 
 from .models import ResetPasswordCode
 from .forms import UserRegisterForm, UserEditForm, ResetPasswordConfirmForm
-from .utils import ActionAccountMixin, create_random_sequence, send_password_reset_code
+from .utils import ActionAccountMixin, send_password_reset_code, create_default_equipment_types
 
 
 class Register(View):
@@ -32,6 +30,7 @@ class Register(View):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            create_default_equipment_types(user)
             return HttpResponseRedirect(reverse('main:inventory'))
 
         return render(request, 'main/register.html', context={'form': form})
