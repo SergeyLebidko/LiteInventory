@@ -87,6 +87,22 @@
             </div>
         </form>
     </dialog>
+
+    <div class="equipment_card" style="display: none">
+        <div>
+            <span></span>
+            <span></span>
+        </div>
+        <div>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
@@ -159,17 +175,35 @@
 
             if (selectedGroup === null) return;
 
-            $.ajax(EQUIPMENT_CARDS_API_URL, {
-                data: {
-                    group: selectedGroup.id
+            async function downloadData() {
+                let eqTypes = await (() => $.ajax(EQUIPMENT_TYPES_API_URL))();
+                let eqCards = await (() => $.ajax(EQUIPMENT_CARDS_API_URL, {data: {group: selectedGroup.id}}))();
+                return {eqTypes, eqCards};
+            }
+
+            downloadData().then(({eqTypes, eqCards}) => {
+                if (eqCards.length === 0) return;
+
+                let getTypeString = typeId => {
+                    for (let eqType of eqTypes) if (eqType.id === typeId) return eqType.title;
                 }
-            }).then(data => {
-                if (data.length === 0) return;
 
                 let $equipment;
-                for (let {equipment_type, inv_number, title, comment, worker, purchase_date, price} of data) {
-                    $equipment = $('<div>').text(`${equipment_type} ${title} ${worker}`);
+                for (let {equipment_type, inv_number, title, comment, worker, purchase_date, price} of eqCards) {
+                    $equipment = $('div.equipment_card:hidden').clone();
+
+                    $('div:first-child > span:first-child', $equipment).text(inv_number);
+                    $('div:first-child > span:last-child', $equipment).text(getTypeString(equipment_type));
+
+                    $('div:nth-child(2) > span:first-child', $equipment).text(title);
+                    $('div:nth-child(2) > span:nth-child(2)', $equipment).text(comment);
+                    $('div:nth-child(2) > span:last-child', $equipment).text(worker);
+
+                    $('div:last-child > span:first-child', $equipment).text(purchase_date);
+                    $('div:last-child > span:last-child', $equipment).text(price);
+
                     $root.append($equipment);
+                    $equipment.css({display: 'block', margin: '10px', border: '1px solid red'});
                 }
             });
         }
