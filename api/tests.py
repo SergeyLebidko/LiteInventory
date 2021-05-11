@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from main.utils import create_random_sequence
-from main.models import ResetPasswordCode
+from main.models import ResetPasswordCode, EquipmentType
 from .models import Token
 from .utils import shuffle_string
 
@@ -121,6 +121,12 @@ class UserApiTest(TestCase):
 
         exists_after = User.objects.exists()
         self.assertEqual([exists_before, exists_after], [False, True], 'Пользователь не был создан')
+
+        equipment_type_exists = EquipmentType.objects.exists()
+        self.assertTrue(
+            equipment_type_exists,
+            'Не создан набор типов оборудования для зарегистрированного пользователя'
+        )
 
     def test_fail_register(self):
         """Тестируем невозможность регистрации пользователя при некорректных входных данных"""
