@@ -45,11 +45,10 @@
 {% block scripts %}
     <script type="text/javascript">
         const GROUPS_API_URL = '/api/groups/';
-
         let selectedGroup = null;
 
         // Функция для загрузки и отображения списка групп
-        function buildGroupList(url, selectedId = null) {
+        function refreshGroupList() {
             let $root = $('#group_list');
 
             // Обработчик кликов на элементах списка
@@ -59,13 +58,14 @@
                 selectedGroup = $(event.target).data('group');
             }
 
+            // Функция вставляет переданные группы в контейнер
             function insertGroupToContainer($container, groupList, hasRoot = false) {
                 if (groupList.length === 0) return;
                 let $ul = $('<ul>'), $li, $span;
                 $ul.appendTo($container);
                 for (let group of groupList) {
                     $span = $('<span>').data('group', group).click(elementsClickHandler).text(group.title);
-                    if (selectedId === group.id) $span.addClass('selected');
+                    if (selectedGroup !== null && selectedGroup.id === group.id) $span.addClass('selected');
 
                     $li = $(`<li>`).attr('data-id', group.id).append($span);
                     if (hasRoot) $li.addClass('root_group');
@@ -74,9 +74,9 @@
                 }
             }
 
-            $.ajax(url).then(rawData => {
+            $.ajax(GROUPS_API_URL).then(rawData => {
                 // Очищаем контейнер, в который будем рендерить группы
-                $('*', $root).off();
+                $('span', $root).off();
                 $root.empty();
 
                 // Первый этап - рендеринг списка корневых групп
@@ -99,14 +99,6 @@
                     work1 = work2;
                 }
             });
-
-            // Возвращаем значение, чтобы можно было продолжать цепочку jQuery
-            return this;
-        }
-
-        // Функция обновления списка групп
-        function refreshGroupList(selectedId = null) {
-            buildGroupList(GROUPS_API_URL, selectedId);
         }
 
         // Привязываем обработчики к кнопкам управления группами
@@ -144,7 +136,7 @@
                 method: 'delete'
             }).then(() => {
                 selectedGroup = null;
-                refreshGroupList()
+                refreshGroupList();
             });
         })
 
@@ -170,7 +162,7 @@
                 data
             }).then(() => {
                 $('#create_group_dialog input[type=button]').trigger('click');
-                refreshGroupList(selectedGroup.id);
+                refreshGroupList();
             });
         });
 
@@ -191,7 +183,7 @@
                     }
                 }
             ).then(() => {
-                refreshGroupList(selectedGroup.id);
+                refreshGroupList();
                 $('#rename_group_dialog input[type=button]').trigger('click');
             });
         });
