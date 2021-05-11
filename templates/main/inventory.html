@@ -49,8 +49,16 @@
         let selectedGroup = null;
 
         // Функция для загрузки и отображения списка групп
-        function buildGroupList(url, elementsClickHandler, selectedId = null) {
+        function buildGroupList(url, selectedId = null) {
             let $root = $('#group_list');
+
+            // Обработчик кликов на элементах списка
+            let elementsClickHandler = event => {
+                event.stopPropagation();
+                $('.selected', $('#group_list')).removeClass('selected');
+                $(event.target).addClass('selected');
+                selectedGroup = $(event.target).closest('li').data('group');
+            }
 
             // Функция формирует список (ul), наполняет его наименованиями групп из groupList и вставляет в $container
             function insertGroupToContainer($container, groupList, hasRoot = false) {
@@ -115,13 +123,7 @@
 
         // Функция обновления списка групп
         function refreshGroupList(selectedId = null) {
-            let elementsClickHandler = event => {
-                event.stopPropagation();
-                $('.selected', $('#group_list')).removeClass('selected');
-                $(event.target).addClass('selected');
-                selectedGroup = $(event.target).closest('li').data('group');
-            }
-            buildGroupList(GROUPS_API_URL, elementsClickHandler, selectedId);
+            buildGroupList(GROUPS_API_URL, selectedId);
         }
 
         // Привязываем обработчики к кнопкам управления группами
