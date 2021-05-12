@@ -7,16 +7,38 @@
 
 {% block content %}
     <div class="container">
-        Здесь будет окно редактирования карточки
         <form>
-
+            <p>
+                <label for="inv_number">Инв. номер:</label>
+                <input type="text" id="inv_number" name="inv_number" value="{{ equipment_card.inv_number }}">
+            </p>
+            <p>
+                <label for="equipment_type">Тип:</label>
+                <select name="equipment_type" id="equipment_type">
+                    {% for equipment_type in equipment_types %}
+                        {% if equipment_card.equipment_type.id == equipment_type.id %}
+                            <option value="{{ equipment_type.id }}" selected>{{ equipment_type.title }}</option>
+                        {% else %}
+                            <option value="{{ equipment_type.id }}">{{ equipment_type.title }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </p>
+            <input type="hidden" name="equipment_id" value="{{ equipment_card.id }}">
         </form>
-        {{ equipment_card }}
     </div>
 {% endblock %}
 
 {% block scripts %}
     <script type="text/javascript">
+        const EQUIPMENT_CARDS_API_URL = '/api/equipment_cards/';
 
+        // Функция получает от api данные карточки
+        function getCardData() {
+            // TODO Вставить код
+        }
+
+        // Устанавливаем заголовок для всех ajax-запросов
+        $.ajaxSetup({headers: {'X-CSRFToken': Cookies.get('csrftoken')}});
     </script>
 {% endblock %}
