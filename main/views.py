@@ -8,7 +8,6 @@ from django.contrib.auth.models import User
 from django.views.generic.base import View
 from django.contrib.auth import login, logout
 
-
 from .models import ResetPasswordCode
 from .forms import UserRegisterForm, UserEditForm, ResetPasswordConfirmForm
 from .utils import ActionAccountMixin, send_password_reset_code, create_default_equipment_types
@@ -193,3 +192,9 @@ def api_description(request):
 @login_required
 def inventory(request):
     return render(request, 'main/inventory.html', context={})
+
+
+@login_required
+def equipment_card(request, card_id):
+    context = {}
+    return render(request, 'main/equipment_card.html', context=context)
