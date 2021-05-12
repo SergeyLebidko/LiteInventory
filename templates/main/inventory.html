@@ -287,7 +287,7 @@
             });
         });
 
-        // Привязываем обработчики к кнопкам управления элементами
+        // Привязываем обработчики к кнопкам управления оборудованием
         // Кнопка перехода на главную страницу
         $('#to_index_btn').click(() => window.location.pathname = 'index/');
 
@@ -308,6 +308,15 @@
                 }
 
                 $dialog.get(0).showModal();
+            });
+        });
+
+        // Кнопка удаления карточки оборудования
+        $('#remove_equipment_btn').click(() => {
+            if (selectedEquipment === null) return;
+
+            $.ajax(`${EQUIPMENT_CARDS_API_URL}${selectedEquipment.id}/`, {method: 'delete'}).then(() => {
+                refreshEquipmentList();
             });
         });
 
