@@ -108,6 +108,7 @@
                 $('.selected', $root).removeClass('selected');
                 $(event.target).addClass('selected');
                 selectedGroup = $(event.target).data('group');
+                selectedEquipment = null;
                 refreshEquipmentList();
             }
 
@@ -187,6 +188,9 @@
                 let $equipment, $ul;
                 for (let eqCard of eqCards) {
                     $equipment = $('<div>').data('equipment', eqCard).addClass('equipment_card').click(elementsClickHandler);
+                    if (selectedEquipment !== null && eqCard.id === selectedEquipment.id) {
+                        $equipment.css({backgroundColor: 'rgb(50, 50, 50)'}).addClass('selected');
+                    }
 
                     $ul = $('<ul>');
                     if (eqCard.inv_number) $ul.append(`<li><span>Инв. номер:</span><span>${eqCard.inv_number}</span></li>`);
@@ -194,7 +198,7 @@
                     if (eqCard.title) $ul.append(`<li><span>Описание:</span><span>${eqCard.title}</span></li>`);
                     if (eqCard.comment) $ul.append(`<li><span>Комментарий:</span><span>${eqCard.comment}</span></li>`);
                     if (eqCard.worker) $ul.append(`<li><span>Должность пользователя:</span><span>${eqCard.worker}</span></li>`);
-                    if (eqCard.purchase_date) $ul.append(`<li><span>Дата приобретения:</span><span>${eqCard.purchase_date}</span></li>`);
+                    if (eqCard.purchase_date) $ul.append(`<li><span>Дата приобретения:</span><span>${formatDate(eqCard.purchase_date)}</span></li>`);
                     if (eqCard.price) $ul.append(`<li><span>Цена:</span><span>${eqCard.price}</span></li>`);
 
                     $equipment.append($ul);
@@ -235,7 +239,9 @@
                 method: 'delete'
             }).then(() => {
                 selectedGroup = null;
+                selectedEquipment = null;
                 refreshGroupList();
+                refreshEquipmentList();
             });
         })
 
@@ -292,7 +298,7 @@
         $('#to_index_btn').click(() => window.location.pathname = 'index/');
 
         // Кнопка добавления нового оборудования
-        $('#create_item_btn').click(() => {
+        $('#create_equipment_btn').click(() => {
             if (selectedGroup === null) return;
 
             $.ajax(EQUIPMENT_TYPES_API_URL).then(data => {
@@ -309,6 +315,12 @@
 
                 $dialog.get(0).showModal();
             });
+        });
+
+        // Кнопка перехода на страницу редактирования карточки
+        $('#edit_equipment_btn').click(() => {
+            if (selectedEquipment === null) return;
+            window.location.pathname = `/equipment_card/${selectedEquipment.id}/`;
         });
 
         // Кнопка удаления карточки оборудования
@@ -355,6 +367,13 @@
                 refreshEquipmentList();
             });
         });
+
+        // Функция форматирования даты
+        function formatDate(dateString) {
+            let [_, y, m, d] = /(\d{4})-(\d{2})-(\d{2})/.exec(dateString);
+            let months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+            return `${d} ${months[+m - 1]} ${y} г.`;
+        }
 
         // Обновляем списки групп и оборудования
         refreshGroupList();
