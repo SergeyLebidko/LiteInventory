@@ -8,6 +8,9 @@
 {% block content %}
     <div class="container">
         <form>
+            <h1>
+                Группа: {{ equipment_card.group.title }}
+            </h1>
             <p>
                 <label for="inv_number">Инв. номер:</label>
                 <input type="text" id="inv_number" name="inv_number" value="{{ equipment_card.inv_number }}">
@@ -24,8 +27,42 @@
                     {% endfor %}
                 </select>
             </p>
+            <p>
+                <label for="title">Описание:</label>
+                <input type="text" id="title" name="title" value="{{ equipment_card.title }}">
+            </p>
+            <p>
+                <label for="comment">Комментарий:</label>
+                <input type="text" id="comment" name="comment" value="{{ equipment_card.comment }}">
+            </p>
+            <p>
+                <label for="worker">Должность пользователя:</label>
+                <input type="text" id="worker" name="worker" value="{{ equipment_card.worker }}">
+            </p>
+            <p>
+                <label for="purchase_date">Дата приобретения:</label>
+                <input type="date" id="purchase_date" name="purchase_date"
+                       value="{{ equipment_card.purchase_date|date:"Y-m-d" }}">
+            </p>
+            <p>
+                <label for="price">Стоимость:</label>
+                <input type="text"
+                       id="price"
+                       name="price"
+                       pattern="(\d{0,13})|(\d{0,13}\.\d{0,2})"
+                       value="{{ equipment_card.price }}"
+                >
+            </p>
             <input type="hidden" name="equipment_id" value="{{ equipment_card.id }}">
+            <div>
+                <input type="button" value="Отмена">
+                <input type="submit" value="Сохранить">
+            </div>
         </form>
+    </div>
+
+    <div class="container">
+        Здесь будут характеристики
     </div>
 {% endblock %}
 

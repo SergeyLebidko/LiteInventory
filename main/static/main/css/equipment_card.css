@@ -1,5 +1,5 @@
 .container {
-    max-width: 800px;
+    max-width: 750px;
     margin: auto;
     padding: 10px;
     background-color: white;
@@ -7,4 +7,12 @@
     border-radius: 15px;
     overflow: auto;
     font-family: "Roboto Light", Arial, SansSerif;
+}
+
+.container:not(:first-child) {
+    margin-top: 10px;
+}
+
+.container p {
+    margin: 15px 0;
 }
