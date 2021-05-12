@@ -1,0 +1,10 @@
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 10px;
+    background-color: white;
+    box-shadow: 0 3px 20px rgba(90, 90, 90, 0.2);
+    border-radius: 15px;
+    overflow: auto;
+    font-family: "Roboto Light", Arial, SansSerif;
+}

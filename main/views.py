@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.views.generic.base import View
 from django.contrib.auth import login, logout
 
-from .models import ResetPasswordCode
+from .models import ResetPasswordCode, EquipmentCard, EquipmentType, EquipmentFeature
 from .forms import UserRegisterForm, UserEditForm, ResetPasswordConfirmForm
 from .utils import ActionAccountMixin, send_password_reset_code, create_default_equipment_types
 
@@ -196,5 +196,21 @@ def inventory(request):
 
 @login_required
 def equipment_card(request, card_id):
-    context = {}
+    user = request.user
+    try:
+        card = EquipmentCard.objects.get(pk=card_id)
+    except EquipmentCard.DoesNotExist:
+        return Http404()
+
+    if card.group.user != user:
+        return Http404()
+
+    equipment_types = EquipmentType.objects.filter(user=user)
+    equipment_features = EquipmentFeature.objects.filter(equipment_card=card)
+
+    context = {
+        'equipment_card': card,
+        'equipment_types': equipment_types,
+        'equipment_features': equipment_features
+    }
     return render(request, 'main/equipment_card.html', context=context)
