@@ -11,10 +11,11 @@
         <input type="button" id="rename_group_btn" value="Переименовать">
         <input type="button" id="remove_group_btn" value="Удалить">
     </div>
-    <div class="container item_control">
+    <div class="container equipment_control">
         <input type="button" id="to_index_btn" value="На главную">
-        <input type="button" id="create_item_btn" value="Добавить">
-        <input type="button" id="remove_item_btn" value="Удалить">
+        <input type="button" id="create_equipment_btn" value="Добавить">
+        <input type="button" id="edit_equipment_btn" value="Редактировать">
+        <input type="button" id="remove_equipment_btn" value="Удалить">
     </div>
     <div id="group_list" class="container group_list"></div>
     <div id="equipment_list" class="container equipment_list"></div>
@@ -96,6 +97,7 @@
         const EQUIPMENT_CARDS_API_URL = '/api/equipment_cards/';
 
         let selectedGroup = null;
+        let selectedEquipment = null;
 
         // Функция для загрузки и отображения списка групп
         function refreshGroupList() {
@@ -159,6 +161,16 @@
 
             if (selectedGroup === null) return;
 
+            selectedEquipment = null;
+
+            let elementsClickHandler = event => {
+                let $target = $(event.target).closest('div.equipment_card');
+                let eqCard = $target.data('equipment');
+                $('div.equipment_card', $root).css({backgroundColor: 'rgb(235, 235, 235)'}).removeClass('selected');
+                $target.css({backgroundColor: 'rgb(50, 50, 50)'}).addClass('selected');
+                selectedEquipment = eqCard;
+            };
+
             async function downloadData() {
                 let eqTypes = await (() => $.ajax(EQUIPMENT_TYPES_API_URL))();
                 let eqCards = await (() => $.ajax(EQUIPMENT_CARDS_API_URL, {data: {group: selectedGroup.id}}))();
@@ -173,17 +185,17 @@
                 }
 
                 let $equipment, $ul;
-                for (let {equipment_type, inv_number, title, comment, worker, purchase_date, price} of eqCards) {
-                    $equipment = $('<div>').addClass('equipment_card');
+                for (let eqCard of eqCards) {
+                    $equipment = $('<div>').data('equipment', eqCard).addClass('equipment_card').click(elementsClickHandler);
 
                     $ul = $('<ul>');
-                    if (inv_number) $ul.append(`<li><span>Инв. номер:</span><span>${inv_number}</span></li>`);
-                    $ul.append(`<li><span>Тип:</span><span>${getTypeString(equipment_type)}</span></li>`);
-                    if (title) $ul.append(`<li><span>Описание:</span><span>${title}</span></li>`);
-                    if (comment) $ul.append(`<li><span>Комментарий:</span><span>${comment}</span></li>`);
-                    if (worker) $ul.append(`<li><span>Должность пользователя:</span><span>${worker}</span></li>`);
-                    if (purchase_date) $ul.append(`<li><span>Дата приобретения:</span><span>${purchase_date}</span></li>`);
-                    if (price) $ul.append(`<li><span>Цена:</span><span>${price}</span></li>`);
+                    if (eqCard.inv_number) $ul.append(`<li><span>Инв. номер:</span><span>${eqCard.inv_number}</span></li>`);
+                    $ul.append(`<li><span>Тип:</span><span>${getTypeString(eqCard.equipment_type)}</span></li>`);
+                    if (eqCard.title) $ul.append(`<li><span>Описание:</span><span>${eqCard.title}</span></li>`);
+                    if (eqCard.comment) $ul.append(`<li><span>Комментарий:</span><span>${eqCard.comment}</span></li>`);
+                    if (eqCard.worker) $ul.append(`<li><span>Должность пользователя:</span><span>${eqCard.worker}</span></li>`);
+                    if (eqCard.purchase_date) $ul.append(`<li><span>Дата приобретения:</span><span>${eqCard.purchase_date}</span></li>`);
+                    if (eqCard.price) $ul.append(`<li><span>Цена:</span><span>${eqCard.price}</span></li>`);
 
                     $equipment.append($ul);
                     $root.append($equipment);
@@ -325,8 +337,6 @@
             if (worker) data = {...data, worker};
             if (purchase_date) data = {...data, purchase_date};
             if (price) data = {...data, price};
-
-            console.log(data);
 
             $.ajax(EQUIPMENT_CARDS_API_URL, {
                 method: 'post',
