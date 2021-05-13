@@ -178,6 +178,16 @@
             $dialog.get(0).showModal();
         });
 
+        // Кнопка удаления характеристики
+        $('#remove_feature_btn').click(() => {
+            if (selectedFeature === null) return;
+
+            $.ajax(`${EQUIPMENT_FEATURES_API_URL}${selectedFeature.id}/`, {method: 'delete'}).then(() => {
+                selectedFeature = null;
+                refreshFeatures();
+            });
+        });
+
         // Привязываем обработчик к кнопке Отмена в диалоге свойств
         $('#feature_dialog input[type=button]').click(() => {
             $('#feature_dialog').get(0).close();
