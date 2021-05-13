@@ -206,11 +206,9 @@ def equipment_card(request, card_id):
         return Http404()
 
     equipment_types = EquipmentType.objects.filter(user=user)
-    equipment_features = EquipmentFeature.objects.filter(equipment_card=card)
 
     context = {
         'equipment_card': card,
-        'equipment_types': equipment_types,
-        'equipment_features': equipment_features
+        'equipment_types': equipment_types
     }
     return render(request, 'main/equipment_card.html', context=context)

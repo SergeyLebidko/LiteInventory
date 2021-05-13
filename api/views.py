@@ -205,4 +205,7 @@ class EquipmentFeatureViewSet(ModelViewSet):
 
     def get_queryset(self):
         queryset = EquipmentFeature.objects.all()
+        card_id = self.request.query_params.get('card')
+        if card_id:
+            queryset = queryset.filter(equipment_card=card_id)
         return queryset

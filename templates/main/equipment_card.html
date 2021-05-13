@@ -73,11 +73,7 @@
             <input type="button" value="Удалить">
         </div>
         <div>
-            <ul>
-                {% for equipment_feature in equipment_features %}
-                    <li>{{ equipment_feature }}</li>
-                {% endfor %}
-            </ul>
+            <ul class="features_list"></ul>
         </div>
     </div>
 {% endblock %}
@@ -88,6 +84,21 @@
         const EQUIPMENT_FEATURES_API_URL = '/api/equipment_features/';
 
         let cardId = $('input[name=equipment_id]').val();
+
+        // Функция обновляет список свойств
+        function refreshFeatures() {
+            let $featureList = $('ul.features_list');
+            $('*', $featureList).off();
+            $featureList.empty();
+
+            let $listElement;
+            $.ajax(`${EQUIPMENT_FEATURES_API_URL}`, {data: {card: cardId}}).then(featuresList => {
+                featuresList.forEach(feature => {
+                    $listElement = $(`<li><span>${feature.name}</span><span>${feature.value}</span></li>`);
+                    $featureList.append($listElement);
+                });
+            });
+        }
 
         // Привязываем обработчик к кнопке Отмена
         $('#card_container input[type=button]').click(() => window.location.pathname = '/inventory/');
@@ -104,6 +115,9 @@
                 data
             }).then(() => window.location.pathname = '/inventory/');
         });
+
+        // Обновляем список свойств
+        refreshFeatures();
 
         // Устанавливаем заголовок для всех ajax-запросов
         $.ajaxSetup({headers: {'X-CSRFToken': Cookies.get('csrftoken')}});

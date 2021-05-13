@@ -16,3 +16,21 @@
 .container div {
     margin: 15px 0;
 }
+
+.features_list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.features_list li {
+    padding: 10px 0;
+}
+
+.features_list li:not(:last-child) {
+    border-bottom: 1px dashed rgb(50, 50, 50);
+}
+
+.features_list span:first-child {
+    display: inline-block;
+    width: 40%;
+}
