@@ -1,12 +1,13 @@
 {% extends 'main/base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block style %}
     <link rel="stylesheet" href="{% static 'main/css/equipment_card.css' %}">
 {% endblock %}
 
 {% block content %}
-    <div class="container">
+    <div class="container" id="card_container">
         <form>
             <h1>
                 Группа: {{ equipment_card.group.title }}
@@ -41,8 +42,11 @@
             </p>
             <p>
                 <label for="purchase_date">Дата приобретения:</label>
-                <input type="date" id="purchase_date" name="purchase_date"
-                       value="{{ equipment_card.purchase_date|date:"Y-m-d" }}">
+                <input type="date"
+                       id="purchase_date"
+                       name="purchase_date"
+                       value="{{ equipment_card.purchase_date|date:"Y-m-d" }}"
+                >
             </p>
             <p>
                 <label for="price">Стоимость:</label>
@@ -50,7 +54,7 @@
                        id="price"
                        name="price"
                        pattern="(\d{0,13})|(\d{0,13}\.\d{0,2})"
-                       value="{{ equipment_card.price }}"
+                       value="{{ equipment_card.price|dot }}"
                 >
             </p>
             <input type="hidden" name="equipment_id" value="{{ equipment_card.id }}">
@@ -61,7 +65,7 @@
         </form>
     </div>
 
-    <div class="container">
+    <div class="container" id="features_container">
         Здесь будут характеристики
     </div>
 {% endblock %}
@@ -69,11 +73,24 @@
 {% block scripts %}
     <script type="text/javascript">
         const EQUIPMENT_CARDS_API_URL = '/api/equipment_cards/';
+        let cardId = $('input[name=equipment_id]').val();
 
-        // Функция получает от api данные карточки
-        function getCardData() {
-            // TODO Вставить код
-        }
+        // Привязываем обработчик к кнопке Отмена
+        $('#card_container input[type=button]').click(() => window.location.pathname = '/inventory/');
+
+        // Привязываем обработчик к кнопке Сохранить
+        $('#card_container form').submit(event => {
+            event.preventDefault();
+            let $form = $(event.target);
+
+            let data = $form.serialize();
+
+            $.ajax(`${EQUIPMENT_CARDS_API_URL}${cardId}/`, {
+                method: 'patch',
+                data
+            });
+
+        });
 
         // Устанавливаем заголовок для всех ajax-запросов
         $.ajaxSetup({headers: {'X-CSRFToken': Cookies.get('csrftoken')}});
