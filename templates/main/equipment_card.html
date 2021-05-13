@@ -68,14 +68,31 @@
     <div class="container" id="features_container">
         <h1>Характеристики</h1>
         <div>
-            <input type="button" value="Добавить">
-            <input type="button" value="Изменить">
-            <input type="button" value="Удалить">
+            <input type="button" id="create_feature_btn" value="Добавить">
+            <input type="button" id="edit_feature_btn" value="Изменить">
+            <input type="button" id="remove_feature_btn" value="Удалить">
         </div>
         <div>
             <ul class="features_list"></ul>
         </div>
     </div>
+
+    <dialog id="feature_dialog">
+        <form>
+            <div>
+                <label for="feature_name">Наименование характеристики:</label>
+                <input type="text" id="feature_name" name="name" required>
+            </div>
+            <div>
+                <label for="feature_value">Значение характеристики:</label>
+                <input type="text" id="feature_value" name="value" required>
+            </div>
+            <div>
+                <input type="button" value="Отмена">
+                <input type="submit" value="Сохранить">
+            </div>
+        </form>
+    </dialog>
 {% endblock %}
 
 {% block scripts %}
@@ -106,9 +123,11 @@
             let $listElement;
             $.ajax(`${EQUIPMENT_FEATURES_API_URL}`, {data: {card: cardId}}).then(featuresList => {
                 featuresList.forEach(feature => {
-                    $listElement = $(`<li><span>${feature.name}</span><span>${feature.value}</span></li>`)
-                        .data('feature', feature)
-                        .click(elementsClickHandler);
+                    $listElement = $(`<li><span>${feature.name}</span><span>${feature.value}</span></li>`);
+                    if (selectedFeature !== null && selectedFeature.id === feature.id) {
+                        $listElement.addClass('selected');
+                    }
+                    $listElement.data('feature', feature).click(elementsClickHandler);
                     $featureList.append($listElement);
                 });
             });
@@ -128,6 +147,40 @@
                 method: 'patch',
                 data
             }).then(() => window.location.pathname = '/inventory/');
+        });
+
+        // Привязываем обработчики к кнопкам управления свойствами
+        // Кнопка добавления
+        $('#create_feature_btn').click(() => {
+            let $dialog = $('#feature_dialog');
+            $('input[type=text]', $dialog).val('');
+
+            // Привязываем обработчик к кнопке отправки
+            $('form', $dialog).off().submit(event => {
+                event.preventDefault();
+
+                let $form = $(event.target);
+                let data = {
+                    equipment_card: cardId,
+                    name: $('input[name=name]', $form).val(),
+                    value: $('input[name=value]', $form).val()
+                }
+                $.ajax(EQUIPMENT_FEATURES_API_URL, {
+                    method: 'post',
+                    data
+                }).then(createdFeature => {
+                    $dialog.get(0).close();
+                    selectedFeature = createdFeature;
+                    refreshFeatures();
+                });
+            });
+
+            $dialog.get(0).showModal();
+        });
+
+        // Привязываем обработчик к кнопке Отмена в диалоге свойств
+        $('#feature_dialog input[type=button]').click(() => {
+            $('#feature_dialog').get(0).close();
         });
 
         // Обновляем список свойств
