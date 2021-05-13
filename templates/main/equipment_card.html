@@ -88,8 +88,7 @@
             $.ajax(`${EQUIPMENT_CARDS_API_URL}${cardId}/`, {
                 method: 'patch',
                 data
-            });
-
+            }).then(() => window.location.pathname = '/inventory/');
         });
 
         // Устанавливаем заголовок для всех ajax-запросов
