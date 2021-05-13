@@ -95,6 +95,7 @@
         const GROUPS_API_URL = '/api/groups/';
         const EQUIPMENT_TYPES_API_URL = '/api/equipment_types/';
         const EQUIPMENT_CARDS_API_URL = '/api/equipment_cards/';
+        const EQUIPMENT_FEATURES_API_URL = '/api/equipment_features/';
 
         let selectedGroup = null;
         let selectedEquipment = null;
@@ -202,6 +203,25 @@
                     if (eqCard.price) $ul.append(`<li><span>Цена:</span><span>${eqCard.price}</span></li>`);
 
                     $equipment.append($ul);
+
+                    // Проверяем наличие дополнительных характеристик у оборудования
+                    (function ($container) {
+                        $.ajax(EQUIPMENT_FEATURES_API_URL, {data: {card: eqCard.id}}).then(features => {
+                            if (features.length === 0) return;
+
+                            let $details = $('<details>');
+                            $details.append('<summary>Характеристики</summary>');
+
+                            let $featureList = $('<ul>');
+                            features.forEach(feature => {
+                                $featureList.append(`<li><span>${feature.name}</span><span>${feature.value}</span></li>`);
+                            });
+                            $details.append($featureList);
+
+                            $container.append($details);
+                        });
+                    })($equipment);
+
                     $root.append($equipment);
                 }
             });

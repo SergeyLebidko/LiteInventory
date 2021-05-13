@@ -131,13 +131,57 @@ table {
     cursor: pointer;
 }
 
-.equipment_card ul {
+.equipment_card > ul {
     list-style-type: none;
     padding-left: 0;
 }
 
-.equipment_card ul span:first-child {
+.equipment_card > ul span:first-child {
     display: inline-block;
     width: 215px;
 }
+
+details {
+    margin-top: 10px;
+    background-color: white;
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+    width: 80%;
+}
+
+details > ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+details > ul > li {
+    padding: 5px 0;
+}
+
+details > ul > li:not(:last-child) {
+    border-bottom: 1px dashed rgb(50, 50, 50);
+}
+
+details > ul > li {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+details > ul > li span:first-child {
+    min-width: 30%;
+    max-width: 30%;
+}
+
+details summary {
+    color: gray;
+    margin-bottom: 5px;
+}
+
+details[open] summary {
+    color: black;
+}
+
+
 

@@ -25,6 +25,9 @@
 .features_list li {
     padding: 10px 5px;
     cursor: pointer;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
 }
 
 .features_list li:not(:last-child) {
@@ -34,7 +37,8 @@
 .features_list span:first-child {
     display: inline-block;
     padding-right: 5px;
-    width: 40%;
+    max-width: 40%;
+    min-width: 40%;
 }
 
 .selected {
