@@ -194,7 +194,8 @@ class EquipmentTypeViewSet(ModelViewSet):
         return {'request': self.request}
 
     def get_queryset(self):
-        queryset = EquipmentType.objects.all()
+        user = self.request.user
+        queryset = EquipmentType.objects.filter(user=user)
         return queryset
 
 
