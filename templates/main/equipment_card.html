@@ -85,16 +85,30 @@
 
         let cardId = $('input[name=equipment_id]').val();
 
+        let selectedFeature = null;
+
         // Функция обновляет список свойств
         function refreshFeatures() {
             let $featureList = $('ul.features_list');
+
+            // Сбрасываем обработчики и очищаем список
             $('*', $featureList).off();
             $featureList.empty();
+
+            // Обработчик кликов
+            let elementsClickHandler = event => {
+                $('li', $featureList).removeClass('selected');
+                let $target = $(event.target).closest('li');
+                $target.addClass('selected');
+                selectedFeature = $target.data('feature');
+            }
 
             let $listElement;
             $.ajax(`${EQUIPMENT_FEATURES_API_URL}`, {data: {card: cardId}}).then(featuresList => {
                 featuresList.forEach(feature => {
-                    $listElement = $(`<li><span>${feature.name}</span><span>${feature.value}</span></li>`);
+                    $listElement = $(`<li><span>${feature.name}</span><span>${feature.value}</span></li>`)
+                        .data('feature', feature)
+                        .click(elementsClickHandler);
                     $featureList.append($listElement);
                 });
             });
