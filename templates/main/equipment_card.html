@@ -150,7 +150,7 @@
         });
 
         // Привязываем обработчики к кнопкам управления свойствами
-        // Кнопка добавления
+        // Кнопка добавления свойства
         $('#create_feature_btn').click(() => {
             let $dialog = $('#feature_dialog');
             $('input[type=text]', $dialog).val('');
@@ -178,7 +178,37 @@
             $dialog.get(0).showModal();
         });
 
-        // Кнопка удаления характеристики
+        // Кнопка редактирования свойства
+        $('#edit_feature_btn').click(() => {
+            if (selectedFeature === null) return;
+
+            let $dialog = $('#feature_dialog');
+            $('input[name=name]', $dialog).val(selectedFeature.name);
+            $('input[name=value]', $dialog).val(selectedFeature.value);
+
+            // Привязываем обработчик к кнопке отправки
+            $('form', $dialog).off().submit(event => {
+                event.preventDefault();
+
+                let $form = $(event.target);
+                let data = {
+                    equipment_card: cardId,
+                    name: $('input[name=name]', $form).val(),
+                    value: $('input[name=value]', $form).val()
+                }
+                $.ajax(`${EQUIPMENT_FEATURES_API_URL}${selectedFeature.id}/`, {
+                    method: 'patch',
+                    data
+                }).then(() => {
+                    $dialog.get(0).close();
+                    refreshFeatures();
+                });
+            });
+
+            $dialog.get(0).showModal();
+        });
+
+        // Кнопка удаления свойства
         $('#remove_feature_btn').click(() => {
             if (selectedFeature === null) return;
 
