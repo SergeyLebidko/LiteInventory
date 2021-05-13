@@ -12,11 +12,11 @@
             <h1>
                 Группа: {{ equipment_card.group.title }}
             </h1>
-            <p>
+            <div>
                 <label for="inv_number">Инв. номер:</label>
                 <input type="text" id="inv_number" name="inv_number" value="{{ equipment_card.inv_number }}">
-            </p>
-            <p>
+            </div>
+            <div>
                 <label for="equipment_type">Тип:</label>
                 <select name="equipment_type" id="equipment_type">
                     {% for equipment_type in equipment_types %}
@@ -27,28 +27,28 @@
                         {% endif %}
                     {% endfor %}
                 </select>
-            </p>
-            <p>
+            </div>
+            <div>
                 <label for="title">Описание:</label>
                 <input type="text" id="title" name="title" value="{{ equipment_card.title }}">
-            </p>
-            <p>
+            </div>
+            <div>
                 <label for="comment">Комментарий:</label>
                 <input type="text" id="comment" name="comment" value="{{ equipment_card.comment }}">
-            </p>
-            <p>
+            </div>
+            <div>
                 <label for="worker">Должность пользователя:</label>
                 <input type="text" id="worker" name="worker" value="{{ equipment_card.worker }}">
-            </p>
-            <p>
+            </div>
+            <div>
                 <label for="purchase_date">Дата приобретения:</label>
                 <input type="date"
                        id="purchase_date"
                        name="purchase_date"
                        value="{{ equipment_card.purchase_date|date:"Y-m-d" }}"
                 >
-            </p>
-            <p>
+            </div>
+            <div>
                 <label for="price">Стоимость:</label>
                 <input type="text"
                        id="price"
@@ -56,7 +56,7 @@
                        pattern="(\d{0,13})|(\d{0,13}\.\d{0,2})"
                        value="{{ equipment_card.price|dot }}"
                 >
-            </p>
+            </div>
             <input type="hidden" name="equipment_id" value="{{ equipment_card.id }}">
             <div>
                 <input type="button" value="Отмена">
@@ -66,13 +66,27 @@
     </div>
 
     <div class="container" id="features_container">
-        Здесь будут характеристики
+        <h1>Характеристики</h1>
+        <div>
+            <input type="button" value="Добавить">
+            <input type="button" value="Изменить">
+            <input type="button" value="Удалить">
+        </div>
+        <div>
+            <ul>
+                {% for equipment_feature in equipment_features %}
+                    <li>{{ equipment_feature }}</li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 {% endblock %}
 
 {% block scripts %}
     <script type="text/javascript">
         const EQUIPMENT_CARDS_API_URL = '/api/equipment_cards/';
+        const EQUIPMENT_FEATURES_API_URL = '/api/equipment_features/';
+
         let cardId = $('input[name=equipment_id]').val();
 
         // Привязываем обработчик к кнопке Отмена

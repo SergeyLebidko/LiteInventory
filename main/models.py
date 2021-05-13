@@ -53,7 +53,9 @@ class EquipmentCard(models.Model):
     price = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='Стоимость', null=True, blank=True)
 
     def __str__(self):
-        return f'{self.equipment_type} {self.title}'
+        if self.title:
+            return f'{self.equipment_type} {self.title}'
+        return f'{self.equipment_type}'
 
     class Meta:
         verbose_name = 'Учетная карточка'
