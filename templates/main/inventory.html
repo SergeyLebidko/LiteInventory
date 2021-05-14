@@ -16,6 +16,7 @@
         <input type="button" id="create_equipment_btn" value="Добавить">
         <input type="button" id="edit_equipment_btn" value="Редактировать">
         <input type="button" id="remove_equipment_btn" value="Удалить">
+        <input type="button" id="equipment_types_btn" value="Типы оборудования">
     </div>
     <div id="group_list" class="container group_list"></div>
     <div id="equipment_list" class="container equipment_list"></div>
@@ -350,6 +351,11 @@
             $.ajax(`${EQUIPMENT_CARDS_API_URL}${selectedEquipment.id}/`, {method: 'delete'}).then(() => {
                 refreshEquipmentList();
             });
+        });
+
+        // Кнопка перехода на страницу редактирования типов
+        $('#equipment_types_btn').click(() => {
+            window.location.pathname = '/equipment_types/';
         });
 
         // Привязывавем обработчики к кнопкам управления в диалоге создания оборудования

@@ -1,0 +1,65 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'main/css/equipment_types.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div>
+            <input type="button" id="to_inventory_btn" value="В инвентарь">
+            <input type="button" id="create_equipment_type" value="Создать">
+            <input type="button" id="edit_equipment_type" value="Изменить">
+            <input type="button" id="remove_equipment_type" value="Удалить">
+        </div>
+        <div>
+            <em>Учтите, что при удалении элемента все связанные с ним карточки оборудования тоже будут удалены!</em>
+        </div>
+        <div>
+            <ul id="type_list"></ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        const EQUIPMENT_TYPES_API_URL = '/api/equipment_types/';
+
+        let selectedType = null;
+
+        // Обработчик кнопки перехода на страницу инвентаря
+        $('#to_inventory_btn').click(() => {
+            window.location.pathname = '/inventory/';
+        });
+
+        // Функция обновляет список типов
+        function refreshTypeList() {
+            $.ajax(EQUIPMENT_TYPES_API_URL).then(typesList => {
+                if (typesList.length === 0) return;
+
+                let $container = $('#type_list');
+                $('li', $container).off();
+                $container.empty();
+
+                let elementsClickHandler = event => {
+                    let $target = $(event.target);
+
+                    $('li', $container).removeClass('selected');
+                    $target.addClass('selected');
+
+                    selectedType = $target.data('type');
+                }
+
+                let $listElement;
+                typesList.forEach(type => {
+                    $listElement = $('<li>').text(type.title).data('type', type).click(elementsClickHandler);
+                    $container.append($listElement);
+                });
+            });
+        }
+
+        // Обновляем список типов при загрузке страницы
+        refreshTypeList();
+    </script>
+{% endblock %}

@@ -205,10 +205,21 @@ def equipment_card(request, card_id):
     if card.group.user != user:
         return Http404()
 
-    equipment_types = EquipmentType.objects.filter(user=user)
+    types = EquipmentType.objects.filter(user=user)
 
     context = {
         'equipment_card': card,
-        'equipment_types': equipment_types
+        'equipment_types': types
     }
     return render(request, 'main/equipment_card.html', context=context)
+
+
+@login_required
+def equipment_types(request):
+    user = request.user
+    types = EquipmentType.objects.filter(user=user)
+
+    context = {
+        'equipment_types': types
+    }
+    return render(request, 'main/equipment_types.html', context=context)
