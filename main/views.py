@@ -223,3 +223,10 @@ def equipment_types(request):
         'equipment_types': types
     }
     return render(request, 'main/equipment_types.html', context=context)
+
+
+@login_required
+def stat(request):
+    user = request.user
+    context = {}
+    return render(request, 'main/stat.html', context={})

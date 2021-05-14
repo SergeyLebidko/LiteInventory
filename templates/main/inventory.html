@@ -17,6 +17,7 @@
         <input type="button" id="edit_equipment_btn" value="Редактировать">
         <input type="button" id="remove_equipment_btn" value="Удалить">
         <input type="button" id="equipment_types_btn" value="Типы оборудования">
+        <input type="button" id="stat_btn" value="Статистика">
     </div>
     <div id="group_list" class="container group_list"></div>
     <div id="equipment_list" class="container equipment_list"></div>
@@ -356,6 +357,11 @@
         // Кнопка перехода на страницу редактирования типов
         $('#equipment_types_btn').click(() => {
             window.location.pathname = '/equipment_types/';
+        });
+
+        // Кнопка перехода на страницу статистики
+        $('#stat_btn').click(() => {
+            window.location.pathname = '/stat/';
         });
 
         // Привязывавем обработчики к кнопкам управления в диалоге создания оборудования

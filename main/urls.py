@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import Register, Login, Logout, ChangePassword, change_password_done, RemoveAccountMixin, \
     EditAccountMixin, remove_account_done, ResetPasswordView, ResetPasswordConfirmView, index, api_description, \
-    inventory, equipment_card, equipment_types
+    inventory, equipment_card, equipment_types, stat
 
 app_name = 'main'
 
@@ -20,5 +20,6 @@ urlpatterns = [
     path('api_description/', api_description, name='api_description'),
     path('inventory/', inventory, name='inventory'),
     path('equipment_card/<int:card_id>/', equipment_card, name='equipment_card'),
-    path('equipment_types/', equipment_types, name='equipment_types')
+    path('equipment_types/', equipment_types, name='equipment_types'),
+    path('stat/', stat, name='stat')
 ]
