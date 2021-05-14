@@ -8,9 +8,9 @@ from django.contrib.auth.models import User
 from django.views.generic.base import View
 from django.contrib.auth import login, logout
 
-from .models import ResetPasswordCode, EquipmentCard, EquipmentType, EquipmentFeature
+from .models import ResetPasswordCode, EquipmentCard, EquipmentType
 from .forms import UserRegisterForm, UserEditForm, ResetPasswordConfirmForm
-from .utils import ActionAccountMixin, send_password_reset_code, create_default_equipment_types
+from .utils import ActionAccountMixin, send_password_reset_code, create_default_equipment_types, get_stat
 
 
 class Register(View):
@@ -228,5 +228,5 @@ def equipment_types(request):
 @login_required
 def stat(request):
     user = request.user
-    context = {}
-    return render(request, 'main/stat.html', context={})
+    context = get_stat(user)
+    return render(request, 'main/stat.html', context=context)

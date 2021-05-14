@@ -4,11 +4,12 @@ import random
 from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
+from django.db.models import Sum, Count
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from .models import ResetPasswordCode, EquipmentType
+from .models import ResetPasswordCode, Group, EquipmentCard, EquipmentType
 
 
 class ActionAccountMixin:
@@ -91,3 +92,24 @@ def create_default_equipment_types(user):
     titles = ['Десктоп', 'Ноутбук', 'Сервер', 'Принтер', 'МФУ', 'Сканер', 'Коммутатор', 'Роутер']
     for title in titles:
         EquipmentType.objects.create(user=user, title=title)
+
+
+def get_stat(user):
+    """ Функция возвращает статистику по пользователю"""
+
+    result = {}
+
+    queryset = EquipmentCard.objects.filter(group__user=user)
+    result['total_count'] = len(queryset)
+    result['total_price'] = queryset.aggregate(total_price=Sum('price'))['total_price']
+
+    result['count_by_groups'] = []
+    queryset = Group.objects.annotate(equipment_count=Count('equipmentcard')).filter(equipment_count__gt=0)
+    for group in queryset:
+        result['count_by_groups'].append({
+            'id': group.pk,
+            'title': group.title,
+            'equipment_count': group.equipment_count
+        })
+
+    return result
