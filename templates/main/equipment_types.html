@@ -95,6 +95,16 @@
             $dialog.get(0).showModal();
         });
 
+        // Обработчик кнопки удаления
+        $('#remove_equipment_type').click(() => {
+            if (selectedType === null) return;
+
+            $.ajax(`${EQUIPMENT_TYPES_API_URL}${selectedType.id}/`, {method: 'delete'}).then(() => {
+                selectedType = null;
+                refreshTypeList();
+            });
+        });
+
         // Функция обновляет список типов
         function refreshTypeList() {
             $.ajax(EQUIPMENT_TYPES_API_URL).then(typesList => {
