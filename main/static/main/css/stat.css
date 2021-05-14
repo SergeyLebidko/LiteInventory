@@ -8,3 +8,11 @@
     overflow: auto;
     font-family: "Roboto Light", Arial, SansSerif;
 }
+
+.container > div {
+    padding: 10px 0;
+}
+
+.container > div:not(:last-child) {
+    border-bottom: 1px dashed rgb(50, 50, 50);
+}

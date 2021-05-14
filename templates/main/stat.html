@@ -8,15 +8,24 @@
 {% block content %}
     <div class="container">
         <div>
-            Общее количество оборудования: {{ total_count }}
+            Общее количество оборудования: {{ total_count }} шт.
         </div>
         <div>
-            Общая стоимость оборудования: {{ total_price }}
+            Общая стоимость оборудования: {{ total_price }} руб.
         </div>
         <div>
+            Количество оборудования по группам (шт.):
             <ul>
                 {% for group in count_by_groups %}
                     <li>{{ group.title }} - {{ group.equipment_count }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            Стоимость оборудования по группам (руб.):
+            <ul>
+                {% for group in price_by_groups %}
+                    <li>{{ group.title }} - {{ group.equipment_price }}</li>
                 {% endfor %}
             </ul>
         </div>

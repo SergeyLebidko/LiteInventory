@@ -104,12 +104,33 @@ def get_stat(user):
     result['total_price'] = queryset.aggregate(total_price=Sum('price'))['total_price']
 
     result['count_by_groups'] = []
-    queryset = Group.objects.annotate(equipment_count=Count('equipmentcard')).filter(equipment_count__gt=0)
+    queryset = Group.objects.filter(
+        user=user
+    ).annotate(
+        equipment_count=Count('equipmentcard')
+    ).filter(
+        equipment_count__gt=0
+    )
     for group in queryset:
         result['count_by_groups'].append({
             'id': group.pk,
             'title': group.title,
             'equipment_count': group.equipment_count
+        })
+
+    result['price_by_groups'] = []
+    queryset = Group.objects.filter(
+        user=user
+    ).annotate(
+        equipment_price=Sum('equipmentcard__price')
+    ).filter(
+        equipment_price__gt=0
+    )
+    for group in queryset:
+        result['price_by_groups'].append({
+            'id': group.pk,
+            'title': group.title,
+            'equipment_price': group.equipment_price
         })
 
     return result
