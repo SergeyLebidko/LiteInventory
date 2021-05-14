@@ -10,9 +10,33 @@
 }
 
 .container > div {
-    padding: 10px 0;
+    padding: 20px 0;
 }
 
 .container > div:not(:last-child) {
     border-bottom: 1px dashed rgb(50, 50, 50);
+}
+
+h1 {
+    padding: 10px 0;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 10px;
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 5px;
+}
+
+li:nth-child(even) {
+    background-color: rgb(235, 235, 235);
+}
+
+li:nth-child(odd) {
+    background-color: rgb(205, 205, 205);
 }

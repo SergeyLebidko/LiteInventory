@@ -7,25 +7,54 @@
 
 {% block content %}
     <div class="container">
+        <input type="button" id="to_inventory_btn" value="К инвентарю">
         <div>
-            Общее количество оборудования: {{ total_count }} шт.
+            <h1>Общее количество оборудования: {{ total_count }} шт.</h1>
         </div>
         <div>
-            Общая стоимость оборудования: {{ total_price }} руб.
+            <h1>Общая стоимость оборудования: {{ total_price }} руб.</h1>
         </div>
         <div>
-            Количество оборудования по группам (шт.):
+            <h1>Количество оборудования по группам (шт.):</h1>
             <ul>
-                {% for group in count_by_groups %}
-                    <li>{{ group.title }} - {{ group.equipment_count }}</li>
+                {% for element in count_by_groups %}
+                    <li>
+                        <span>{{ element.title }}</span>
+                        <span>{{ element.equipment_count }}</span>
+                    </li>
                 {% endfor %}
             </ul>
         </div>
         <div>
-            Стоимость оборудования по группам (руб.):
+            <h1>Стоимость оборудования по группам (руб.):</h1>
             <ul>
-                {% for group in price_by_groups %}
-                    <li>{{ group.title }} - {{ group.equipment_price }}</li>
+                {% for element in price_by_groups %}
+                    <li>
+                        <span>{{ element.title }}</span>
+                        <span>{{ element.equipment_price }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <h1>Количество оборудования по типам (шт.):</h1>
+            <ul>
+                {% for element in count_by_types %}
+                    <li>
+                        <span>{{ element.title }}</span>
+                        <span>{{ element.equipment_count }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <h1>Стоимость оборудования по типам (руб.):</h1>
+            <ul>
+                {% for element in price_by_types %}
+                    <li>
+                        <span>{{ element.title }}</span>
+                        <span>{{ element.equipment_price }}</span>
+                    </li>
                 {% endfor %}
             </ul>
         </div>
@@ -34,6 +63,8 @@
 
 {% block scripts %}
     <script type="text/javascript">
-
+        $('#to_inventory_btn').click(() => {
+            window.location.pathname = '/inventory/';
+        });
     </script>
 {% endblock %}

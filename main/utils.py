@@ -103,6 +103,7 @@ def get_stat(user):
     result['total_count'] = len(queryset)
     result['total_price'] = queryset.aggregate(total_price=Sum('price'))['total_price']
 
+    # Подсчитываем количество оборудования по группам
     result['count_by_groups'] = []
     queryset = Group.objects.filter(
         user=user
@@ -118,6 +119,7 @@ def get_stat(user):
             'equipment_count': group.equipment_count
         })
 
+    # Подсчитываем стоимость оборудования по группам
     result['price_by_groups'] = []
     queryset = Group.objects.filter(
         user=user
@@ -131,6 +133,38 @@ def get_stat(user):
             'id': group.pk,
             'title': group.title,
             'equipment_price': group.equipment_price
+        })
+
+    # Подсчитываем количество оборудования по типам
+    result['count_by_types'] = []
+    queryset = EquipmentType.objects.filter(
+        user=user
+    ).annotate(
+        equipment_count=Count('equipmentcard')
+    ).filter(
+        equipment_count__gt=0
+    )
+    for _type in queryset:
+        result['count_by_types'].append({
+            'id': _type.pk,
+            'title': _type.title,
+            'equipment_count': _type.equipment_count
+        })
+
+    # Подсчитываем стоимость оборудования по типам
+    result['price_by_types'] = []
+    queryset = EquipmentType.objects.filter(
+        user=user
+    ).annotate(
+        equipment_price=Sum('equipmentcard__price')
+    ).filter(
+        equipment_price__gt=0
+    )
+    for _type in queryset:
+        result['price_by_types'].append({
+            'id': _type.pk,
+            'title': _type.title,
+            'equipment_price': _type.equipment_price
         })
 
     return result
