@@ -74,6 +74,7 @@ class EquipmentType(models.Model):
     class Meta:
         verbose_name = 'Тип оборудования'
         verbose_name_plural = 'Типы оборудования'
+        ordering = ['title']
 
 
 class EquipmentFeature(models.Model):
@@ -89,3 +90,4 @@ class EquipmentFeature(models.Model):
     class Meta:
         verbose_name = 'Характеристика оборудования'
         verbose_name_plural = 'Характеристики оборудования'
+        ordering = ['name']
