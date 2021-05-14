@@ -404,8 +404,5 @@
         // Обновляем списки групп и оборудования
         refreshGroupList();
         refreshEquipmentList();
-
-        // Устанавливаем заголовок для всех ajax-запросов
-        $.ajaxSetup({headers: {'X-CSRFToken': Cookies.get('csrftoken')}});
     </script>
 {% endblock %}

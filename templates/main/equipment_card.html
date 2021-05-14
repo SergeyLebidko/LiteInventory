@@ -225,8 +225,5 @@
 
         // Обновляем список свойств
         refreshFeatures();
-
-        // Устанавливаем заголовок для всех ajax-запросов
-        $.ajaxSetup({headers: {'X-CSRFToken': Cookies.get('csrftoken')}});
     </script>
 {% endblock %}

@@ -20,6 +20,16 @@
             <ul id="type_list"></ul>
         </div>
     </div>
+
+    <dialog>
+        <form>
+            <input type="text" name="title" required>
+            <div>
+                <input type="button" value="Отмена">
+                <input type="submit" value="Сохранить">
+            </div>
+        </form>
+    </dialog>
 {% endblock %}
 
 {% block scripts %}
@@ -31,6 +41,58 @@
         // Обработчик кнопки перехода на страницу инвентаря
         $('#to_inventory_btn').click(() => {
             window.location.pathname = '/inventory/';
+        });
+
+        // Обработчик кнопки создания
+        $('#create_equipment_type').click(() => {
+            let $dialog = $('dialog');
+            let $titleField = $('input[type=text]', $dialog);
+            $titleField.val('');
+
+            $('form', $dialog).off();
+            $('form', $dialog).submit(event => {
+                event.preventDefault();
+
+                $.ajax(EQUIPMENT_TYPES_API_URL, {
+                    method: 'post',
+                    data: {
+                        title: $titleField.val()
+                    }
+                }).then(createdType => {
+                    selectedType = createdType;
+                    refreshTypeList();
+                    $dialog.get(0).close();
+                });
+            });
+
+            $dialog.get(0).showModal();
+        });
+
+        // Обработчик кнопки изменения
+        $('#edit_equipment_type').click(() => {
+            if (selectedType === null) return;
+
+            let $dialog = $('dialog');
+            let $titleField = $('input[type=text]', $dialog);
+            $titleField.val(selectedType.title);
+
+            $('form', $dialog).off();
+            $('form', $dialog).submit(event => {
+                event.preventDefault();
+
+                $.ajax(`${EQUIPMENT_TYPES_API_URL}${selectedType.id}/`, {
+                    method: 'patch',
+                    data: {
+                        title: $titleField.val()
+                    }
+                }).then(editedType => {
+                    selectedType = editedType;
+                    refreshTypeList();
+                    $dialog.get(0).close();
+                });
+            });
+
+            $dialog.get(0).showModal();
         });
 
         // Функция обновляет список типов
@@ -54,6 +116,7 @@
                 let $listElement;
                 typesList.forEach(type => {
                     $listElement = $('<li>').text(type.title).data('type', type).click(elementsClickHandler);
+                    if (selectedType !== null && selectedType.id === type.id) $listElement.addClass('selected');
                     $container.append($listElement);
                 });
             });

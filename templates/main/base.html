@@ -21,6 +21,10 @@
 <body>
 {% block content %}
 {% endblock %}
+<script type="text/javascript">
+    // Устанавливаем заголовок для всех ajax-запросов
+    $.ajaxSetup({headers: {'X-CSRFToken': Cookies.get('csrftoken')}});
+</script>
 {% block scripts %}
 {% endblock scripts %}
 </body>
