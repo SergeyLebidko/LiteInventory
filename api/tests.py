@@ -1,4 +1,5 @@
 import uuid
+import random
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -6,7 +7,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from main.utils import create_random_sequence
-from main.models import ResetPasswordCode, EquipmentType
+from main.models import ResetPasswordCode, Group, EquipmentCard, EquipmentType
 from .models import Token
 from .utils import shuffle_string
 
@@ -437,4 +438,26 @@ class StatApiTest(TestCase):
 
     def test_stat(self):
         """Тестируем работу хука получения статистики"""
-        pass
+
+        user, token = UserApiTest().create_user()
+
+        for index in range(3):
+            Group.objects.create(user=user, title=f'group{index}')
+            EquipmentType.objects.create(user=user, title=f'eq_type{index}')
+
+        groups = Group.objects.all()
+        eq_types = EquipmentType.objects.all()
+
+        total_count = random.randint(10, 1000)
+        for index in range(total_count):
+            group = random.choice(groups)
+            eq_type = random.choice(eq_types)
+
+            EquipmentCard.objects.create(group=group, equipment_type=eq_type)
+
+        self.client.credentials(HTTP_AUTHORIZATION=token)
+        response = self.client.get(reverse('api:stat'))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Некорректный http-статус ответа')
+
+        print(response.data)

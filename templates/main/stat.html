@@ -9,10 +9,10 @@
     <div class="container">
         <input type="button" id="to_inventory_btn" value="К инвентарю">
         <div>
-            <h1>Общее количество оборудования: {{ total_count }} шт.</h1>
+            <h1>Общее количество оборудования: {{ total_count|default_if_none:"" }} шт.</h1>
         </div>
         <div>
-            <h1>Общая стоимость оборудования: {{ total_price }} руб.</h1>
+            <h1>Общая стоимость оборудования: {{ total_price|default_if_none:"" }} руб.</h1>
         </div>
         <div>
             <h1>Количество оборудования по группам (шт.):</h1>

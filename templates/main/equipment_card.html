@@ -14,7 +14,7 @@
             </h1>
             <div>
                 <label for="inv_number">Инв. номер:</label>
-                <input type="text" id="inv_number" name="inv_number" value="{{ equipment_card.inv_number|none }}">
+                <input type="text" id="inv_number" name="inv_number" value="{{ equipment_card.inv_number|default_if_none:"" }}">
             </div>
             <div>
                 <label for="equipment_type">Тип:</label>
@@ -30,15 +30,15 @@
             </div>
             <div>
                 <label for="title">Описание:</label>
-                <input type="text" id="title" name="title" value="{{ equipment_card.title|none }}">
+                <input type="text" id="title" name="title" value="{{ equipment_card.title|default_if_none:"" }}">
             </div>
             <div>
                 <label for="comment">Комментарий:</label>
-                <input type="text" id="comment" name="comment" value="{{ equipment_card.comment|none }}">
+                <input type="text" id="comment" name="comment" value="{{ equipment_card.comment|default_if_none:"" }}">
             </div>
             <div>
                 <label for="worker">Должность пользователя:</label>
-                <input type="text" id="worker" name="worker" value="{{ equipment_card.worker|none }}">
+                <input type="text" id="worker" name="worker" value="{{ equipment_card.worker|default_if_none:"" }}">
             </div>
             <div>
                 <label for="purchase_date">Дата приобретения:</label>
@@ -54,7 +54,7 @@
                        id="price"
                        name="price"
                        pattern="(\d{0,13})|(\d{0,13}\.\d{0,2})"
-                       value="{{ equipment_card.price|none|dot }}"
+                       value="{{ equipment_card.price|default_if_none:""|dot }}"
                 >
             </div>
             <input type="hidden" name="equipment_id" value="{{ equipment_card.id }}">
