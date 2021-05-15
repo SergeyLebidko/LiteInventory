@@ -8,7 +8,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 
-from main.utils import send_password_reset_code, create_default_equipment_types
+from main.utils import send_password_reset_code, create_default_equipment_types, get_stat
 from main.models import ResetPasswordCode, Group, EquipmentCard, EquipmentType, EquipmentFeature
 from .models import Token
 from .authentication import CustomTokenAuthentication
@@ -210,3 +210,12 @@ class EquipmentFeatureViewSet(ModelViewSet):
         if card_id:
             queryset = queryset.filter(equipment_card=card_id)
         return queryset
+
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, CustomTokenAuthentication])
+@permission_classes([IsAuthenticated])
+def stat(request):
+    user = request.user
+    result = get_stat(user)
+    return Response(result, status=status.HTTP_200_OK)
