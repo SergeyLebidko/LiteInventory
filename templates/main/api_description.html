@@ -418,5 +418,42 @@
                 </p>
             </div>
         </div>
+
+        <!-- Описание stat -->
+        <div class="hook_block">
+            <div class="description_block">
+                <h3>
+                    Получение статистики по аккаунту
+                </h3>
+                <p>
+                    GET: /api/stat/
+                </p>
+                <p>
+                    Запросы к хуку требуют обязательной аутентификации (указания токена пользователя в заголовке
+                    Authorization).
+                </p>
+                <p>
+                    В ответе хука:
+                </p>
+                <ul>
+                    <li>total_count - общее количество карточек оборудования (или едениц оборудования на учете)</li>
+                    <li>total_price - общая стоимость всего оборудования</li>
+                    <li>count_by_groups - количество оборудования по группам</li>
+                    <li>price_by_groups - стоимость оборудования по группам</li>
+                    <li>count_by_types - количество оборудования по типам</li>
+                    <li>price_by_types - стоимость оборудования по типам</li>
+                </ul>
+            </div>
+            <div class="code_block">
+                <code>
+                    Пример ответа API на запрос статистики:
+                    <br>
+                    GET /api/stat/
+                </code>
+                <p>
+                <pre>{{ stat_json }}</pre>
+                </p>
+            </div>
+        </div>
     </div>
 {% endblock %}

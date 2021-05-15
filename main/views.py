@@ -260,6 +260,83 @@ def api_description(request):
             'equipment_card': 2
         }
     ]
+    stat_json = {
+        'total_count': 6,
+        'total_price': 71500.25,
+        'count_by_groups': [
+            {
+                'id': 16,
+                'title': 'Пост охраны',
+                'equipment_count': 3
+            },
+            {
+                'id': 44,
+                'title': 'Серверная',
+                'equipment_count': 3
+            }
+        ],
+        'price_by_groups': [
+            {
+                'id': 16,
+                'title': 'Пост охраны',
+                'equipment_price': 300.0
+            },
+            {
+                'id': 44,
+                'title': 'Серверная',
+                'equipment_price': 71200.25
+            }
+        ],
+        'count_by_types': [
+            {
+                'id': 1,
+                'title': 'Десктоп',
+                'equipment_count': 2
+            },
+            {
+                'id': 2,
+                'title': 'Ноутбук',
+                'equipment_count': 1
+            },
+            {
+                'id': 3,
+                'title': 'Сервер',
+                'equipment_count': 1
+            },
+            {
+                'id': 5,
+                'title': 'МФУ',
+                'equipment_count': 1
+            },
+            {
+                'id': 7,
+                'title': 'Коммутатор',
+                'equipment_count': 1
+            }
+        ],
+        'price_by_types': [
+            {
+                'id': 1,
+                'title': 'Десктоп',
+                'equipment_price': 300.0
+            },
+            {
+                'id': 3,
+                'title': 'Сервер',
+                'equipment_price': 60000.0
+            },
+            {
+                'id': 5,
+                'title': 'МФУ',
+                'equipment_price': 1200.0
+            },
+            {
+                'id': 7,
+                'title': 'Коммутатор',
+                'equipment_price': 10000.25
+            }
+        ]
+    }
 
     context = {
         'login_json': json.dumps(login_json, indent=2, ensure_ascii=False, sort_keys=False),
@@ -268,7 +345,8 @@ def api_description(request):
         'group_json': json.dumps(group_json, indent=2, ensure_ascii=False, sort_keys=False),
         'equipment_cards_json': json.dumps(equipment_cards_json, indent=2, ensure_ascii=False, sort_keys=False),
         'equipment_types_json': json.dumps(equipment_types_json, indent=2, ensure_ascii=False, sort_keys=False),
-        'equipment_features_json': json.dumps(equipment_features_json, indent=2, ensure_ascii=False, sort_keys=False)
+        'equipment_features_json': json.dumps(equipment_features_json, indent=2, ensure_ascii=False, sort_keys=False),
+        'stat_json': json.dumps(stat_json, indent=2, ensure_ascii=False, sort_keys=False),
     }
     return render(request, 'main/api_description.html', context=context)
 
