@@ -441,23 +441,70 @@ class StatApiTest(TestCase):
 
         user, token = UserApiTest().create_user()
 
+        count_by_groups = {}
+        count_by_types = {}
+        price_by_groups = {}
+        price_by_types = {}
         for index in range(3):
-            Group.objects.create(user=user, title=f'group{index}')
-            EquipmentType.objects.create(user=user, title=f'eq_type{index}')
+            group = Group.objects.create(user=user, title=f'group{index}')
+            eq_type = EquipmentType.objects.create(user=user, title=f'eq_type{index}')
+
+            count_by_groups[group.pk] = 0
+            count_by_types[eq_type.pk] = 0
+            price_by_groups[group.pk] = 0
+            price_by_types[eq_type.pk] = 0
 
         groups = Group.objects.all()
         eq_types = EquipmentType.objects.all()
 
         total_count = random.randint(10, 1000)
+        total_price = 0
         for index in range(total_count):
             group = random.choice(groups)
             eq_type = random.choice(eq_types)
 
-            EquipmentCard.objects.create(group=group, equipment_type=eq_type)
+            price = random.randint(1000, 9999)
+            total_price += price
+
+            count_by_groups[group.pk] += 1
+            count_by_types[eq_type.pk] += 1
+            price_by_groups[group.pk] += price
+            price_by_types[eq_type.pk] += price
+
+            EquipmentCard.objects.create(group=group, equipment_type=eq_type, price=price)
 
         self.client.credentials(HTTP_AUTHORIZATION=token)
         response = self.client.get(reverse('api:stat'))
 
         self.assertEqual(response.status_code, status.HTTP_200_OK, 'Некорректный http-статус ответа')
 
-        print(response.data)
+        self.assertEqual(response.data['total_count'], total_count, 'Неверное значение общего количества оборудования')
+        self.assertEqual(response.data['total_price'], total_price, 'Неверное значение общей стоимости оборудования')
+
+        for group in response.data['count_by_groups']:
+            self.assertEqual(
+                group['equipment_count'],
+                count_by_groups[group['id']],
+                'Некорректный подсчет количества оборудования в отдельных группах'
+            )
+
+        for group in response.data['price_by_groups']:
+            self.assertEqual(
+                group['equipment_price'],
+                price_by_groups[group['id']],
+                'Некорректный подсчет стоимости оборудования в отдельных группах'
+            )
+
+        for eq_type in response.data['count_by_types']:
+            self.assertEqual(
+                eq_type['equipment_count'],
+                count_by_types[eq_type['id']],
+                'Некорректный подсчет количества оборудования по типам'
+            )
+
+        for eq_type in response.data['price_by_types']:
+            self.assertEqual(
+                eq_type['equipment_price'],
+                price_by_types[eq_type['id']],
+                'Некорректный подсчет стоимости оборудования по типам'
+            )
