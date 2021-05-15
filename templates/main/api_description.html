@@ -336,5 +336,50 @@
                 </p>
             </div>
         </div>
+
+        <!-- Описание equipment_types -->
+        <div class="hook_block">
+            <div class="description_block">
+                <h3>
+                    Работа с типам оборудования
+                </h3>
+                <p>
+                    GET: /api/equipment_types/
+                </p>
+                <p>
+                    GET, POST, DELETE, PATCH, PUT:
+                    <br>
+                    /api/equipment_types/{id_типа}/
+                </p>
+                <p>
+                    Хук нужен для создания, удаления и изменения типов оборудования.
+                    Запросы к хуку требуют обязательной аутентификации (указания токена пользователя в заголовке
+                    Authorization).
+                </p>
+                <p>
+                    При регистрации пользователя для него автоматически создается следующий набор типов:
+                </p>
+                <ul>
+                    <li>Десктоп</li>
+                    <li>Ноутбук</li>
+                    <li>Сервер</li>
+                    <li>Принтер</li>
+                    <li>МФУ</li>
+                    <li>Сканер</li>
+                    <li>Коммутатор</li>
+                    <li>Роутер'</li>
+                </ul>
+            </div>
+            <div class="code_block">
+                <code>
+                    Пример ответа API на запрос списка карточек:
+                    <br>
+                    GET /api/equipment_types/
+                </code>
+                <p>
+                <pre>{{ equipment_types_json }}</pre>
+                </p>
+            </div>
+        </div>
     </div>
 {% endblock %}

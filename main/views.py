@@ -214,13 +214,28 @@ def api_description(request):
             'equipment_type': 5
         }
     ]
+    equipment_types_json = [
+        {
+            'id': 1,
+            'title': 'Десктоп'
+        },
+        {
+            'id': 7,
+            'title': 'Коммутатор'
+        },
+        {
+            'id': 5,
+            'title': 'МФУ'
+        }
+    ]
 
     context = {
         'login_json': json.dumps(login_json, indent=2, ensure_ascii=False, sort_keys=False),
         'account_data_json': json.dumps(account_data_json, indent=2, ensure_ascii=False, sort_keys=False),
         'reset_password_json': json.dumps(reset_password_json, indent=2, ensure_ascii=False, sort_keys=False),
         'group_json': json.dumps(group_json, indent=2, ensure_ascii=False, sort_keys=False),
-        'equipment_cards_json': json.dumps(equipment_cards_json, indent=2, ensure_ascii=False, sort_keys=False)
+        'equipment_cards_json': json.dumps(equipment_cards_json, indent=2, ensure_ascii=False, sort_keys=False),
+        'equipment_types_json': json.dumps(equipment_types_json, indent=2, ensure_ascii=False, sort_keys=False)
     }
     return render(request, 'main/api_description.html', context=context)
 
