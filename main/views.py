@@ -228,6 +228,38 @@ def api_description(request):
             'title': 'МФУ'
         }
     ]
+    equipment_features_json = [
+        {
+            'id': 6,
+            'name': 'LAN',
+            'value': '2 x 1000Gbit',
+            'equipment_card': 2
+        },
+        {
+            'id': 5,
+            'name': 'SSD',
+            'value': '4 TB',
+            'equipment_card': 2
+        },
+        {
+            'id': 4,
+            'name': 'Оперативная память',
+            'value': '32 Gb',
+            'equipment_card': 2
+        },
+        {
+            'id': 7,
+            'name': 'Операционная система',
+            'value': 'Ubuntu Linux',
+            'equipment_card': 2
+        },
+        {
+            'id': 3,
+            'name': 'Процессор',
+            'value': 'Intel Core i9 11900',
+            'equipment_card': 2
+        }
+    ]
 
     context = {
         'login_json': json.dumps(login_json, indent=2, ensure_ascii=False, sort_keys=False),
@@ -235,7 +267,8 @@ def api_description(request):
         'reset_password_json': json.dumps(reset_password_json, indent=2, ensure_ascii=False, sort_keys=False),
         'group_json': json.dumps(group_json, indent=2, ensure_ascii=False, sort_keys=False),
         'equipment_cards_json': json.dumps(equipment_cards_json, indent=2, ensure_ascii=False, sort_keys=False),
-        'equipment_types_json': json.dumps(equipment_types_json, indent=2, ensure_ascii=False, sort_keys=False)
+        'equipment_types_json': json.dumps(equipment_types_json, indent=2, ensure_ascii=False, sort_keys=False),
+        'equipment_features_json': json.dumps(equipment_features_json, indent=2, ensure_ascii=False, sort_keys=False)
     }
     return render(request, 'main/api_description.html', context=context)
 

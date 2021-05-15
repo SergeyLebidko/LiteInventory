@@ -372,12 +372,49 @@
             </div>
             <div class="code_block">
                 <code>
-                    Пример ответа API на запрос списка карточек:
+                    Пример ответа API на запрос списка типов:
                     <br>
                     GET /api/equipment_types/
                 </code>
                 <p>
                 <pre>{{ equipment_types_json }}</pre>
+                </p>
+            </div>
+        </div>
+
+        <!-- Описание equipment_features -->
+        <div class="hook_block">
+            <div class="description_block">
+                <h3>
+                    Работа со списками характеристик оборудования
+                </h3>
+                <p>
+                    GET: /api/equipment_features/
+                </p>
+                <p>
+                    GET, POST, DELETE, PATCH, PUT:
+                    <br>
+                    /api/equipment_features/{id_характеристики}/
+                </p>
+                <p>
+                    Хук нужен для создания, удаления и изменения характеристик отдельной еденицы оборудования
+                    (например, сервера, десктопа, ноутбука и т.п.).
+                    Запросы к хуку требуют обязательной аутентификации (указания токена пользователя в заголовке
+                    Authorization).
+                </p>
+                <p>
+                    При запросе характеристик на хук надо передавать параметр card с идентификатором карточки
+                    оборудования.
+                </p>
+            </div>
+            <div class="code_block">
+                <code>
+                    Пример ответа API на запрос списка характеристик:
+                    <br>
+                    GET /api/equipment_features/?card=2
+                </code>
+                <p>
+                <pre>{{ equipment_features_json }}</pre>
                 </p>
             </div>
         </div>
