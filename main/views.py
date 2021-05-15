@@ -179,12 +179,48 @@ def api_description(request):
             'group': 1
         }
     ]
+    equipment_cards_json = [
+        {
+            'id': 2,
+            'inv_number': '0002',
+            'title': 'Futjitsu',
+            'comment': 'Старый сервер',
+            'worker': 'Админ',
+            'purchase_date': '2021-05-12',
+            'price': '60000.00',
+            'group': 44,
+            'equipment_type': 3
+        },
+        {
+            'id': 3,
+            'inv_number': '0001',
+            'title': 'Cisco',
+            'comment': 'Главный маршрутизатор офиса',
+            'worker': 'Админ',
+            'purchase_date': '2021-05-12',
+            'price': '10000.25',
+            'group': 44,
+            'equipment_type': 7
+        },
+        {
+            'id': 4,
+            'inv_number': '0004',
+            'title': '',
+            'comment': 'Пока стоит в серверной. Нужна замена барабана',
+            'worker': 'Секретарь',
+            'purchase_date': None,
+            'price': '1200.00',
+            'group': 44,
+            'equipment_type': 5
+        }
+    ]
 
     context = {
         'login_json': json.dumps(login_json, indent=2, ensure_ascii=False, sort_keys=False),
         'account_data_json': json.dumps(account_data_json, indent=2, ensure_ascii=False, sort_keys=False),
         'reset_password_json': json.dumps(reset_password_json, indent=2, ensure_ascii=False, sort_keys=False),
-        'group_json': json.dumps(group_json, indent=2, ensure_ascii=False, sort_keys=False)
+        'group_json': json.dumps(group_json, indent=2, ensure_ascii=False, sort_keys=False),
+        'equipment_cards_json': json.dumps(equipment_cards_json, indent=2, ensure_ascii=False, sort_keys=False)
     }
     return render(request, 'main/api_description.html', context=context)
 

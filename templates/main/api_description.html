@@ -301,5 +301,40 @@
                 </p>
             </div>
         </div>
+
+        <!-- Описание equipment_cards -->
+        <div class="hook_block">
+            <div class="description_block">
+                <h3>
+                    Работа с карточками оборудования
+                </h3>
+                <p>
+                    GET: /api/equipment_cards/
+                </p>
+                <p>
+                    GET, POST, DELETE, PATCH, PUT:
+                    <br>
+                    /api/equipment_cards/{id_карточки}/
+                </p>
+                <p>
+                    Хук нужен для создания, удаления и изменения карточек оборудования.
+                    Запросы к хуку требуют обязательной аутентификации (указания токена пользователя в заголовке
+                    Authorization).
+                </p>
+                <p>
+                    Допустимо указывать параметр поиска group для отбора карточек, принадлежащих определенной группе.
+                </p>
+            </div>
+            <div class="code_block">
+                <code>
+                    Пример ответа API на запрос списка карточек:
+                    <br>
+                    GET /api/equipment_cards/?group=44
+                </code>
+                <p>
+                <pre>{{ equipment_cards_json }}</pre>
+                </p>
+            </div>
+        </div>
     </div>
 {% endblock %}
