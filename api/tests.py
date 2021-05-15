@@ -428,3 +428,13 @@ class UserApiTest(TestCase):
             status.HTTP_400_BAD_REQUEST,
             'Неверный статус http-ответа при попытке сбросить пароль с некорректным новым паролем'
         )
+
+
+class StatApiTest(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_stat(self):
+        """Тестируем работу хука получения статистики"""
+        pass
