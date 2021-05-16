@@ -17,6 +17,9 @@ gThk8%lo@ji86&
 
 Имя пользователя в БД: admin. Пароль: admin.
 
+Для запуска проекта необходимо выполнить клонирование репозитория в отдельную папку (git clone), затем установить зависимости командой
+```pip install -r requirements.txt``` и, наконец, стартовать тестовый сервер ```python manage.py runserver```
+
 ![screenshot](screenshots/screen1.jpg)
 
 ![screenshot](screenshots/screen2.jpg)
