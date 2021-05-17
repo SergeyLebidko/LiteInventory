@@ -154,7 +154,7 @@ def api_description(request):
         'token': 'f1b8c722-d7dc-4784-9596-365902dc5920'
     }
     account_data_json = {
-        'login': 'thanos',
+        'username': 'thanos',
         'email': 'th@nos.com',
         'first_name': 'Танос',
         'last_name': 'Завоеватель'

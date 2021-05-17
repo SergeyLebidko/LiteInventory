@@ -22,7 +22,7 @@ from .serializers import GroupSerializer, EquipmentCardSerializer, EquipmentType
 def account_data(request):
     user = request.user
     return Response({
-        'login': user.username,
+        'username': user.username,
         'email': user.email,
         'first_name': user.first_name,
         'last_name': user.last_name
