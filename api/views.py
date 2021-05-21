@@ -93,13 +93,19 @@ def edit_account(request):
 @authentication_classes([CustomTokenAuthentication])
 @permission_classes([IsAuthenticated])
 def remove_account(request):
-    password = request.data.get('password')
     user = request.user
+    if user.is_superuser or user.is_staff:
+        return Response(
+            {'detail': 'Удаление аккаунтов персонала производится через административную панель Django'},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    password = request.data.get('password')
     if user.check_password(password):
         user.delete()
         return Response(status=status.HTTP_200_OK)
 
-    return Response(status=status.HTTP_403_FORBIDDEN)
+    return Response({'detail': 'Некорректный пароль'}, status=status.HTTP_403_FORBIDDEN)
 
 
 @api_view(['POST'])
