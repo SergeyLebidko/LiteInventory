@@ -20,13 +20,15 @@ class UserApiTest(TestCase):
     TEST_LAST_NAME = 'last_name'
     TEST_TOKEN = 'token'
 
-    def create_user(self, with_token=True):
+    def create_user(self, with_token=True, is_superuser=False, is_staff=False):
         user = User.objects.create_user(
             username=self.TEST_USERNAME,
             password=self.TEST_PASSWORD,
             email=self.TEST_EMAIL,
             first_name=self.TEST_FIRST_NAME,
-            last_name=self.TEST_LAST_NAME
+            last_name=self.TEST_LAST_NAME,
+            is_superuser=is_superuser,
+            is_staff=is_staff
         )
         if not with_token:
             return user
@@ -258,6 +260,24 @@ class UserApiTest(TestCase):
 
         user_exists = User.objects.exists()
         self.assertTrue(user_exists, 'Удалось удалить пользователя не передав его токен')
+
+        # Тестируем невозможность удаления пользователей со статусом Суперпользователь и Персонал
+        for is_superuser, is_staff in [(True, True), (True, False), (False, True)]:
+            user.delete()
+            user, token = self.create_user(is_superuser=is_superuser, is_staff=is_staff)
+            client3 = APIClient()
+            client3.credentials(HTTP_AUTHORIZATION=token)
+
+            response = client3.delete(reverse('api:remove_account'), {'password': self.TEST_PASSWORD})
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'Некорректный http-статус ответа')
+
+            user_exists = User.objects.exists()
+            self.assertTrue(
+                user_exists,
+                f'Через API далось удалить пользователя со статусом(ами): '
+                f'{"Суперпользователь" if is_superuser else ""} '
+                f'{"Персонал" if is_staff else ""}'
+            )
 
     def test_success_change_password(self):
         """Тестируем успешное изменение пароля"""
