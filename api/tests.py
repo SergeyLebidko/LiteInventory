@@ -301,7 +301,7 @@ class UserApiTest(TestCase):
         self.assertNotEqual(before_pass_hash, after_pass_hash, 'Пароль не изменился')
 
     def test_fail_change_password(self):
-        """ тестируем невозможность смены пароля при некорректных данных"""
+        """ Тестируем невозможность смены пароля при некорректных данных"""
 
         user, token = self.create_user()
         pass_hash_before = user.password
@@ -345,6 +345,34 @@ class UserApiTest(TestCase):
             pass_hash_after,
             'Удалось изменить пароль при передаче некорректного нового пароля'
         )
+
+        # Тестируем смены пароля пользователей со статусом Суперпользователь и Персонал
+        for is_superuser, is_staff in [(True, True), (True, False), (False, True)]:
+            user.delete()
+            user, token = self.create_user(is_superuser=is_superuser, is_staff=is_staff)
+            client3 = APIClient()
+            client3.credentials(HTTP_AUTHORIZATION=token)
+
+            password_before = user.password
+            response = client3.post(
+                reverse('api:change_password'),
+                {
+                    'password': self.TEST_PASSWORD,
+                    'next_password': shuffle_string(self.TEST_PASSWORD)
+                }
+            )
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'Некорректный http-статус ответа')
+
+            user.refresh_from_db()
+            password_after = user.password
+
+            self.assertEqual(
+                password_before,
+                password_after,
+                f'Через API далось сменить пароль у пользователя со статусом(ами): '
+                f'{"Суперпользователь" if is_superuser else ""} '
+                f'{"Персонал" if is_staff else ""}'
+            )
 
     def test_success_reset_password(self):
         """Тестируем успешный сброс пароля"""
