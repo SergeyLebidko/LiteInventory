@@ -228,6 +228,43 @@ class UserApiTest(TestCase):
                 f'Некорректный http-статус ответа для данных: {element}'
             )
 
+        # Тестируем невозможность редактирования пользователей со статусом Суперпользователь и Персонал
+        for is_superuser, is_staff in [(True, True), (True, False), (False, True)]:
+            user.delete()
+            user, token = self.create_user(is_superuser=is_superuser, is_staff=is_staff)
+            client = APIClient()
+            client.credentials(HTTP_AUTHORIZATION=token)
+
+            username_before = user.username
+            email_before = user.email
+            first_name_before = user.first_name
+            last_name_before = user.last_name
+
+            response = client.post(
+                reverse('api:edit_account'),
+                {
+                    'username': shuffle_string(self.TEST_USERNAME),
+                    'email': f'{create_random_sequence(10)}@{create_random_sequence(6)}.{create_random_sequence(3)}',
+                    'first_name': shuffle_string(self.TEST_FIRST_NAME),
+                    'last_name': shuffle_string(self.TEST_LAST_NAME)
+                }
+            )
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'Некорректный http-статус ответа')
+
+            user.refresh_from_db()
+            username_after = user.username
+            email_after = user.email
+            first_name_after = user.first_name
+            last_name_after = user.last_name
+
+            self.assertEqual(
+                [username_before, email_before, first_name_before, last_name_before],
+                [username_after, email_after, first_name_after, last_name_after],
+                f'Через API далось отредактировать пользователя со статусом(ами): '
+                f'{"Суперпользователь" if is_superuser else ""} '
+                f'{"Персонал" if is_staff else ""}'
+            )
+
     def test_success_remove(self):
         """Тестируем успешное удаление аккаунта"""
 

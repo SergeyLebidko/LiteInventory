@@ -73,13 +73,19 @@ def register(request):
 @authentication_classes([CustomTokenAuthentication])
 @permission_classes([IsAuthenticated])
 def edit_account(request):
+    user = request.user
+    if user.is_superuser or user.is_staff:
+        return Response(
+            {'detail': 'Редактирование аккаунтов персонала производится через административную панель Django'},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
     username, _, email, first_name, last_name = extract_user_data_from_request(request)
 
     error = check_user_data(username=username, email=email)
     if error:
         return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
 
-    user = request.user
     user.username = username
     user.email = email
     user.first_name = first_name
