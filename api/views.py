@@ -116,8 +116,14 @@ def change_password(request):
     next_password = request.data.get('next_password', '')
     user = request.user
 
+    if user.is_superuser or user.is_staff:
+        return Response(
+            {'detail': 'Удаление аккаунтов персонала производится через административную панель Django'},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
     if not user.check_password(password):
-        return Response(status=status.HTTP_403_FORBIDDEN)
+        return Response({'detail': 'Неверный текущий пароль'}, status=status.HTTP_403_FORBIDDEN)
 
     error = check_user_data(password=next_password)
     if error:
