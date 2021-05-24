@@ -300,6 +300,10 @@ class UserApiTest(TestCase):
         after_pass_hash = user.password
         self.assertNotEqual(before_pass_hash, after_pass_hash, 'Пароль не изменился')
 
+        # Проверяем удаление токена при смене пароля
+        token_exists = Token.objects.filter(token=token).exists()
+        self.assertFalse(token_exists, 'При смене пароля токен не был удален')
+
     def test_fail_change_password(self):
         """ Тестируем невозможность смены пароля при некорректных данных"""
 
@@ -346,7 +350,7 @@ class UserApiTest(TestCase):
             'Удалось изменить пароль при передаче некорректного нового пароля'
         )
 
-        # Тестируем смены пароля пользователей со статусом Суперпользователь и Персонал
+        # Тестируем невозможность смены пароля пользователей со статусом Суперпользователь и Персонал
         for is_superuser, is_staff in [(True, True), (True, False), (False, True)]:
             user.delete()
             user, token = self.create_user(is_superuser=is_superuser, is_staff=is_staff)

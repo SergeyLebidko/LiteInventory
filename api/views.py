@@ -118,7 +118,7 @@ def change_password(request):
 
     if user.is_superuser or user.is_staff:
         return Response(
-            {'detail': 'Удаление аккаунтов персонала производится через административную панель Django'},
+            {'detail': 'Смена аккаунтов персонала производится через административную панель Django'},
             status=status.HTTP_403_FORBIDDEN
         )
 
@@ -131,6 +131,10 @@ def change_password(request):
 
     user.set_password(next_password)
     user.save()
+
+    # При смене пароля удаляем токен, с которым была выполнена смена
+    token = request.auth
+    Token.objects.get(token=token).delete()
 
     return Response(status=status.HTTP_200_OK)
 
