@@ -1,8 +1,6 @@
 import random
-from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
-from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
 from main.utils import username_checker
@@ -34,11 +32,6 @@ def check_user_data(username=None, password=None, email=None):
             EmailValidator('Некорректный email')(email)
         except ValidationError as ex:
             return ex.message
-
-    if username is not None or email is not None:
-        user_exists = User.objects.filter(Q(username=username) | Q(email=email)).exists()
-        if user_exists:
-            return 'Пользователь с таким логином или email уже существует'
 
     return None
 

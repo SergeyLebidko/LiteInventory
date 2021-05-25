@@ -1,6 +1,7 @@
 import uuid
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -56,6 +57,14 @@ def register(request):
     error = check_user_data(username=username, password=password, email=email)
     if error:
         return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
+    user_exist = User.objects.filter(Q(username=username) | Q(email=email))
+    if user_exist:
+        return Response(
+            {
+                'detail': 'Пользователь с таким паролем или email уже существует'
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     user = User.objects.create_user(
         username,
@@ -82,21 +91,26 @@ def edit_account(request):
 
     username, _, email, first_name, last_name = extract_user_data_from_request(request)
 
-    # if username or email:
-    #     error = check_user_data(username=username, email=email)
-    #     if error:
-    #         return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
+    if username or email:
+        user_exist = User.objects.filter((Q(username=username) | Q(email=email)) & ~Q(pk=user.pk)).exists()
+        if user_exist:
+            return Response(
+                {
+                    'detail': 'Пользователь с таким паролем или email уже существует'
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-    if username:
-        user.username = username
-    if email:
-        user.email = email
-    if first_name:
-        user.first_name = first_name
-    if last_name:
-        user.last_name = last_name
+        error = check_user_data(username=username, email=email)
+        if error:
+            return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
 
+    user.username = username or user.username
+    user.email = email or user.email
+    user.first_name = first_name or user.first_name
+    user.last_name = last_name or user.last_name
     user.save()
+
     return Response(status=status.HTTP_200_OK)
 
 
