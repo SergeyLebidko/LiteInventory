@@ -226,6 +226,9 @@ class UserApiTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, 'Некорректный http-статус ответа')
 
+        self.assertNotEqual(user2.username, '*', 'Удалось назначить пользователю некорректный логин')
+        self.assertNotEqual(user2.email, '*', 'Удалось назначить пользователю некорректный email')
+
         # Очистка перед следующим кейсом
         user1.delete()
         user2.delete()
