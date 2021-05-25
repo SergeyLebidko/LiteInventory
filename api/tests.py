@@ -136,6 +136,9 @@ class UserApiTest(TestCase):
 
         data = [
             {
+              'msg': 'Удалось создать пользователя, не предоставив логин, пароль и email'
+            },
+            {
                 'username': '',
                 'msg': 'Удалось создать пользователя с некорректным логином'
             },
@@ -153,13 +156,15 @@ class UserApiTest(TestCase):
         ]
 
         for element in data:
+            credentials = {**element}
+            del credentials['msg']
             before_exists = User.objects.exists()
             client = APIClient()
-            response = client.post(reverse('api:register'), element)
+            response = client.post(reverse('api:register'), credentials)
             self.assertEqual(
                 response.status_code,
                 status.HTTP_400_BAD_REQUEST,
-                f'Некорректный http-статус для следующих данных: {element}'
+                f'Некорректный http-статус для следующих данных: {credentials}'
             )
             after_exists = User.objects.exists()
             self.assertEqual([before_exists, after_exists], [False, False], element['msg'])
