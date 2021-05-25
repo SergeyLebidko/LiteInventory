@@ -96,7 +96,7 @@ def edit_account(request):
     username = request.data.get('username')
     email = request.data.get('email')
 
-    if username is not None or email is None:
+    if username is not None or email is not None:
         error = None
         if email:
             error = check_email(email)
