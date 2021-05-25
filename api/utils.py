@@ -3,36 +3,20 @@ from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 from django.contrib.auth.password_validation import validate_password
 
-from main.utils import username_checker
+
+def check_password(password):
+    try:
+        validate_password(password)
+    except ValidationError as ex:
+        return ' '.join(ex.messages)
+    return None
 
 
-def extract_user_data_from_request(request):
-    username = request.data.get('username', '')
-    password = request.data.get('password', '')
-    email = request.data.get('email', '')
-    first_name = request.data.get('first_name', '')
-    last_name = request.data.get('last_name', '')
-    return username, password, email, first_name, last_name
-
-
-def check_user_data(username=None, password=None, email=None):
-    if username is not None:
-        error = username_checker(username)
-        if error:
-            return error
-
-    if password is not None:
-        try:
-            validate_password(password)
-        except ValidationError as ex:
-            return ' '.join(ex.messages)
-
-    if email is not None:
-        try:
-            EmailValidator('Некорректный email')(email)
-        except ValidationError as ex:
-            return ex.message
-
+def check_email(email):
+    try:
+        EmailValidator('Некорректный email')(email)
+    except ValidationError as ex:
+        return ex.message
     return None
 
 

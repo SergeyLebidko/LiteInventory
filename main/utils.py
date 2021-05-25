@@ -26,7 +26,7 @@ class ActionAccountMixin:
         return None
 
 
-def username_checker(username):
+def check_username(username):
     if not username:
         return 'Пустое имя пользователя недопустимо'
     for letter in username:
@@ -40,7 +40,7 @@ class UsernameCheckMixin:
 
     def clean_username(self):
         username = self.cleaned_data['username']
-        error = username_checker(username)
+        error = check_username(username)
         if error:
             raise ValidationError(error)
         return username

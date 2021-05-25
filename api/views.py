@@ -9,11 +9,11 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 
-from main.utils import send_password_reset_code, create_default_equipment_types, get_stat
+from main.utils import send_password_reset_code, create_default_equipment_types, get_stat, check_username
 from main.models import ResetPasswordCode, Group, EquipmentCard, EquipmentType, EquipmentFeature
 from .models import Token
 from .authentication import CustomTokenAuthentication
-from .utils import extract_user_data_from_request, check_user_data
+from .utils import check_password, check_email
 from .serializers import GroupSerializer, EquipmentCardSerializer, EquipmentTypeSerializer, EquipmentFeatureSerializer
 
 
@@ -52,16 +52,20 @@ def logout(request):
 
 @api_view(['POST'])
 def register(request):
-    username, password, email, first_name, last_name = extract_user_data_from_request(request)
+    username = request.data.get('username', '')
+    password = request.data.get('password', '')
+    email = request.data.get('email', '')
+    first_name = request.data.get('first_name')
+    last_name = request.data.get('last_name')
 
-    error = check_user_data(username=username, password=password, email=email)
+    error = check_username(username) or check_password(password) or check_email(email)
     if error:
         return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
     user_exist = User.objects.filter(Q(username=username) | Q(email=email))
     if user_exist:
         return Response(
             {
-                'detail': 'Пользователь с таким паролем или email уже существует'
+                'detail': 'Пользователь с таким логином или email уже существует'
             },
             status=status.HTTP_400_BAD_REQUEST
         )
@@ -89,9 +93,12 @@ def edit_account(request):
             status=status.HTTP_403_FORBIDDEN
         )
 
-    username, _, email, first_name, last_name = extract_user_data_from_request(request)
+    username = request.data.get('username')
+    email = request.data.get('email')
+    first_name = request.data.get('first_name')
+    last_name = request.data.get('last_name')
 
-    if username or email:
+    if username is not None or email is None:
         user_exist = User.objects.filter((Q(username=username) | Q(email=email)) & ~Q(pk=user.pk)).exists()
         if user_exist:
             return Response(
@@ -101,7 +108,7 @@ def edit_account(request):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        error = check_user_data(username=username, email=email)
+        error = check_username(username) or check_email(email)
         if error:
             return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -150,7 +157,7 @@ def change_password(request):
     if not user.check_password(password):
         return Response({'detail': 'Неверный текущий пароль'}, status=status.HTTP_403_FORBIDDEN)
 
-    error = check_user_data(password=next_password)
+    error = check_password(next_password)
     if error:
         return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -188,7 +195,7 @@ def reset_password_confirm(request, _uuid):
         return Response({'detail': 'Неверный код сброса пароля'}, status=status.HTTP_403_FORBIDDEN)
 
     password = request.data.get('password')
-    error = check_user_data(password=password)
+    error = check_password(password)
     if error:
         return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
 
