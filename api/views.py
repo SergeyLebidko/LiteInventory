@@ -55,8 +55,8 @@ def register(request):
     username = request.data.get('username', '')
     password = request.data.get('password', '')
     email = request.data.get('email', '')
-    first_name = request.data.get('first_name')
-    last_name = request.data.get('last_name')
+    first_name = request.data.get('first_name', '')
+    last_name = request.data.get('last_name', '')
 
     error = check_username(username) or check_password(password) or check_email(email)
     if error:
@@ -95,8 +95,6 @@ def edit_account(request):
 
     username = request.data.get('username')
     email = request.data.get('email')
-    first_name = request.data.get('first_name')
-    last_name = request.data.get('last_name')
 
     if username is not None or email is None:
         error = None
@@ -106,14 +104,18 @@ def edit_account(request):
             error = check_username(username)
         user_exist = User.objects.filter((Q(username=username) | Q(email=email)) & ~Q(pk=user.pk)).exists()
         if user_exist:
-            error = 'Пользователь с таким паролем или email уже существует'
+            error = 'Пользователь с таким логином или email уже существует'
         if error:
             return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
 
-    user.username = username or user.username
-    user.email = email or user.email
-    user.first_name = first_name or user.first_name
-    user.last_name = last_name or user.last_name
+        user.username = username or user.username
+        user.email = email or user.email
+
+    if 'first_name' in request.data:
+        user.first_name = request.data.get('first_name')
+    if 'last_name' in request.data:
+        user.last_name = request.data.get('last_name')
+
     user.save()
 
     return Response(status=status.HTTP_200_OK)
