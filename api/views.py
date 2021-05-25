@@ -69,7 +69,7 @@ def register(request):
     return Response(status=status.HTTP_201_CREATED)
 
 
-@api_view(['POST'])
+@api_view(['PATCH'])
 @authentication_classes([CustomTokenAuthentication])
 @permission_classes([IsAuthenticated])
 def edit_account(request):

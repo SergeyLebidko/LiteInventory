@@ -188,7 +188,7 @@ class UserApiTest(TestCase):
         next_data = dict(username=username, email=email, first_name=first_name, last_name=last_name)
 
         self.client.credentials(HTTP_AUTHORIZATION=token)
-        response = self.client.post(reverse('api:edit_account'), next_data)
+        response = self.client.patch(reverse('api:edit_account'), next_data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK, 'Некорректный http-статус ответа')
 
@@ -221,7 +221,7 @@ class UserApiTest(TestCase):
         for element in data:
             client = APIClient()
             client.credentials(HTTP_AUTHORIZATION=token)
-            response = client.post(reverse('api:edit_account'), element)
+            response = client.patch(reverse('api:edit_account'), element)
             self.assertEqual(
                 response.status_code,
                 status.HTTP_400_BAD_REQUEST,
@@ -240,7 +240,7 @@ class UserApiTest(TestCase):
             first_name_before = user.first_name
             last_name_before = user.last_name
 
-            response = client.post(
+            response = client.patch(
                 reverse('api:edit_account'),
                 {
                     'username': shuffle_string(self.TEST_USERNAME),
