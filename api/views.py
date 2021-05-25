@@ -99,16 +99,14 @@ def edit_account(request):
     last_name = request.data.get('last_name')
 
     if username is not None or email is None:
+        error = None
+        if email:
+            error = check_email(email)
+        if username:
+            error = check_username(username)
         user_exist = User.objects.filter((Q(username=username) | Q(email=email)) & ~Q(pk=user.pk)).exists()
         if user_exist:
-            return Response(
-                {
-                    'detail': 'Пользователь с таким паролем или email уже существует'
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        error = check_username(username) or check_email(email)
+            error = 'Пользователь с таким паролем или email уже существует'
         if error:
             return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
 
