@@ -202,6 +202,34 @@ class UserApiTest(TestCase):
     def test_fail_edit(self):
         """Тестируем невозможность редактирования аккаунта при некорректных данных"""
 
+        # Тестируем невозможность указать пользователю такие же логин и email, как у другого пользователя
+        username = shuffle_string(self.TEST_USERNAME)
+        password = shuffle_string(self.TEST_PASSWORD)
+        email = f'{create_random_sequence(10)}@{create_random_sequence(6)}.{create_random_sequence(3)}'
+        user1 = User.objects.create_user(username=username, password=password, email=email)
+        user2, token = self.create_user()
+
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION=token)
+        response = client.patch(reverse('api:edit_account'), {'username': username, 'email': email})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, 'Некорректный http-статус ответа')
+
+        user2.refresh_from_db()
+        self.assertNotEqual(user2.username, username, 'Удалось назначить пользователю уже существующий в БД логин')
+        self.assertNotEqual(user2.email, email, 'Удалось назначить пользователю уже имеющийся в БД email')
+
+        # Тестируем невозможность указать пользователю некорректные логин и email
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION=token)
+        response = client.patch(reverse('api:edit_account'), {'username': '*', 'email': '*'})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, 'Некорректный http-статус ответа')
+
+        # Очистка перед следующим кейсом
+        user1.delete()
+        user2.delete()
+
         # Тестируем невозможность редактирования пользователей со статусом Суперпользователь и Персонал
         for is_superuser, is_staff in [(True, True), (True, False), (False, True)]:
             user, token = self.create_user(is_superuser=is_superuser, is_staff=is_staff)
