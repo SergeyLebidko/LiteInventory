@@ -86,12 +86,16 @@ def edit_account(request):
     if error:
         return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
 
-    user.username = username
-    user.email = email
-    user.first_name = first_name
-    user.last_name = last_name
-    user.save()
+    if username:
+        user.username = username
+    if email:
+        user.email = email
+    if first_name:
+        user.first_name = first_name
+    if last_name:
+        user.last_name = last_name
 
+    user.save()
     return Response(status=status.HTTP_200_OK)
 
 
