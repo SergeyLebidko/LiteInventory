@@ -52,7 +52,7 @@ def change_password_done(request):
     return render(request, 'main/change_password_done.html', context={})
 
 
-class RemoveAccountMixin(View, ActionAccountMixin):
+class RemoveAccountView(View, ActionAccountMixin):
 
     def get(self, request):
         return render(request, 'main/remove_account.html', context={'error': None})
@@ -76,7 +76,7 @@ def remove_account_done(request):
     return render(request, 'main/remove_account_done.html', context={})
 
 
-class EditAccountMixin(View, ActionAccountMixin):
+class EditAccountView(View, ActionAccountMixin):
 
     def get(self, request):
         form = UserEditForm(instance=request.user)

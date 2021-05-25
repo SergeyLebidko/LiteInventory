@@ -35,7 +35,7 @@ def check_user_data(username=None, password=None, email=None):
         except ValidationError as ex:
             return ex.message
 
-    if username is not None and email is not None:
+    if username is not None or email is not None:
         user_exists = User.objects.filter(Q(username=username) | Q(email=email)).exists()
         if user_exists:
             return 'Пользователь с таким логином или email уже существует'

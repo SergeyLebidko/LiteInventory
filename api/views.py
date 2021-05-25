@@ -82,9 +82,10 @@ def edit_account(request):
 
     username, _, email, first_name, last_name = extract_user_data_from_request(request)
 
-    error = check_user_data(username=username, email=email)
-    if error:
-        return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
+    # if username or email:
+    #     error = check_user_data(username=username, email=email)
+    #     if error:
+    #         return Response({'detail': error}, status=status.HTTP_400_BAD_REQUEST)
 
     if username:
         user.username = username

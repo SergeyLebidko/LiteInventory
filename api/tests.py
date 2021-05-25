@@ -202,35 +202,8 @@ class UserApiTest(TestCase):
     def test_fail_edit(self):
         """Тестируем невозможность редактирования аккаунта при некорректных данных"""
 
-        user, token = self.create_user()
-
-        data = [
-            {
-                'username': '',
-                'email': self.TEST_EMAIL
-            },
-            {
-                'username': self.TEST_USERNAME,
-                'email': ''
-            },
-            {
-                'username': '',
-                'email': ''
-            }
-        ]
-        for element in data:
-            client = APIClient()
-            client.credentials(HTTP_AUTHORIZATION=token)
-            response = client.patch(reverse('api:edit_account'), element)
-            self.assertEqual(
-                response.status_code,
-                status.HTTP_400_BAD_REQUEST,
-                f'Некорректный http-статус ответа для данных: {element}'
-            )
-
         # Тестируем невозможность редактирования пользователей со статусом Суперпользователь и Персонал
         for is_superuser, is_staff in [(True, True), (True, False), (False, True)]:
-            user.delete()
             user, token = self.create_user(is_superuser=is_superuser, is_staff=is_staff)
             client = APIClient()
             client.credentials(HTTP_AUTHORIZATION=token)
@@ -264,6 +237,8 @@ class UserApiTest(TestCase):
                 f'{"Суперпользователь" if is_superuser else ""} '
                 f'{"Персонал" if is_staff else ""}'
             )
+
+            user.delete()
 
     def test_success_remove(self):
         """Тестируем успешное удаление аккаунта"""
