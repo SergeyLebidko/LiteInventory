@@ -283,7 +283,7 @@ class UserApiTest(TestCase):
         self.client.credentials(HTTP_AUTHORIZATION=token)
 
         response = self.client.delete(reverse('api:remove_account'), {'password': self.TEST_PASSWORD})
-        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Некорректный http-статус ответа')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT, 'Некорректный http-статус ответа')
 
         user_exists = User.objects.exists()
         self.assertFalse(user_exists, 'Пользователь не был удален')

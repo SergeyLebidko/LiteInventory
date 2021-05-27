@@ -79,7 +79,12 @@ def register(request):
     )
     create_default_equipment_types(user)
 
-    return Response(status=status.HTTP_201_CREATED)
+    return Response({
+        'username': user.username,
+        'email': user.email,
+        'first_name': user.first_name,
+        'last_name': user.last_name
+    }, status=status.HTTP_201_CREATED)
 
 
 @api_view(['PATCH'])
@@ -118,7 +123,12 @@ def edit_account(request):
 
     user.save()
 
-    return Response(status=status.HTTP_200_OK)
+    return Response({
+        'username': user.username,
+        'email': user.email,
+        'first_name': user.first_name,
+        'last_name': user.last_name
+    }, status=status.HTTP_200_OK)
 
 
 @api_view(['DELETE'])
@@ -135,7 +145,7 @@ def remove_account(request):
     password = request.data.get('password')
     if user.check_password(password):
         user.delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     return Response({'detail': 'Некорректный пароль'}, status=status.HTTP_403_FORBIDDEN)
 
