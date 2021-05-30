@@ -125,14 +125,12 @@ def get_stat(user):
         user=user
     ).annotate(
         equipment_price=Sum('equipmentcard__price')
-    ).filter(
-        equipment_price__gt=0
     )
     for group in queryset:
         result['price_by_groups'].append({
             'id': group.pk,
             'title': group.title,
-            'equipment_price': group.equipment_price
+            'equipment_price': group.equipment_price or 0
         })
 
     # Подсчитываем количество оборудования по типам
@@ -141,14 +139,12 @@ def get_stat(user):
         user=user
     ).annotate(
         equipment_count=Count('equipmentcard')
-    ).filter(
-        equipment_count__gt=0
     )
     for _type in queryset:
         result['count_by_types'].append({
             'id': _type.pk,
             'title': _type.title,
-            'equipment_count': _type.equipment_count
+            'equipment_count': _type.equipment_count or 0
         })
 
     # Подсчитываем стоимость оборудования по типам
@@ -157,14 +153,12 @@ def get_stat(user):
         user=user
     ).annotate(
         equipment_price=Sum('equipmentcard__price')
-    ).filter(
-        equipment_price__gt=0
     )
     for _type in queryset:
         result['price_by_types'].append({
             'id': _type.pk,
             'title': _type.title,
-            'equipment_price': _type.equipment_price
+            'equipment_price': _type.equipment_price or 0
         })
 
     return result
