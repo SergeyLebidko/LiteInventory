@@ -101,7 +101,7 @@ def get_stat(user):
 
     queryset = EquipmentCard.objects.filter(group__user=user)
     result['total_count'] = len(queryset)
-    result['total_price'] = queryset.aggregate(total_price=Sum('price'))['total_price']
+    result['total_price'] = queryset.aggregate(total_price=Sum('price'))['total_price'] or 0
 
     # Подсчитываем количество оборудования по группам
     result['count_by_groups'] = []
