@@ -41,3 +41,5 @@ liteinventory@gmail.com
 ![screenshot](screenshots/screen6.jpg)
 
 ![screenshot](screenshots/screen7.jpg)
+
+![screenshot](screenshots/screen8.jpg)
