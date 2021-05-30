@@ -14,8 +14,8 @@
         <div>
             <h1>Общая стоимость оборудования: {{ total_price|default_if_none:"" }} руб.</h1>
         </div>
-        <div>
-            <h1>Количество оборудования по группам (шт.):</h1>
+        <details>
+            <summary>Количество оборудования по группам (шт.):</summary>
             <ul>
                 {% for element in count_by_groups %}
                     <li>
@@ -24,9 +24,9 @@
                     </li>
                 {% endfor %}
             </ul>
-        </div>
-        <div>
-            <h1>Стоимость оборудования по группам (руб.):</h1>
+        </details>
+        <details>
+            <summary>Стоимость оборудования по группам (руб.):</summary>
             <ul>
                 {% for element in price_by_groups %}
                     <li>
@@ -35,9 +35,9 @@
                     </li>
                 {% endfor %}
             </ul>
-        </div>
-        <div>
-            <h1>Количество оборудования по типам (шт.):</h1>
+        </details>
+        <details>
+            <summary>Количество оборудования по типам (шт.):</summary>
             <ul>
                 {% for element in count_by_types %}
                     <li>
@@ -46,9 +46,9 @@
                     </li>
                 {% endfor %}
             </ul>
-        </div>
-        <div>
-            <h1>Стоимость оборудования по типам (руб.):</h1>
+        </details>
+        <details>
+            <summary>Стоимость оборудования по типам (руб.):</summary>
             <ul>
                 {% for element in price_by_types %}
                     <li>
@@ -57,7 +57,7 @@
                     </li>
                 {% endfor %}
             </ul>
-        </div>
+        </details>
     </div>
 {% endblock %}
 
