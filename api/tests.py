@@ -623,31 +623,31 @@ class MultipleUpdateApiTest(TestCase):
         client.credentials(HTTP_AUTHORIZATION=token)
 
         # Создаем в БД список типов, с которым будем работать
-        for title in [f'type_{index}' for index in range(4)]:
-            EquipmentType.objects.create(user=user, title=title)
+        total_count = 30
+        count_to_remove = 10
+        count_to_update = 10
+        count_to_create = 20
 
+        EquipmentType.objects.bulk_create(
+            [EquipmentType(user=user, title=f'type_{index}') for index in range(total_count)]
+        )
         types_in_bd = EquipmentType.objects.all()
 
         # Объекты к удалению
-        objects_to_remove = types_in_bd[0], types_in_bd[1]
-        objects_to_remove = EquipmentTypeSerializer(objects_to_remove, many=True).data
-        removed_ids = types_in_bd[0].pk, types_in_bd[1].pk
+        objects_to_remove = types_in_bd[:count_to_remove]
+        removed_ids = [obj.pk for obj in objects_to_remove]
 
         # Объекты к обновлению
-        objects_to_update = types_in_bd[2], types_in_bd[3]
-        objects_to_update[0].title = 'updated_type_0'
-        objects_to_update[1].title = 'updated_type_1'
-        objects_to_update = EquipmentTypeSerializer(objects_to_update, many=True).data
-        updated_ids = types_in_bd[2].pk, types_in_bd[3].pk
+        objects_to_update = types_in_bd.exclude(pk__in=removed_ids)[:count_to_update]
+        updated_ids = [obj.pk for obj in objects_to_update]
+        for index, obj in enumerate(objects_to_update):
+            obj.title = f'updated_type_{index}'
 
         # Объекты, которые надо будет создать
-        objects_to_create = [
-            {'title': 'created_type_0'},
-            {'title': 'created_type_1'}
-        ]
+        objects_to_create = [{'title': f'created_type_{index}'} for index in range(count_to_create)]
 
-        to_remove = json.dumps(objects_to_remove)
-        to_update = json.dumps(objects_to_update)
+        to_remove = json.dumps(EquipmentTypeSerializer(objects_to_remove, many=True).data)
+        to_update = json.dumps(EquipmentTypeSerializer(objects_to_update, many=True).data)
         to_create = json.dumps(objects_to_create)
 
         response = client.post(
@@ -666,14 +666,13 @@ class MultipleUpdateApiTest(TestCase):
         self.assertFalse(type_exists, 'Объекты не были удалены')
 
         # Проверяем, обновлены ли объекты
-        for number, pk in enumerate(updated_ids):
-            self.assertEqual(
-                EquipmentType.objects.get(pk=pk).title,
-                f'updated_type_{number}',
+        for pk in updated_ids:
+            self.assertTrue(
+                EquipmentType.objects.get(pk=pk).title.startswith('updated_type_'),
                 'Некорректное обновление объектов'
             )
 
         # Проверяем, созданы ли объекты
-        for index in range(2):
+        for index in range(count_to_create):
             type_exists = EquipmentType.objects.filter(title=f'created_type_{index}').exists()
             self.assertTrue(type_exists, 'Объект не был создан')
