@@ -615,12 +615,13 @@ class StatApiTest(TestCase):
 class MultipleUpdateApiTest(TestCase):
     """Класс для тестирования хуков массового обновления данных"""
 
-    def test_equipment_types_update(self):
-        """Тестируем хук массового обновления типов оборудования"""
+    def setUp(self) -> None:
+        self.client = APIClient()
+
+    def test_success_equipment_types_update(self):
+        """Тестируем успешную работу хука массового обновления типов оборудования"""
 
         user, token = UserApiTest().create_user()
-        client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION=token)
 
         # Создаем в БД список типов, с которым будем работать
         total_count = 30
@@ -650,7 +651,8 @@ class MultipleUpdateApiTest(TestCase):
         to_update = json.dumps(EquipmentTypeSerializer(objects_to_update, many=True).data)
         to_create = json.dumps(objects_to_create)
 
-        response = client.post(
+        self.client.credentials(HTTP_AUTHORIZATION=token)
+        response = self.client.post(
             reverse('api:update_equipment_types_list'),
             {
                 'to_remove': to_remove,
@@ -676,3 +678,52 @@ class MultipleUpdateApiTest(TestCase):
         for index in range(count_to_create):
             type_exists = EquipmentType.objects.filter(title=f'created_type_{index}').exists()
             self.assertTrue(type_exists, 'Объект не был создан')
+
+    def test_fail_equipment_types_update(self):
+        """Тестируем работу хука массового обновления типов оборудования при некорректных данных"""
+
+        user1, _ = UserApiTest().create_user()
+        user1.username = 'user1'
+        user1.save()
+
+        user2, token = UserApiTest().create_user()
+        user2.username = 'user2'
+        user2.save()
+
+        total_count = 30
+        count_to_remove = 10
+        count_to_update = 10
+
+        EquipmentType.objects.bulk_create(
+            [EquipmentType(user=user1, title=f'custom_type') for _ in range(total_count)]
+        )
+        types_in_db = EquipmentType.objects.all()
+
+        to_remove = json.dumps(EquipmentTypeSerializer(types_in_db[:count_to_remove], many=True).data)
+
+        to_update = types_in_db[count_to_remove: count_to_remove + count_to_update]
+        for obj in to_update:
+            obj.title = 'updated_type'
+        to_update = json.dumps(EquipmentTypeSerializer(to_update, many=True).data)
+
+        to_create = '[]'
+
+        # Пробуем выполнить удаление или изменение данных у другого пользователя
+        self.client.credentials(HTTP_AUTHORIZATION=token)
+        response = self.client.post(
+            reverse('api:update_equipment_types_list'),
+            {
+                'to_remove': to_remove,
+                'to_update': to_update,
+                'to_create': to_create
+            }
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'Некорректный http-статус ответа')
+
+        # Проверяем состояние БД после выполнения запроса
+        count_in_db = EquipmentType.objects.filter(user=user1).count()
+        self.assertEqual(count_in_db, total_count, 'Количество объектов в БД изменилось после выполнения запроса')
+
+        updated_exists = EquipmentType.objects.filter(user=user1, title='updated_type').exists()
+        self.assertFalse(updated_exists, 'После выполнения запроса в БД были выполнены изменения')

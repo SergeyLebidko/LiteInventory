@@ -317,6 +317,6 @@ def update_equipment_types_list(request):
     # Удаляем объекты
     EquipmentType.objects.filter(pk__in=[item['id'] for item in to_remove]).delete()
 
-    # Возвращаем список после всех изменений
+    # Возвращаем список объектов из БД после всех изменений
     serializer = EquipmentTypeSerializer(EquipmentType.objects.filter(user=user), many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
