@@ -1,4 +1,5 @@
 import uuid
+import json
 import random
 from django.test import TestCase
 from django.urls import reverse
@@ -6,6 +7,7 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from api.serializers import EquipmentTypeSerializer
 from main.utils import create_random_sequence
 from main.models import ResetPasswordCode, Group, EquipmentCard, EquipmentType
 from .models import Token
@@ -136,7 +138,7 @@ class UserApiTest(TestCase):
 
         data = [
             {
-              'msg': 'Удалось создать пользователя, не предоставив логин, пароль и email'
+                'msg': 'Удалось создать пользователя, не предоставив логин, пароль и email'
             },
             {
                 'username': '',
@@ -608,3 +610,70 @@ class StatApiTest(TestCase):
                 price_by_types[eq_type['id']],
                 'Некорректный подсчет стоимости оборудования по типам'
             )
+
+
+class MultipleUpdateApiTest(TestCase):
+    """Класс для тестирования хуков массового обновления данных"""
+
+    def test_equipment_types_update(self):
+        """Тестируем хук массового обновления типов оборудования"""
+
+        user, token = UserApiTest().create_user()
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION=token)
+
+        # Создаем в БД список типов, с которым будем работать
+        for title in [f'type_{index}' for index in range(4)]:
+            EquipmentType.objects.create(user=user, title=title)
+
+        types_in_bd = EquipmentType.objects.all()
+
+        # Объекты к удалению
+        objects_to_remove = types_in_bd[0], types_in_bd[1]
+        objects_to_remove = EquipmentTypeSerializer(objects_to_remove, many=True).data
+        removed_ids = types_in_bd[0].pk, types_in_bd[1].pk
+
+        # Объекты к обновлению
+        objects_to_update = types_in_bd[2], types_in_bd[3]
+        objects_to_update[0].title = 'updated_type_0'
+        objects_to_update[1].title = 'updated_type_1'
+        objects_to_update = EquipmentTypeSerializer(objects_to_update, many=True).data
+        updated_ids = types_in_bd[2].pk, types_in_bd[3].pk
+
+        # Объекты, которые надо будет создать
+        objects_to_create = [
+            {'title': 'created_type_0'},
+            {'title': 'created_type_1'}
+        ]
+
+        to_remove = json.dumps(objects_to_remove)
+        to_update = json.dumps(objects_to_update)
+        to_create = json.dumps(objects_to_create)
+
+        response = client.post(
+            reverse('api:update_equipment_types_list'),
+            {
+                'to_remove': to_remove,
+                'to_update': to_update,
+                'to_create': to_create
+            }
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Некорректный http-статус ответа')
+
+        # Проверяем удалены ли объекты
+        type_exists = EquipmentType.objects.filter(pk__in=removed_ids).exists()
+        self.assertFalse(type_exists, 'Объекты не были удалены')
+
+        # Проверяем, обновлены ли объекты
+        for number, pk in enumerate(updated_ids):
+            self.assertEqual(
+                EquipmentType.objects.get(pk=pk).title,
+                f'updated_type_{number}',
+                'Некорректное обновление объектов'
+            )
+
+        # Проверяем, созданы ли объекты
+        for index in range(2):
+            type_exists = EquipmentType.objects.filter(title=f'created_type_{index}').exists()
+            self.assertTrue(type_exists, 'Объект не был создан')
