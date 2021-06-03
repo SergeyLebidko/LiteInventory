@@ -3,7 +3,7 @@ from rest_framework.routers import SimpleRouter
 
 from .views import account_data, login, logout, register, edit_account, remove_account, change_password, \
     reset_password, reset_password_confirm, GroupViwSet, EquipmentCardViewSet, EquipmentTypeViewSet, \
-    EquipmentFeatureViewSet, stat
+    EquipmentFeatureViewSet, stat, update_equipment_types_list
 
 app_name = 'api'
 
@@ -17,7 +17,8 @@ urlpatterns = [
     path('change_password/', change_password, name='change_password'),
     path('reset_password/', reset_password, name='reset_password'),
     path('reset_password_confirm/<uuid:_uuid>/', reset_password_confirm, name='reset_password_confirm'),
-    path('stat/', stat, name='stat')
+    path('stat/', stat, name='stat'),
+    path('update_equipment_types_list/', update_equipment_types_list, name='update_equipment_types_list')
 ]
 
 router = SimpleRouter()

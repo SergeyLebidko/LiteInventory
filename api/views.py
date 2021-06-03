@@ -1,4 +1,6 @@
 import uuid
+import json
+from json.decoder import JSONDecodeError
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -277,3 +279,44 @@ def stat(request):
     user = request.user
     result = get_stat(user)
     return Response(result, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@authentication_classes([SessionAuthentication, CustomTokenAuthentication])
+@permission_classes([IsAuthenticated])
+def update_equipment_types_list(request):
+    """Контроллер служит для обновления списка типов оборудования с помощью одного запроса к api"""
+
+    user = request.user
+    try:
+        to_create = json.loads(request.data.get('to_create'))
+        to_update = json.loads(request.data.get('to_update'))
+        to_remove = json.loads(request.data.get('to_remove'))
+    except (TypeError, JSONDecodeError):
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    # Отсекаем попытку обновления списка типов оборудования другого пользователя
+    forbidden_ids = EquipmentType.objects.exclude(user=user).values_list('id', flat=True)
+    update_and_remove_ids = [item['id'] for item in to_update] + [item['id'] for item in to_remove]
+    if set(forbidden_ids) & set(update_and_remove_ids):
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    # Создаем объекты
+    EquipmentType.objects.bulk_create([EquipmentType(user=user, title=item['title']) for item in to_create])
+
+    # Обновляем объекты
+    objects_to_update = EquipmentType.objects.filter(user=user, pk__in=[item['id'] for item in to_update])
+    for item_to_update in to_update:
+        for object_to_update in objects_to_update:
+            if int(item_to_update['id']) == object_to_update.pk:
+                object_to_update.title = item_to_update['title']
+                break
+
+    EquipmentType.objects.bulk_update(objects_to_update, ('title',))
+
+    # Удаляем объекты
+    EquipmentType.objects.filter(pk__in=[item['id'] for item in to_remove]).delete()
+
+    # Возвращаем список после всех изменений
+    serializer = EquipmentTypeSerializer(EquipmentType.objects.filter(user=user), many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
