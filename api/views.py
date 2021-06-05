@@ -351,6 +351,24 @@ def update_equipment_features_list(request):
 
     # TODO Вставить код непосредственного обновления списка объектов
 
+    # Создаем объекты
+    EquipmentFeature.objects.bulk_create(
+        [EquipmentFeature(equipment_card=card_id, name=item['name'], value=item['value']) for item in to_create]
+    )
+
+    # Обновляем объекты
+    objects_to_update = EquipmentFeature.objects.filter(pk__in=[item['id'] for item in to_update])
+    for obj in objects_to_update:
+        for item in to_update:
+            if obj.pk == item['pk']:
+                obj.name = item['name']
+                obj.value = item['value']
+                break
+    EquipmentFeature.objects.bulk_update(objects_to_update, ('name', 'title'))
+
+    # Удаляем объекты
+    EquipmentFeature.objects.filter(pk__in=[item['id'] for item in to_remove]).delete()
+
     # TODO Код заглушка. Должен быть удален
     features = EquipmentFeature.objects.filter(equipment_card=card)
     serializer = EquipmentFeatureSerializer(features, many=True)
