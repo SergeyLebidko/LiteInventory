@@ -1,6 +1,4 @@
 import uuid
-import json
-from json.decoder import JSONDecodeError
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -15,7 +13,7 @@ from main.utils import send_password_reset_code, create_default_equipment_types,
 from main.models import ResetPasswordCode, Group, EquipmentCard, EquipmentType, EquipmentFeature
 from .models import Token
 from .authentication import CustomTokenAuthentication
-from .utils import check_password, check_email
+from .utils import check_password, check_email, extract_json_data
 from .serializers import GroupSerializer, EquipmentCardSerializer, EquipmentTypeSerializer, EquipmentFeatureSerializer
 
 
@@ -288,12 +286,10 @@ def update_equipment_types_list(request):
     """Контроллер служит для обновления списка типов оборудования с помощью одного запроса к api"""
 
     user = request.user
-    try:
-        to_create = json.loads(request.data.get('to_create'))
-        to_update = json.loads(request.data.get('to_update'))
-        to_remove = json.loads(request.data.get('to_remove'))
-    except (TypeError, JSONDecodeError):
+    data = extract_json_data(request)
+    if not data:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+    to_create, to_update, to_remove = data
 
     # Отсекаем попытку обновления списка типов оборудования другого пользователя
     forbidden_ids = EquipmentType.objects.exclude(user=user).values_list('id', flat=True)
@@ -319,4 +315,43 @@ def update_equipment_types_list(request):
 
     # Возвращаем список объектов из БД после всех изменений
     serializer = EquipmentTypeSerializer(EquipmentType.objects.filter(user=user), many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@authentication_classes([SessionAuthentication, CustomTokenAuthentication])
+@permission_classes([IsAuthenticated])
+def update_equipment_features_list(request):
+    """Контроллер служит для обновления списка характеристик оборудования с помощью одного запроса к api"""
+
+    user = request.user
+    data = extract_json_data(request)
+    if not data:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    to_create, to_update, to_remove = data
+
+    # Все характеристики, которые будут обрабатываться хуком, должны принадлежать одной карточке
+    card_ids = []
+    card_ids.extend([item['equipment_card'] for item in to_create])
+    card_ids.extend([item['equipment_card'] for item in to_update])
+    card_ids.extend([item['equipment_card'] for item in to_remove])
+
+    if len(set(card_ids)) > 1:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    # Карточка, для которой обновляем список, должна принадлежать пользователю от имени которого выполняется запрос
+    card_id = card_ids[0]
+    try:
+        card = EquipmentCard.objects.get(pk=card_id)
+    except EquipmentCard.DoesNotExist:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    if card.user != user:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    # TODO Вставить код непосредственного обновления списка объектов
+
+    # TODO Код заглушка. Должен быть удален
+    features = EquipmentFeature.objects.filter(equipment_card=card)
+    serializer = EquipmentFeatureSerializer(features, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)

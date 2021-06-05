@@ -1,4 +1,6 @@
+import json
 import random
+from json import JSONDecodeError
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 from django.contrib.auth.password_validation import validate_password
@@ -30,3 +32,13 @@ def shuffle_string(source):
         random.shuffle(source_as_list)
         result = ''.join(source_as_list)
     return result
+
+
+def extract_json_data(request):
+    try:
+        to_create = json.loads(request.data.get('to_create'))
+        to_update = json.loads(request.data.get('to_update'))
+        to_remove = json.loads(request.data.get('to_remove'))
+    except (TypeError, JSONDecodeError):
+        return None
+    return to_create, to_update, to_remove
