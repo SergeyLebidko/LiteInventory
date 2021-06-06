@@ -346,30 +346,27 @@ def update_equipment_features_list(request):
     except EquipmentCard.DoesNotExist:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    if card.user != user:
+    if card.group.user != user:
         return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    # TODO Вставить код непосредственного обновления списка объектов
 
     # Создаем объекты
     EquipmentFeature.objects.bulk_create(
-        [EquipmentFeature(equipment_card=card_id, name=item['name'], value=item['value']) for item in to_create]
+        [EquipmentFeature(equipment_card_id=card_id, name=item['name'], value=item['value']) for item in to_create]
     )
 
     # Обновляем объекты
     objects_to_update = EquipmentFeature.objects.filter(pk__in=[item['id'] for item in to_update])
     for obj in objects_to_update:
         for item in to_update:
-            if obj.pk == item['pk']:
+            if obj.pk == item['id']:
                 obj.name = item['name']
                 obj.value = item['value']
                 break
-    EquipmentFeature.objects.bulk_update(objects_to_update, ('name', 'title'))
+    EquipmentFeature.objects.bulk_update(objects_to_update, ('name', 'value'))
 
     # Удаляем объекты
     EquipmentFeature.objects.filter(pk__in=[item['id'] for item in to_remove]).delete()
 
-    # TODO Код заглушка. Должен быть удален
     features = EquipmentFeature.objects.filter(equipment_card=card)
     serializer = EquipmentFeatureSerializer(features, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)

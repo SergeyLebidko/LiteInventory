@@ -7,9 +7,9 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from api.serializers import EquipmentTypeSerializer
+from api.serializers import EquipmentTypeSerializer, EquipmentFeatureSerializer
 from main.utils import create_random_sequence
-from main.models import ResetPasswordCode, Group, EquipmentCard, EquipmentType
+from main.models import ResetPasswordCode, Group, EquipmentCard, EquipmentType, EquipmentFeature
 from .models import Token
 from .utils import shuffle_string
 
@@ -615,7 +615,7 @@ class StatApiTest(TestCase):
 class MultipleUpdateApiTest(TestCase):
     """Класс для тестирования хуков массового обновления данных"""
 
-    def setUp(self) -> None:
+    def setUp(self):
         self.client = APIClient()
 
     def test_success_equipment_types_update(self):
@@ -727,3 +727,131 @@ class MultipleUpdateApiTest(TestCase):
 
         updated_exists = EquipmentType.objects.filter(user=user1, title='updated_type').exists()
         self.assertFalse(updated_exists, 'После выполнения запроса в БД были выполнены изменения')
+
+    def test_success_equipment_features_update(self):
+        """Тестируем успешную работу хука массового обновления характеристик оборудования"""
+
+        user, token = UserApiTest().create_user()
+
+        group = Group.objects.create(user=user, title='group')
+        eq_type = EquipmentType.objects.create(user=user, title='eq_type')
+        eq_card = EquipmentCard.objects.create(group=group, equipment_type=eq_type)
+
+        total_count = 50
+        count_to_remove = 10
+        count_to_update = 10
+        count_to_create = 10
+
+        features = []
+        for index in range(total_count):
+            features.append(
+                EquipmentFeature.objects.create(equipment_card=eq_card, name=f'name_{index}', value=f'value_{index}')
+            )
+
+        serializer = EquipmentFeatureSerializer(features, many=True)
+        to_remove = serializer.data[:count_to_remove]
+
+        to_update = serializer.data[count_to_remove:count_to_remove + count_to_update]
+        for index, obj in enumerate(to_update):
+            obj['name'] = f'updated_name_{index}'
+            obj['value'] = f'updated_value_{index}'
+
+        to_create = []
+        for index in range(count_to_create):
+            to_create.append(
+                {
+                    'equipment_card': eq_card.pk,
+                    'name': f'name_created_{index}',
+                    'value': f'value_created_{index}'
+                }
+            )
+
+        self.client.credentials(HTTP_AUTHORIZATION=token)
+        response = self.client.post(
+            reverse('api:update_equipment_features_list'),
+            {
+                'to_create': json.dumps(to_create),
+                'to_update': json.dumps(to_update),
+                'to_remove': json.dumps(to_remove)
+            }
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, 'Некорректный http-статус ответа')
+
+        features_count = EquipmentFeature.objects.filter(equipment_card=eq_card).count()
+        self.assertEqual(
+            features_count,
+            total_count - count_to_remove + count_to_create,
+            'Неверное количество объектов в БД'
+        )
+
+        updated_objects_count = EquipmentFeature.objects.filter(
+            pk__in=[item['id'] for item in to_update],
+            name__startswith='updated_name_',
+            value__startswith='updated_value'
+        ).count()
+        self.assertEqual(updated_objects_count, count_to_update, 'Не все характеристики были обновлены')
+
+    def test_fail_equipment_features_update(self):
+        """Тестируем работу хука массового обновления свойств при некорректных данных"""
+
+        user1, _ = UserApiTest().create_user()
+        user1.username = 'user1'
+        user1.save()
+
+        user2, token = UserApiTest().create_user()
+        user2.username = 'user2'
+        user2.save()
+
+        eq_type_1 = EquipmentType.objects.create(user=user1, title='equipment_type_1')
+        group1 = Group.objects.create(user=user1, title='group1')
+        card_1 = EquipmentCard.objects.create(group=group1, equipment_type=eq_type_1)
+
+        eq_type_2 = EquipmentType.objects.create(user=user2, title='equipment_type_2')
+        group2 = Group.objects.create(user=user2, title='group2')
+        card_2 = EquipmentCard.objects.create(group=group2, equipment_type=eq_type_2)
+
+        # Пытаемся изменить список характеристик, принадлежащий разным карточкам
+        to_request = json.dumps([
+            {'equipment_card': card_1.pk},
+            {'equipment_card': card_2.pk}
+        ])
+
+        client1 = APIClient()
+        client1.credentials(HTTP_AUTHORIZATION=token)
+        response = client1.post(
+            reverse('api:update_equipment_features_list'),
+            {
+                'to_remove': to_request,
+                'to_create': to_request,
+                'to_update': to_request
+            }
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+            'Некорректный http-статус ответа для попытки изменения характеристик в карточках сразу двух пользователей'
+        )
+
+        # Пытаемся изменить список характеристик карточки, принадлежащей другому пользователю
+        to_request = json.dumps([
+            {'equipment_card': card_1.pk}
+        ])
+
+        client2 = APIClient()
+        client2.credentials(HTTP_AUTHORIZATION=token)
+        response = client2.post(
+            reverse('api:update_equipment_features_list'),
+            {
+                'to_remove': to_request,
+                'to_create': to_request,
+                'to_update': to_request
+            }
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+            'Некорректный http-статус ответа для попытки изменения характеристик в карточке другого пользователя'
+        )
