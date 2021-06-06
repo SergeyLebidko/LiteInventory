@@ -23,16 +23,16 @@
                 </p>
             </div>
             <div class="code_block">
-                <code>В запросе:</code>
+                <section>В запросе:</section>
                 <ul>
                     <li>
-                        <code>password: "пароль_пользователя"</code>
+                        <section>password: "пароль_пользователя"</section>
                     </li>
                     <li>
-                        <code>username: "логин_пользователя"</code>
+                        <section>username: "логин_пользователя"</section>
                     </li>
                 </ul>
-                <code>Ответ:</code>
+                <section>Ответ:</section>
                 <ul>
                     <li>
                         <pre>{{ login_json }}</pre>
@@ -56,7 +56,7 @@
                 </p>
             </div>
             <div class="code_block">
-                <code>Ответ:</code>
+                <section>Ответ:</section>
                 <ul>
                     <li>
                         <pre>{{ account_data_json }}</pre>
@@ -80,7 +80,7 @@
                 </p>
             </div>
             <div class="code_block">
-                <code>Если успешно - ответ со статусом 200</code>
+                <section>Если успешно - ответ со статусом 200</section>
             </div>
         </div>
 
@@ -99,25 +99,25 @@
                 </p>
             </div>
             <div class="code_block">
-                <code>В запросе:</code>
+                <section>В запросе:</section>
                 <ul>
                     <li>
-                        <code>username: "логин_пользователя"</code>
+                        <section>username: "логин_пользователя"</section>
                     </li>
                     <li>
-                        <code>password: "пароль_пользователя"</code>
+                        <section>password: "пароль_пользователя"</section>
                     </li>
                     <li>
-                        <code>email: "email_пользователя"</code>
+                        <section>email: "email_пользователя"</section>
                     </li>
                     <li>
-                        <code>first_name: "имя_пользователя"</code>
+                        <section>first_name: "имя_пользователя"</section>
                     </li>
                     <li>
-                        <code>last_name: "фамилия_пользователя"</code>
+                        <section>last_name: "фамилия_пользователя"</section>
                     </li>
                 </ul>
-                <code>Если данные корректны: ответ со статусом 201</code>
+                <section>Если данные корректны: ответ со статусом 201</section>
             </div>
         </div>
 
@@ -137,22 +137,22 @@
                 </p>
             </div>
             <div class="code_block">
-                <code>В запросе:</code>
+                <section>В запросе:</section>
                 <ul>
                     <li>
-                        <code>username: "логин_пользователя"</code>
+                        <section>username: "логин_пользователя"</section>
                     </li>
                     <li>
-                        <code>email: "email_пользователя"</code>
+                        <section>email: "email_пользователя"</section>
                     </li>
                     <li>
-                        <code>first_name: "имя_пользователя"</code>
+                        <section>first_name: "имя_пользователя"</section>
                     </li>
                     <li>
-                        <code>last_name: "фамилия_пользователя"</code>
+                        <section>last_name: "фамилия_пользователя"</section>
                     </li>
                 </ul>
-                <code>Если данные корректны: ответ со статусом 200</code>
+                <section>Если данные корректны: ответ со статусом 200</section>
             </div>
         </div>
 
@@ -171,13 +171,13 @@
                 </p>
             </div>
             <div class="code_block">
-                <code>В запросе:</code>
+                <section>В запросе:</section>
                 <ul>
                     <li>
-                        <code>password: "пароль_пользователя"</code>
+                        <section>password: "пароль_пользователя"</section>
                     </li>
                 </ul>
-                <code>Если данные корректны: ответ со статусом 204</code>
+                <section>Если данные корректны: ответ со статусом 204</section>
             </div>
         </div>
 
@@ -196,16 +196,16 @@
                 </p>
             </div>
             <div class="code_block">
-                <code>В запросе:</code>
+                <section>В запросе:</section>
                 <ul>
                     <li>
-                        <code>password: "текущий_пароль_пользователя"</code>
+                        <section>password: "текущий_пароль_пользователя"</section>
                     </li>
                     <li>
-                        <code>next_password: "новый_пароль_пользователя"</code>
+                        <section>next_password: "новый_пароль_пользователя"</section>
                     </li>
                 </ul>
-                <code>Если данные корректны: ответ со статусом 200</code>
+                <section>Если данные корректны: ответ со статусом 200</section>
             </div>
         </div>
 
@@ -225,16 +225,16 @@
                 </p>
             </div>
             <div class="code_block">
-                <code>В запросе:</code>
+                <section>В запросе:</section>
                 <ul>
                     <li>
-                        <code>email: "текущий_email_пользователя"</code>
+                        <section>email: "текущий_email_пользователя"</section>
                     </li>
                 </ul>
-                <code>
+                <section>
                     Если данные корректны, то в ответ придет uuid запроса, который надо будет использовать при
                     обращении к хуку установки нового пароля:
-                </code>
+                </section>
                 <pre>{{ reset_password_json }}</pre>
             </div>
         </div>
@@ -255,18 +255,18 @@
                 </p>
             </div>
             <div class="code_block">
-                <code>В запросе:</code>
+                <section>В запросе:</section>
                 <ul>
                     <li>
-                        <code>code: "код_сброса_пароля"</code>
+                        <section>code: "код_сброса_пароля"</section>
                     </li>
                     <li>
-                        <code>password: "новый_пароль"</code>
+                        <section>password: "новый_пароль"</section>
                     </li>
                 </ul>
-                <code>
+                <section>
                     Если данные корректны: ответ со статусом 200
-                </code>
+                </section>
             </div>
         </div>
 
@@ -290,14 +290,14 @@
                 </p>
             </div>
             <div class="code_block">
-                <code>Пример ответа API на запрос списка групп:</code>
+                <section>Пример ответа API на запрос списка групп:</section>
                 <p>
                 <pre>{{ group_json }}</pre>
                 </p>
                 <p>
-                    <code>
+                    <section>
                         Поле group у объектов - идентификатор родительской группы. У корневых групп он равен null.
-                    </code>
+                    </section>
                 </p>
             </div>
         </div>
@@ -326,11 +326,11 @@
                 </p>
             </div>
             <div class="code_block">
-                <code>
+                <section>
                     Пример ответа API на запрос списка карточек:
                     <br>
                     GET /api/equipment_cards/?group=44
-                </code>
+                </section>
                 <p>
                 <pre>{{ equipment_cards_json }}</pre>
                 </p>
@@ -371,11 +371,11 @@
                 </ul>
             </div>
             <div class="code_block">
-                <code>
+                <section>
                     Пример ответа API на запрос списка типов:
                     <br>
                     GET /api/equipment_types/
-                </code>
+                </section>
                 <p>
                 <pre>{{ equipment_types_json }}</pre>
                 </p>
@@ -401,7 +401,7 @@
                 </p>
             </div>
             <div class="code_block">
-                <code>
+                <section>
                     На хук нужно отправить три параметра:
                     <ul>
                         <li>to_create - список объектов, которые нужно создать</li>
@@ -411,11 +411,11 @@
                     Каждый список должен быть представлен в виде преобразованого в текстовую строку списка объектов
                     equipment_type, каждый из которых содержит поле title (наименование) и поле id (для удаляемых и
                     обновляемых объектов).
-                </code>
-                <code>
+                </section>
+                <section>
                     В ответе хука будет обновленный список типов оборудования, такой же, как возвращаемый по запросу
                     GET /api/equipment_types/
-                </code>
+                </section>
             </div>
         </div>
 
@@ -445,11 +445,11 @@
                 </p>
             </div>
             <div class="code_block">
-                <code>
+                <section>
                     Пример ответа API на запрос списка характеристик:
                     <br>
                     GET /api/equipment_features/?card=2
-                </code>
+                </section>
                 <p>
                 <pre>{{ equipment_features_json }}</pre>
                 </p>
@@ -476,7 +476,7 @@
                 </p>
             </div>
             <div class="code_block">
-                <code>
+                <section>
                     На хук нужно отправить три параметра:
                     <ul>
                         <li>to_create - список объектов, которые нужно создать</li>
@@ -492,11 +492,11 @@
                     <p>
                         Все объекты характеристик (equipment_feature) должны относится к одной и той же карточке.
                     </p>
-                </code>
-                <code>
+                </section>
+                <section>
                     В ответе хука будет обновленный список характеристик оборудования, такой же, как возвращаемый по
                     запросу GET /api/equipment_features/
-                </code>
+                </section>
             </div>
         </div>
 
@@ -526,11 +526,11 @@
                 </ul>
             </div>
             <div class="code_block">
-                <code>
+                <section>
                     Пример ответа API на запрос статистики:
                     <br>
                     GET /api/stat/
-                </code>
+                </section>
                 <p>
                 <pre>{{ stat_json }}</pre>
                 </p>
